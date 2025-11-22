@@ -1,11 +1,11 @@
-// firebase-config.js - الإصدار المعدل باستخدام Modular SDK
+// firebase-config.js - الإصدار النهائي مع databaseURL الصحيح
 console.log("جاري تحميل إعدادات Firebase Modular SDK...");
 
-// إعدادات Firebase - استبدل هذه بالقيم الفعلية من مشروعك
+// إعدادات Firebase مع databaseURL الصحيح
 const firebaseConfig = {
     apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
     authDomain: "wacel-live.firebaseapp.com",
-    databaseURL: "https://wacel-live-default-rtdb.firebaseio.com", // تأكد من إضافة هذا
+    databaseURL: "https://wacel-live-default-rtdb.firebaseio.com", // ✅ هذا هو الرابط الصحيح
     projectId: "wacel-live",
     storageBucket: "wacel-live.firebasestorage.app",
     messagingSenderId: "185108554006",
@@ -52,6 +52,7 @@ function initializeFirebase() {
         window.firebaseAuth = getAuth(window.firebaseApp);
         
         console.log("تم تهيئة Firebase بنجاح باستخدام Modular SDK");
+        console.log("✅ Database URL:", firebaseConfig.databaseURL);
     } catch (error) {
         console.error("خطأ في تهيئة Firebase:", error);
         setupFallback();
