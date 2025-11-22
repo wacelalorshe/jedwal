@@ -15,11 +15,6 @@
     
     <a href="admin.html" class="admin-link">لوحة التحكم</a>
 
-    <!-- تحميل Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    
     <!-- إعدادات Firebase -->
     <script src="firebase-config.js"></script>
     
@@ -33,7 +28,7 @@
             
             // تحميل المباريات بعد التأكد من تهيئة Firebase
             const checkFirebase = setInterval(() => {
-                if (window.firebaseDb) {
+                if (window.firebaseDb && window.firebaseModules) {
                     clearInterval(checkFirebase);
                     loadMatches();
                 }
@@ -41,9 +36,11 @@
             
             function loadMatches() {
                 const matchesContainer = document.getElementById('matches-container');
+                const { ref, onValue } = window.firebaseModules;
                 
                 // الاستماع للتحديثات في قاعدة البيانات
-                window.firebaseDb.ref('matches').on('value', function(snapshot) {
+                const matchesRef = ref(window.firebaseDb, 'matches');
+                onValue(matchesRef, (snapshot) => {
                     matchesContainer.innerHTML = '';
                     
                     if (!snapshot.exists()) {
@@ -54,7 +51,7 @@
                     let currentLeague = '';
                     let hasMatches = false;
                     
-                    snapshot.forEach(function(childSnapshot) {
+                    snapshot.forEach((childSnapshot) => {
                         hasMatches = true;
                         const match = childSnapshot.val();
                         
@@ -107,7 +104,7 @@
                     if (!hasMatches) {
                         matchesContainer.innerHTML = '<div class="loading">لا توجد مباريات متاحة حالياً</div>';
                     }
-                }, function(error) {
+                }, (error) => {
                     console.error("خطأ في تحميل المباريات:", error);
                     matchesContainer.innerHTML = '<div class="error">حدث خطأ في تحميل المباريات. يرجى المحاولة لاحقاً.</div>';
                 });
