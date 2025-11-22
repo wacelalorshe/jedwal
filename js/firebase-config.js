@@ -1,11 +1,11 @@
-// firebase-config.js - الإصدار النهائي مع databaseURL الصحيح
+// firebase-config.js - الإصدار النهائي مع databaseURL الصحيح للمنطقة الجديدة
 console.log("جاري تحميل إعدادات Firebase Modular SDK...");
 
-// إعدادات Firebase مع databaseURL الصحيح
+// إعدادات Firebase مع databaseURL الصحيح للمنطقة asia-southeast1
 const firebaseConfig = {
     apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
     authDomain: "wacel-live.firebaseapp.com",
-    databaseURL: "https://wacel-live-default-rtdb.firebaseio.com", // ✅ هذا هو الرابط الصحيح
+    databaseURL: "https://wacel-live-default-rtdb.asia-southeast1.firebasedatabase.app", // ✅ الرابط الجديد
     projectId: "wacel-live",
     storageBucket: "wacel-live.firebasestorage.app",
     messagingSenderId: "185108554006",
@@ -53,6 +53,7 @@ function initializeFirebase() {
         
         console.log("تم تهيئة Firebase بنجاح باستخدام Modular SDK");
         console.log("✅ Database URL:", firebaseConfig.databaseURL);
+        console.log("✅ المنطقة: asia-southeast1 (جنوب شرق آسيا)");
     } catch (error) {
         console.error("خطأ في تهيئة Firebase:", error);
         setupFallback();
@@ -71,30 +72,65 @@ function setupFallback() {
                 if (event === 'value') {
                     setTimeout(() => {
                         callback({
-                            val: () => ({}),
-                            forEach: () => {}
+                            val: () => ({
+                                // بيانات تجريبية للاختبار
+                                "test-match-1": {
+                                    league: "الدوري الانجليزي الممتاز",
+                                    team1: "نوتينغهام",
+                                    team2: "برينتفورد",
+                                    time: "04:00م",
+                                    channel: "bein sport 2",
+                                    commentator: "أحمد البلوشي",
+                                    links: ["https://example.com/stream1"]
+                                }
+                            }),
+                            forEach: function(callback) {
+                                const data = this.val();
+                                Object.keys(data).forEach(key => {
+                                    callback({
+                                        key: key,
+                                        val: () => data[key]
+                                    });
+                                });
+                            }
                         });
-                    }, 500);
+                    }, 1000);
                 }
             },
             push: (data) => Promise.resolve({ key: 'test-' + Date.now() }),
             update: (data) => Promise.resolve(),
             remove: () => Promise.resolve(),
-            once: (event) => Promise.resolve({ val: () => ({}) })
+            once: (event) => Promise.resolve({ 
+                val: () => ({
+                    league: "الدوري الانجليزي الممتاز",
+                    team1: "نوتينغهام",
+                    team2: "برينتفورد",
+                    time: "04:00م",
+                    channel: "bein sport 2",
+                    commentator: "أحمد البلوشي",
+                    links: ["https://example.com/stream1"]
+                }),
+                exists: () => true
+            })
         })
     };
     window.firebaseAuth = {
         signInWithEmailAndPassword: (email, password) => {
             if (email && password) {
                 return Promise.resolve({
-                    user: { email, uid: 'test-user' }
+                    user: { 
+                        email: email, 
+                        uid: 'test-user',
+                        emailVerified: true
+                    }
                 });
             }
             return Promise.reject({ code: 'auth/invalid-credential' });
         },
         signOut: () => Promise.resolve(),
         onAuthStateChanged: (callback) => {
-            callback(null);
+            // محاكاة عدم وجود مستخدم مسجل في البداية
+            setTimeout(() => callback(null), 100);
             return () => {};
         },
         currentUser: null
