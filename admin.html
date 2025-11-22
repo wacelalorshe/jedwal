@@ -122,8 +122,14 @@ https://example.com/stream3"></textarea>
         </div>
     </div>
 
-    <!-- تحميل إعدادات Firebase أولاً -->
+    <!-- تحميل Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
+    <!-- إعدادات Firebase -->
     <script src="firebase-config.js"></script>
+    
     <script>
         // الانتظار حتى تحميل DOM وFirebase
         document.addEventListener('DOMContentLoaded', function() {
