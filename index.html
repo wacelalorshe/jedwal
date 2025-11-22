@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+    <title>مباريات كرة القدم اليوم</title>
+    
+    <!-- الخطوط -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
+    
+    <!-- الأيقونات -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    
+    <!-- الأنماط -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/lightbox.css">
+</head>
+<body>
+    <!-- Lightbox Alert -->
+    <div id="lightbox-alert" class="lightbox">
+        <div class="lightbox-content">
+            <i class="fas fa-exclamation-circle fa-3x icon-alert"></i>
+            <h2>تنبيه هام</h2>
+            <p>لتشغيل المباراة، تحتاج إلى تنزيل مشغل الفيديو <strong>Xpola Player</strong>. يرجى تنزيله إذا لم تكن قد قمت بذلك بالفعل.</p>
+            <div class="button-group">
+                <a href="https://play.google.com/store/apps/details?id=com.xpola.player" class="btn-download" target="_blank">تنزيل المشغل</a>
+                <button class="btn-hide" onclick="hideLightbox()">إخفاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="match_today container" id="match_today">
+        <h2>
+            مباريات اليوم
+            <div id="clock">جارٍ تحميل الوقت...</div>
+        </h2>
+        <div class="widget-content" id="contents"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/matches.js"></script>
+    <script src="js/lightbox.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
