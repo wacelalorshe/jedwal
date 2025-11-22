@@ -4,195 +4,7 @@
     <meta charset='UTF-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>وسيل لايف برو - بث المباريات</title>
-    
-    <!-- محاولة تحميل ملف الأنماط -->
     <link rel="stylesheet" href="styles.css">
-    
-    <!-- تنسيقات احتياطية مضمّنة -->
-    <style>
-        /* تنسيقات أساسية احتياطية */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background: linear-gradient(to right, #000, #151825, #000);
-            color: white;
-            text-align: center;
-            padding: 70px 0 20px;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        h2 {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            color: #FFF;
-            font-weight: bold;
-            padding: 15px 0;
-            margin: 0;
-            z-index: 1000;
-            background: linear-gradient(to right, #151825, #151825);
-            border-radius: 0px 0px 20px 20px;
-            font-size: clamp(16px, 4vw, 20px);
-            border-bottom: 7px double #434C75;
-            box-shadow: 0 0px 15px rgba(255, 255, 255, 0.1);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .flex-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 105px;
-            border: 3px double #434C75;
-            border-left: 0;
-            border-right: 0;
-            font-weight: bold;
-            width: 88%;
-            max-width: 600px;
-            margin: 15px auto;
-            padding: 8px;
-            border-radius: 10px;
-            background: linear-gradient(to right, #151825, #3A4266, #151825);
-        }
-
-        .match-box {
-            border: 15px double #151825;
-            padding: 10px;
-            margin: 10px auto;
-            border-radius: 18px;
-            background: linear-gradient(to right, #151825, #3A4266, #151825);
-            width: 90%;
-            max-width: 600px;
-            text-decoration: none;
-            display: block;
-            color: inherit;
-            box-shadow: 0 0px 10px rgba(255, 255, 255, 0.1);
-            transition: transform 0.2s;
-        }
-
-        .match-box:hover {
-            transform: scale(1.02);
-        }
-
-        .match-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 5px;
-            gap: 10px;
-        }
-
-        .match-info div {
-            text-align: center;
-            width: 32%;
-            flex: 1;
-        }
-
-        .match-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .match-time {
-            background: linear-gradient(to right, #151825, #3A4266, #151825);
-            color: white;
-            font-size: 14px;
-            padding: 6px 12px;
-            border-radius: 6px;
-            display: inline-block;
-            margin: 5px 0;
-            box-shadow: 0 0px 10px rgba(255, 255, 255, 0.1);
-        }
-
-        .match-details {
-            padding: 8px 0 0;
-            margin-top: 8px;
-            display: flex;
-            font-size: clamp(12px, 3vw, 14px);
-            border-top: 1px groove rgba(255, 255, 255, 0.5);
-            justify-content: space-around;
-        }
-
-        .match-details div {
-            padding: 8px;
-            position: relative;
-            flex: 1;
-        }
-
-        .match-details div:nth-child(2)::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            right: 0;
-            width: 1px;
-            height: 70%;
-            background: rgba(255, 255, 255, 0.7);
-            transform: translateY(-50%);
-        }
-
-        .img img {
-            max-width: 40px;
-            height: auto;
-            max-height: 30px;
-            object-fit: contain;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 18px;
-            font-style: italic;
-        }
-
-        .admin-link {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #434C75;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            z-index: 100;
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding-top: 60px;
-            }
-            
-            .match-info img {
-                width: 30px;
-                height: 30px;
-            }
-            
-            .match-time {
-                font-size: 12px;
-                padding: 4px 9px;
-            }
-            
-            .flex-container {
-                gap: 10px;
-                padding: 6px;
-                font-size: 17px;
-            }
-        }
-    </style>
 </head>
 <body>
     <h2 id="page-title">جاري التحميل...</h2>
@@ -203,8 +15,14 @@
     
     <a href="admin.html" class="admin-link">لوحة التحكم</a>
 
-    <!-- تحميل إعدادات Firebase أولاً -->
+    <!-- تحميل Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
+    <!-- إعدادات Firebase -->
     <script src="firebase-config.js"></script>
+    
     <script>
         // الانتظار حتى تحميل Firebase
         document.addEventListener('DOMContentLoaded', function() {
@@ -249,7 +67,7 @@
                             leagueContainer.innerHTML = `
                                 <b>${match.league}</b>
                                 <div class="img">
-                                    <img src="${match.leagueLogo || 'https://i.postimg.cc/Bb0WFJfJ/Picsart-25-01-18-03-49-12-620.png'}" style="width: 80px; height: 45px;">
+                                    <img src="${match.leagueLogo || 'https://i.postimg.cc/Bb0WFJfJ/Picsart-25-01-18-03-49-12-620.png'}" style="width: 80px; height: 45px;" alt="${match.league}">
                                 </div>
                             `;
                             
@@ -291,7 +109,7 @@
                     }
                 }, function(error) {
                     console.error("خطأ في تحميل المباريات:", error);
-                    matchesContainer.innerHTML = '<div class="loading">حدث خطأ في تحميل المباريات. يرجى المحاولة لاحقاً.</div>';
+                    matchesContainer.innerHTML = '<div class="error">حدث خطأ في تحميل المباريات. يرجى المحاولة لاحقاً.</div>';
                 });
             }
         });
