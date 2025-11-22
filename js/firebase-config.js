@@ -1,97 +1,108 @@
-// firebase-config.js
-console.log("جاري تحميل إعدادات Firebase...");
+// firebase-config.js - الإصدار المعدل باستخدام Modular SDK
+console.log("جاري تحميل إعدادات Firebase Modular SDK...");
 
-// إعدادات Firebase - استبدل هذه بالقيم الخاصة بمشروعك
+// إعدادات Firebase - استبدل هذه بالقيم الفعلية من مشروعك
 const firebaseConfig = {
-    apiKey: "AIzaSyC6h-oOG7xteSiJt2jDpSyGitiPp0aDimI",
-    authDomain: "wacelmarkt.firebaseapp.com",
-    databaseURL: "https://wacelmarkt-default-rtdb.firebaseio.com",
-    projectId: "wacelmarkt",
-    storageBucket: "wacelmarkt.firebasestorage.app",
-    messagingSenderId: "662446208797",
-    appId: "1:662446208797:web:a3cc83551d42761e4753f4"
+    apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
+    authDomain: "wacel-live.firebaseapp.com",
+    databaseURL: "https://wacel-live-default-rtdb.firebaseio.com", // تأكد من إضافة هذا
+    projectId: "wacel-live",
+    storageBucket: "wacel-live.firebasestorage.app",
+    messagingSenderId: "185108554006",
+    appId: "1:185108554006:web:93171895b1d4bb07c6f037"
 };
 
-// التحقق من تحميل Firebase SDK
-if (typeof firebase === 'undefined') {
-    console.error("Firebase SDK لم يتم تحميله بشكل صحيح");
-    // تحميل Firebase SDK ديناميكياً إذا لم يكن محملاً
-    loadFirebaseSDK();
-} else {
-    console.log("Firebase SDK محمل بنجاح");
-    initializeFirebase();
-}
+// متغيرات عالمية لتخزين instances
+window.firebaseModules = {};
+window.firebaseApp = null;
+window.firebaseDb = null;
+window.firebaseAuth = null;
 
-function loadFirebaseSDK() {
-    const scripts = [
-        'https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js',
-        'https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js',
-        'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js'
-    ];
-    
-    let loaded = 0;
-    scripts.forEach(src => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = () => {
-            loaded++;
-            if (loaded === scripts.length) {
-                console.log("تم تحميل Firebase SDK بنجاح");
-                initializeFirebase();
-            }
+// دالة لتحميل Firebase Modular SDK
+async function loadFirebaseSDK() {
+    try {
+        // تحميل مكتبات Firebase بشكل ديناميكي
+        const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js');
+        const { getDatabase, ref, onValue, push, update, remove, get, set } = await import('https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js');
+        const { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js');
+        
+        // حفظ الـ modules في كائن عام
+        window.firebaseModules = {
+            initializeApp,
+            getDatabase, ref, onValue, push, update, remove, get, set,
+            getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
         };
-        document.head.appendChild(script);
-    });
+        
+        console.log("تم تحميل Firebase Modular SDK بنجاح");
+        initializeFirebase();
+    } catch (error) {
+        console.error("خطأ في تحميل Firebase SDK:", error);
+        setupFallback();
+    }
 }
 
+// تهيئة Firebase
 function initializeFirebase() {
     try {
-        // تهيئة Firebase
-        window.firebaseApp = firebase.initializeApp(firebaseConfig);
-        window.firebaseDb = firebase.database();
-        window.firebaseAuth = firebase.auth();
-        console.log("تم تهيئة Firebase بنجاح");
+        const { initializeApp, getDatabase, getAuth } = window.firebaseModules;
+        
+        // تهيئة التطبيق
+        window.firebaseApp = initializeApp(firebaseConfig);
+        window.firebaseDb = getDatabase(window.firebaseApp);
+        window.firebaseAuth = getAuth(window.firebaseApp);
+        
+        console.log("تم تهيئة Firebase بنجاح باستخدام Modular SDK");
     } catch (error) {
         console.error("خطأ في تهيئة Firebase:", error);
-        // استخدام قيم افتراضية للاختبار
-        window.firebaseApp = { name: "[DEFAULT]" };
-        window.firebaseDb = {
-            ref: (path) => ({
-                on: (event, callback) => {
-                    console.log(`الاستماع إلى ${path} - ${event}`);
-                    // بيانات تجريبية للاختبار
-                    if (event === 'value') {
-                        setTimeout(() => {
-                            callback({
-                                val: () => ({}),
-                                forEach: () => {}
-                            });
-                        }, 500);
-                    }
-                },
-                push: (data) => Promise.resolve({ key: 'test-' + Date.now() }),
-                update: (data) => Promise.resolve(),
-                remove: () => Promise.resolve(),
-                once: (event) => Promise.resolve({ val: () => ({}) })
-            })
-        };
-        window.firebaseAuth = {
-            signInWithEmailAndPassword: (email, password) => {
-                if (email && password) {
-                    return Promise.resolve({
-                        user: { email, uid: 'test-user' }
-                    });
-                }
-                return Promise.reject({ code: 'auth/invalid-credential' });
-            },
-            signOut: () => Promise.resolve(),
-            onAuthStateChanged: (callback) => {
-                // في البيئة التجريبية، لا يوجد مستخدم مسجل
-                callback(null);
-                return () => {};
-            }
-        };
+        setupFallback();
     }
+}
+
+// إعداد النسخة الاحتياطية للاختبار
+function setupFallback() {
+    console.log("جاري إعداد النسخة الاحتياطية...");
+    
+    window.firebaseApp = { name: "[DEFAULT]" };
+    window.firebaseDb = {
+        ref: (path) => ({
+            on: (event, callback) => {
+                console.log(`الاستماع إلى ${path} - ${event}`);
+                if (event === 'value') {
+                    setTimeout(() => {
+                        callback({
+                            val: () => ({}),
+                            forEach: () => {}
+                        });
+                    }, 500);
+                }
+            },
+            push: (data) => Promise.resolve({ key: 'test-' + Date.now() }),
+            update: (data) => Promise.resolve(),
+            remove: () => Promise.resolve(),
+            once: (event) => Promise.resolve({ val: () => ({}) })
+        })
+    };
+    window.firebaseAuth = {
+        signInWithEmailAndPassword: (email, password) => {
+            if (email && password) {
+                return Promise.resolve({
+                    user: { email, uid: 'test-user' }
+                });
+            }
+            return Promise.reject({ code: 'auth/invalid-credential' });
+        },
+        signOut: () => Promise.resolve(),
+        onAuthStateChanged: (callback) => {
+            callback(null);
+            return () => {};
+        },
+        currentUser: null
+    };
+}
+
+// بدء التحميل
+if (typeof window !== 'undefined') {
+    loadFirebaseSDK();
 }
 
 console.log("تم تحميل إعدادات Firebase بنجاح");
