@@ -6,7 +6,7 @@
     <title>لوحة التحكم - وسيل لايف برو</title>
     <link rel="stylesheet" href="styles.css">
     
-    <!-- تحميل Firebase SDK مباشرة -->
+    <!-- تحميل Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -26,7 +26,7 @@
                     </div>
                     <div class="form-group">
                         <label for="password">كلمة المرور</label>
-                        <input type="password" id="password" required>
+                        <input type="password" id="password" required placeholder="أدخل كلمة المرور التي عينتها في Firebase">
                     </div>
                 </div>
                 <div class="form-row">
@@ -34,21 +34,127 @@
                 </div>
                 <div id="login-message"></div>
                 <div class="form-row">
-                    <small>للتجربة: يمكن استخدام أي بريد إلكتروني وكلمة مرور</small>
+                    <small>تأكد من تفعيل خدمة المصادقة في Firebase Console</small>
                 </div>
             </form>
         </div>
 
         <!-- قسم لوحة التحكم -->
         <div id="dashboard-section" class="hidden">
-            <!-- ... نفس محتوى لوحة التحكم السابق ... -->
+            <div class="form-container">
+                <h3 id="form-title">إضافة مباراة جديدة</h3>
+                <form id="match-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="league">الدوري *</label>
+                            <input type="text" id="league" required placeholder="مثال: الدوري الانجليزي الممتاز">
+                        </div>
+                        <div class="form-group">
+                            <label for="league-logo">رابط شعار الدوري</label>
+                            <input type="text" id="league-logo" placeholder="https://example.com/logo.png">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="team1">الفريق الأول *</label>
+                            <input type="text" id="team1" required placeholder="مثال: نوتينغهام">
+                        </div>
+                        <div class="form-group">
+                            <label for="team1-logo">رابط شعار الفريق الأول</label>
+                            <input type="text" id="team1-logo" placeholder="https://example.com/team1.png">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="team2">الفريق الثاني *</label>
+                            <input type="text" id="team2" required placeholder="مثال: برينتفورد">
+                        </div>
+                        <div class="form-group">
+                            <label for="team2-logo">رابط شعار الفريق الثاني</label>
+                            <input type="text" id="team2-logo" placeholder="https://example.com/team2.png">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="match-time">وقت المباراة *</label>
+                            <input type="text" id="match-time" required placeholder="مثال: 04:00م">
+                        </div>
+                        <div class="form-group">
+                            <label for="channel">القناة الناقلة *</label>
+                            <input type="text" id="channel" required placeholder="مثال: bein sport 2">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="commentator">اسم المعلق *</label>
+                            <input type="text" id="commentator" required placeholder="مثال: أحمد البلوشي">
+                        </div>
+                        <div class="form-group">
+                            <label for="match-date">التاريخ *</label>
+                            <input type="text" id="match-date" required placeholder="مثال: الأحد 17 أغسطس 2025">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="links">روابط المشاهدة * (كل رابط في سطر جديد)</label>
+                            <textarea id="links" required placeholder="https://example.com/stream1
+https://example.com/stream2
+https://example.com/stream3"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <button type="submit" class="btn btn-primary" id="submit-btn">إضافة المباراة</button>
+                        <button type="button" class="btn btn-danger hidden" id="cancel-btn">إلغاء التعديل</button>
+                        <button type="button" class="btn btn-secondary" id="logout-btn">تسجيل الخروج</button>
+                        <a href="index.html" class="btn btn-success">عرض الموقع</a>
+                    </div>
+                    <div id="form-message"></div>
+                </form>
+            </div>
+
+            <div class="matches-container">
+                <h3>المباريات المضافة</h3>
+                <div id="matches-list">
+                    <div class="loading">جاري تحميل المباريات...</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- تحميل إعدادات Firebase -->
-    <script src="firebase-config.js"></script>
-    
     <script>
+        // إعدادات Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
+            authDomain: "wacel-live.firebaseapp.com",
+            databaseURL: "https://wacel-live-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "wacel-live",
+            storageBucket: "wacel-live.firebasestorage.app",
+            messagingSenderId: "185108554006",
+            appId: "1:185108554006:web:93171895b1d4bb07c6f037"
+        };
+
+        // تهيئة Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const database = firebase.database();
+            
+            console.log("✅ تم تهيئة Firebase بنجاح");
+            
+            // جعلها متاحة عالمياً
+            window.firebaseAuth = auth;
+            window.firebaseDb = database;
+            
+        } catch (error) {
+            console.error("❌ خطأ في تهيئة Firebase:", error);
+        }
+
         // الانتظار حتى تحميل الصفحة
         document.addEventListener('DOMContentLoaded', function() {
             console.log("📄 تم تحميل الصفحة");
@@ -57,29 +163,35 @@
             const loginSection = document.getElementById('login-section');
             const dashboardSection = document.getElementById('dashboard-section');
             const loginForm = document.getElementById('login-form');
+            const logoutBtn = document.getElementById('logout-btn');
             const loginMessage = document.getElementById('login-message');
             
+            const matchForm = document.getElementById('match-form');
+            const formTitle = document.getElementById('form-title');
+            const submitBtn = document.getElementById('submit-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const formMessage = document.getElementById('form-message');
+            const matchesList = document.getElementById('matches-list');
+            
+            let currentEditId = null;
+            
             // التحقق من حالة المصادقة
-            function checkAuthState() {
-                if (window.firebaseAuth && window.firebaseAuth.onAuthStateChanged) {
-                    window.firebaseAuth.onAuthStateChanged(function(user) {
-                        console.log("👤 حالة المصادقة:", user ? "مسجل دخول" : "غير مسجل");
-                        if (user) {
-                            loginSection.classList.add('hidden');
-                            dashboardSection.classList.remove('hidden');
-                            showMessage(loginMessage, "✅ تم تسجيل الدخول بنجاح!", "success");
-                            loadMatches();
-                        } else {
-                            loginSection.classList.remove('hidden');
-                            dashboardSection.classList.add('hidden');
-                        }
-                    });
-                } else {
-                    console.warn("⚠️ خدمة المصادقة غير متاحة");
-                    // إظهار واجهة تسجيل الدخول في حالة عدم توفر المصادقة
-                    loginSection.classList.remove('hidden');
-                    dashboardSection.classList.add('hidden');
-                }
+            if (window.firebaseAuth) {
+                window.firebaseAuth.onAuthStateChanged(function(user) {
+                    console.log("👤 حالة المصادقة:", user ? "مسجل دخول" : "غير مسجل");
+                    if (user) {
+                        loginSection.classList.add('hidden');
+                        dashboardSection.classList.remove('hidden');
+                        showMessage(loginMessage, "✅ تم تسجيل الدخول بنجاح!", "success");
+                        loadMatches();
+                    } else {
+                        loginSection.classList.remove('hidden');
+                        dashboardSection.classList.add('hidden');
+                    }
+                });
+            } else {
+                console.error("❌ firebaseAuth غير متوفر");
+                showMessage(loginMessage, "❌ خدمة المصادقة غير متوفرة. تأكد من إعدادات Firebase.", "error");
             }
             
             // تسجيل الدخول
@@ -95,10 +207,8 @@
                 loginBtn.disabled = true;
                 loginBtn.textContent = "جاري تسجيل الدخول...";
                 
-                // التحقق من توفر خدمة المصادقة
-                if (!window.firebaseAuth || !window.firebaseAuth.signInWithEmailAndPassword) {
-                    console.error("❌ خدمة المصادقة غير متاحة");
-                    showMessage(loginMessage, "❌ خدمة المصادقة غير متاحة حالياً", "error");
+                if (!window.firebaseAuth) {
+                    showMessage(loginMessage, "❌ خدمة المصادقة غير متاحة. حاول تحديث الصفحة.", "error");
                     loginBtn.disabled = false;
                     loginBtn.textContent = "تسجيل الدخول";
                     return;
@@ -122,6 +232,8 @@
                             errorMessage = "❌ كلمة المرور غير صحيحة";
                         } else if (error.code === 'auth/network-request-failed') {
                             errorMessage = "❌ مشكلة في الاتصال بالإنترنت";
+                        } else if (error.code === 'auth/too-many-requests') {
+                            errorMessage = "❌ محاولات تسجيل دخول كثيرة. حاول لاحقاً";
                         } else {
                             errorMessage = "❌ " + error.message;
                         }
@@ -135,25 +247,215 @@
                     });
             });
             
-            // بدء التحقق من حالة المصادقة بعد تأخير بسيط
-            setTimeout(checkAuthState, 1000);
+            // تسجيل الخروج
+            logoutBtn.addEventListener('click', function() {
+                if (window.firebaseAuth) {
+                    window.firebaseAuth.signOut()
+                        .then(() => {
+                            showMessage(loginMessage, "✅ تم تسجيل الخروج بنجاح", "success");
+                        })
+                        .catch((error) => {
+                            console.error('❌ خطأ في تسجيل الخروج:', error);
+                        });
+                }
+            });
             
-            // دالة لعرض الرسائل
+            // إرسال نموذج المباراة
+            matchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!window.firebaseAuth || !window.firebaseAuth.currentUser) {
+                    showMessage(formMessage, "❌ يجب تسجيل الدخول أولاً", "error");
+                    return;
+                }
+                
+                // جمع البيانات من النموذج
+                const matchData = {
+                    league: document.getElementById('league').value,
+                    leagueLogo: document.getElementById('league-logo').value,
+                    team1: document.getElementById('team1').value,
+                    team1Logo: document.getElementById('team1-logo').value,
+                    team2: document.getElementById('team2').value,
+                    team2Logo: document.getElementById('team2-logo').value,
+                    time: document.getElementById('match-time').value,
+                    channel: document.getElementById('channel').value,
+                    commentator: document.getElementById('commentator').value,
+                    date: document.getElementById('match-date').value,
+                    links: document.getElementById('links').value.split('\n').filter(link => link.trim() !== ''),
+                    createdAt: Date.now()
+                };
+                
+                // تعطيل الزر أثناء المعالجة
+                submitBtn.disabled = true;
+                submitBtn.textContent = "جاري الحفظ...";
+                
+                if (currentEditId) {
+                    // تحديث مباراة موجودة
+                    window.firebaseDb.ref('matches/' + currentEditId).update(matchData)
+                        .then(() => {
+                            showMessage(formMessage, "✅ تم تحديث المباراة بنجاح!", "success");
+                            resetForm();
+                        })
+                        .catch(error => {
+                            showMessage(formMessage, "❌ حدث خطأ أثناء تحديث المباراة: " + error.message, "error");
+                        })
+                        .finally(() => {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = "تحديث المباراة";
+                        });
+                } else {
+                    // إضافة مباراة جديدة
+                    window.firebaseDb.ref('matches').push(matchData)
+                        .then(() => {
+                            showMessage(formMessage, "✅ تم إضافة المباراة بنجاح!", "success");
+                            resetForm();
+                        })
+                        .catch(error => {
+                            showMessage(formMessage, "❌ حدث خطأ أثناء إضافة المباراة: " + error.message, "error");
+                        })
+                        .finally(() => {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = "إضافة المباراة";
+                        });
+                }
+            });
+            
+            // إلغاء التعديل
+            cancelBtn.addEventListener('click', resetForm);
+            
+            // تحميل المباريات للعرض في لوحة التحكم
+            function loadMatches() {
+                if (!window.firebaseDb) {
+                    console.error("❌ firebaseDb غير متوفر");
+                    return;
+                }
+                
+                window.firebaseDb.ref('matches').on('value', function(snapshot) {
+                    matchesList.innerHTML = '';
+                    
+                    if (!snapshot.exists()) {
+                        matchesList.innerHTML = '<div class="loading">لا توجد مباريات مضافة</div>';
+                        return;
+                    }
+                    
+                    snapshot.forEach(function(childSnapshot) {
+                        const matchId = childSnapshot.key;
+                        const match = childSnapshot.val();
+                        
+                        const matchItem = document.createElement('div');
+                        matchItem.className = 'match-item';
+                        matchItem.innerHTML = `
+                            <div class="match-header">
+                                <h4>${match.league}</h4>
+                                <div class="actions">
+                                    <button class="btn btn-primary" onclick="editMatch('${matchId}')">تعديل</button>
+                                    <button class="btn btn-danger" onclick="deleteMatch('${matchId}')">حذف</button>
+                                </div>
+                            </div>
+                            <div class="match-teams">
+                                <div class="match-team">
+                                    <img src="${match.team1Logo || 'https://via.placeholder.com/50?text=T1'}" alt="${match.team1}">
+                                    <span>${match.team1}</span>
+                                </div>
+                                <div class="match-time">${match.time}</div>
+                                <div class="match-team">
+                                    <img src="${match.team2Logo || 'https://via.placeholder.com/50?text=T2'}" alt="${match.team2}">
+                                    <span>${match.team2}</span>
+                                </div>
+                            </div>
+                            <div class="match-details">
+                                <div>${match.channel}</div>
+                                <div>${match.commentator}</div>
+                            </div>
+                            <div class="links-container">
+                                <strong>روابط المشاهدة (${match.links ? match.links.length : 0}):</strong>
+                                ${match.links ? match.links.map((link, index) => 
+                                    `<div class="link-item">${index + 1}. ${link}</div>`
+                                ).join('') : '<div class="link-item">لا توجد روابط</div>'}
+                            </div>
+                        `;
+                        
+                        matchesList.appendChild(matchItem);
+                    });
+                }, function(error) {
+                    matchesList.innerHTML = '<div class="error">❌ حدث خطأ في تحميل المباريات</div>';
+                    console.error("❌ خطأ في تحميل المباريات:", error);
+                });
+            }
+            
+            // تعريف الدوال العالمية
+            window.editMatch = function(matchId) {
+                if (!window.firebaseDb) {
+                    showMessage(formMessage, "❌ قاعدة البيانات غير متاحة", "error");
+                    return;
+                }
+                
+                window.firebaseDb.ref('matches/' + matchId).once('value')
+                    .then(function(snapshot) {
+                        const match = snapshot.val();
+                        
+                        // تعبئة النموذج ببيانات المباراة
+                        document.getElementById('league').value = match.league || '';
+                        document.getElementById('league-logo').value = match.leagueLogo || '';
+                        document.getElementById('team1').value = match.team1 || '';
+                        document.getElementById('team1-logo').value = match.team1Logo || '';
+                        document.getElementById('team2').value = match.team2 || '';
+                        document.getElementById('team2-logo').value = match.team2Logo || '';
+                        document.getElementById('match-time').value = match.time || '';
+                        document.getElementById('channel').value = match.channel || '';
+                        document.getElementById('commentator').value = match.commentator || '';
+                        document.getElementById('match-date').value = match.date || '';
+                        document.getElementById('links').value = match.links ? match.links.join('\n') : '';
+                        
+                        // تغيير حالة النموذج إلى وضع التعديل
+                        formTitle.textContent = 'تعديل المباراة';
+                        submitBtn.textContent = 'تحديث المباراة';
+                        cancelBtn.classList.remove('hidden');
+                        currentEditId = matchId;
+                        
+                        // التمرير إلى أعلى النموذج
+                        matchForm.scrollIntoView({ behavior: 'smooth' });
+                    })
+                    .catch(error => {
+                        showMessage(formMessage, "❌ حدث خطأ أثناء تحميل بيانات المباراة: " + error.message, "error");
+                    });
+            };
+            
+            window.deleteMatch = function(matchId) {
+                if (confirm('⚠️ هل أنت متأكد من حذف هذه المباراة؟')) {
+                    if (!window.firebaseDb) {
+                        showMessage(formMessage, "❌ قاعدة البيانات غير متاحة", "error");
+                        return;
+                    }
+                    
+                    window.firebaseDb.ref('matches/' + matchId).remove()
+                        .then(() => {
+                            showMessage(formMessage, "✅ تم حذف المباراة بنجاح!", "success");
+                        })
+                        .catch(error => {
+                            showMessage(formMessage, "❌ حدث خطأ أثناء حذف المباراة: " + error.message, "error");
+                        });
+                }
+            };
+            
+            // إعادة تعيين النموذج
+            function resetForm() {
+                matchForm.reset();
+                formTitle.textContent = 'إضافة مباراة جديدة';
+                submitBtn.textContent = 'إضافة المباراة';
+                cancelBtn.classList.add('hidden');
+                currentEditId = null;
+                formMessage.innerHTML = '';
+            }
+            
+            // عرض الرسائل
             function showMessage(element, message, type) {
                 element.innerHTML = `<div class="${type}">${message}</div>`;
                 setTimeout(() => {
                     element.innerHTML = '';
                 }, 5000);
             }
-            
-            // دالة لتحميل المباريات (سيتم تنفيذها لاحقاً)
-            function loadMatches() {
-                console.log("📥 جاري تحميل المباريات...");
-                // سيتم تنفيذ هذا لاحقاً
-            }
         });
     </script>
-
-    <script src="simple-auth.js"></script>
 </body>
 </html>
