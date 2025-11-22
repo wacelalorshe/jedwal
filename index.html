@@ -111,5 +111,17 @@
             }
         });
     </script>
+<script>
+// حل بديل لاستكشاف الأخطاء
+setTimeout(() => {
+    if (!window.firebaseDb) {
+        console.warn("⚠️ Firebase لم يتم تهيئته، جاري التحميل اليدوي...");
+        const script = document.createElement('script');
+        script.src = 'firebase-config.js';
+        document.head.appendChild(script);
+    }
+}, 2000);
+</script>
+    
 </body>
 </html>
