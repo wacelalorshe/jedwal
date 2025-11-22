@@ -122,11 +122,6 @@ https://example.com/stream3"></textarea>
         </div>
     </div>
 
-    <!-- تحميل Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    
     <!-- إعدادات Firebase -->
     <script src="firebase-config.js"></script>
     
@@ -151,10 +146,12 @@ https://example.com/stream3"></textarea>
             
             // التحقق من حالة المصادقة
             const checkAuth = setInterval(() => {
-                if (window.firebaseAuth) {
+                if (window.firebaseAuth && window.firebaseModules) {
                     clearInterval(checkAuth);
                     
-                    window.firebaseAuth.onAuthStateChanged(function(user) {
+                    const { onAuthStateChanged } = window.firebaseModules;
+                    
+                    onAuthStateChanged(window.firebaseAuth, (user) => {
                         if (user) {
                             // المستخدم مسجل الدخول
                             loginSection.classList.add('hidden');
@@ -171,7 +168,7 @@ https://example.com/stream3"></textarea>
             }, 100);
             
             // تسجيل الدخول
-            loginForm.addEventListener('submit', function(e) {
+            loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const email = document.getElementById('email').value;
@@ -182,45 +179,44 @@ https://example.com/stream3"></textarea>
                 loginBtn.disabled = true;
                 loginBtn.textContent = "جاري تسجيل الدخول...";
                 
-                window.firebaseAuth.signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        showMessage(loginMessage, "تم تسجيل الدخول بنجاح!", "success");
-                    })
-                    .catch((error) => {
-                        let errorMessage = "خطأ في تسجيل الدخول";
-                        
-                        if (error.code === 'auth/invalid-credential') {
-                            errorMessage = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
-                        } else if (error.code === 'auth/user-not-found') {
-                            errorMessage = "لم يتم العثور على مستخدم بهذا البريد الإلكتروني";
-                        } else if (error.code === 'auth/wrong-password') {
-                            errorMessage = "كلمة المرور غير صحيحة";
-                        } else {
-                            errorMessage = error.message;
-                        }
-                        
-                        showMessage(loginMessage, errorMessage, "error");
-                    })
-                    .finally(() => {
-                        // إعادة تمكين الزر
-                        loginBtn.disabled = false;
-                        loginBtn.textContent = "تسجيل الدخول";
-                    });
+                try {
+                    const { signInWithEmailAndPassword } = window.firebaseModules;
+                    await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+                    showMessage(loginMessage, "تم تسجيل الدخول بنجاح!", "success");
+                } catch (error) {
+                    let errorMessage = "خطأ في تسجيل الدخول";
+                    
+                    if (error.code === 'auth/invalid-credential') {
+                        errorMessage = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+                    } else if (error.code === 'auth/user-not-found') {
+                        errorMessage = "لم يتم العثور على مستخدم بهذا البريد الإلكتروني";
+                    } else if (error.code === 'auth/wrong-password') {
+                        errorMessage = "كلمة المرور غير صحيحة";
+                    } else {
+                        errorMessage = error.message;
+                    }
+                    
+                    showMessage(loginMessage, errorMessage, "error");
+                } finally {
+                    // إعادة تمكين الزر
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = "تسجيل الدخول";
+                }
             });
             
             // تسجيل الخروج
-            logoutBtn.addEventListener('click', function() {
-                window.firebaseAuth.signOut()
-                    .then(() => {
-                        showMessage(loginMessage, "تم تسجيل الخروج بنجاح", "success");
-                    })
-                    .catch((error) => {
-                        console.error('خطأ في تسجيل الخروج:', error);
-                    });
+            logoutBtn.addEventListener('click', async function() {
+                try {
+                    const { signOut } = window.firebaseModules;
+                    await signOut(window.firebaseAuth);
+                    showMessage(loginMessage, "تم تسجيل الخروج بنجاح", "success");
+                } catch (error) {
+                    console.error('خطأ في تسجيل الخروج:', error);
+                }
             });
             
             // إرسال نموذج المباراة
-            matchForm.addEventListener('submit', function(e) {
+            matchForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 if (!window.firebaseAuth.currentUser) {
@@ -241,41 +237,34 @@ https://example.com/stream3"></textarea>
                     commentator: document.getElementById('commentator').value,
                     date: document.getElementById('match-date').value,
                     links: document.getElementById('links').value.split('\n').filter(link => link.trim() !== ''),
-                    createdAt: firebase.database.ServerValue.TIMESTAMP
+                    createdAt: Date.now()
                 };
                 
                 // تعطيل الزر أثناء المعالجة
                 submitBtn.disabled = true;
                 submitBtn.textContent = "جاري الحفظ...";
                 
-                if (currentEditId) {
-                    // تحديث مباراة موجودة
-                    window.firebaseDb.ref('matches/' + currentEditId).update(matchData)
-                        .then(() => {
-                            showMessage(formMessage, "تم تحديث المباراة بنجاح!", "success");
-                            resetForm();
-                        })
-                        .catch(error => {
-                            showMessage(formMessage, "حدث خطأ أثناء تحديث المباراة: " + error.message, "error");
-                        })
-                        .finally(() => {
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = "تحديث المباراة";
-                        });
-                } else {
-                    // إضافة مباراة جديدة
-                    window.firebaseDb.ref('matches').push(matchData)
-                        .then(() => {
-                            showMessage(formMessage, "تم إضافة المباراة بنجاح!", "success");
-                            resetForm();
-                        })
-                        .catch(error => {
-                            showMessage(formMessage, "حدث خطأ أثناء إضافة المباراة: " + error.message, "error");
-                        })
-                        .finally(() => {
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = "إضافة المباراة";
-                        });
+                try {
+                    const { ref, push, update, set } = window.firebaseModules;
+                    
+                    if (currentEditId) {
+                        // تحديث مباراة موجودة
+                        const matchRef = ref(window.firebaseDb, `matches/${currentEditId}`);
+                        await update(matchRef, matchData);
+                        showMessage(formMessage, "تم تحديث المباراة بنجاح!", "success");
+                        resetForm();
+                    } else {
+                        // إضافة مباراة جديدة
+                        const matchesRef = ref(window.firebaseDb, 'matches');
+                        await push(matchesRef, matchData);
+                        showMessage(formMessage, "تم إضافة المباراة بنجاح!", "success");
+                        resetForm();
+                    }
+                } catch (error) {
+                    showMessage(formMessage, "حدث خطأ أثناء حفظ المباراة: " + error.message, "error");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = currentEditId ? "تحديث المباراة" : "إضافة المباراة";
                 }
             });
             
@@ -284,7 +273,10 @@ https://example.com/stream3"></textarea>
             
             // تحميل المباريات للعرض في لوحة التحكم
             function loadMatches() {
-                window.firebaseDb.ref('matches').on('value', function(snapshot) {
+                const { ref, onValue } = window.firebaseModules;
+                const matchesRef = ref(window.firebaseDb, 'matches');
+                
+                onValue(matchesRef, (snapshot) => {
                     matchesList.innerHTML = '';
                     
                     if (!snapshot.exists()) {
@@ -292,7 +284,7 @@ https://example.com/stream3"></textarea>
                         return;
                     }
                     
-                    snapshot.forEach(function(childSnapshot) {
+                    snapshot.forEach((childSnapshot) => {
                         const matchId = childSnapshot.key;
                         const match = childSnapshot.val();
                         
@@ -331,16 +323,20 @@ https://example.com/stream3"></textarea>
                         
                         matchesList.appendChild(matchItem);
                     });
-                }, function(error) {
+                }, (error) => {
                     matchesList.innerHTML = '<div class="error">حدث خطأ في تحميل المباريات</div>';
                     console.error("خطأ في تحميل المباريات:", error);
                 });
             }
             
             // تعريف الدوال العالمية
-            window.editMatch = function(matchId) {
-                window.firebaseDb.ref('matches/' + matchId).once('value')
-                    .then(function(snapshot) {
+            window.editMatch = async function(matchId) {
+                try {
+                    const { ref, get } = window.firebaseModules;
+                    const matchRef = ref(window.firebaseDb, `matches/${matchId}`);
+                    const snapshot = await get(matchRef);
+                    
+                    if (snapshot.exists()) {
                         const match = snapshot.val();
                         
                         // تعبئة النموذج ببيانات المباراة
@@ -364,21 +360,22 @@ https://example.com/stream3"></textarea>
                         
                         // التمرير إلى أعلى النموذج
                         matchForm.scrollIntoView({ behavior: 'smooth' });
-                    })
-                    .catch(error => {
-                        showMessage(formMessage, "حدث خطأ أثناء تحميل بيانات المباراة: " + error.message, "error");
-                    });
+                    }
+                } catch (error) {
+                    showMessage(formMessage, "حدث خطأ أثناء تحميل بيانات المباراة: " + error.message, "error");
+                }
             };
             
-            window.deleteMatch = function(matchId) {
+            window.deleteMatch = async function(matchId) {
                 if (confirm('هل أنت متأكد من حذف هذه المباراة؟')) {
-                    window.firebaseDb.ref('matches/' + matchId).remove()
-                        .then(() => {
-                            showMessage(formMessage, "تم حذف المباراة بنجاح!", "success");
-                        })
-                        .catch(error => {
-                            showMessage(formMessage, "حدث خطأ أثناء حذف المباراة: " + error.message, "error");
-                        });
+                    try {
+                        const { ref, remove } = window.firebaseModules;
+                        const matchRef = ref(window.firebaseDb, `matches/${matchId}`);
+                        await remove(matchRef);
+                        showMessage(formMessage, "تم حذف المباراة بنجاح!", "success");
+                    } catch (error) {
+                        showMessage(formMessage, "حدث خطأ أثناء حذف المباراة: " + error.message, "error");
+                    }
                 }
             };
             
