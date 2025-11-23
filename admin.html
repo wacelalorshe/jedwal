@@ -72,6 +72,12 @@
             color: #666;
             margin-top: 5px;
         }
+        
+        .league-logo-container {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -119,21 +125,24 @@
                         </div>
                         <div class="form-group">
                             <label for="league-logo">رابط شعار الدوري</label>
-                            <input type="text" id="league-logo" value="https://i.postimg.cc/Bb0WFJfJ/Picsart-25-01-18-03-49-12-620.png">
+                            <div class="league-logo-container">
+                                <input type="text" id="league-logo" value="https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png">
+                                <img id="league-preview" class="logo-preview" src="https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png" alt="شعار الدوري">
+                            </div>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="team1">الفريق الأول *</label>
-                            <input type="text" id="team1" required value="نوتينغهام">
-                            <div class="auto-fill-notice">اكتب اسم الفريق وسيتم تعبئة الشعار تلقائياً</div>
+                            <input type="text" id="team1" required placeholder="ابدأ بكتابة اسم الفريق">
+                            <div class="auto-fill-notice">اكتب اسم الفريق (حرفين على الأقل) وسيتم تعبئة الشعار تلقائياً</div>
                         </div>
                         <div class="form-group">
                             <label for="team1-logo">رابط شعار الفريق الأول</label>
                             <div class="logo-container">
-                                <input type="text" id="team1-logo" value="https://imgs.ysscores.com/teams/64/7741690119007.png">
-                                <img id="team1-preview" class="logo-preview" src="https://imgs.ysscores.com/teams/64/7741690119007.png" alt="شعار الفريق الأول">
+                                <input type="text" id="team1-logo" placeholder="سيتم تعبئته تلقائياً">
+                                <img id="team1-preview" class="logo-preview" src="https://via.placeholder.com/40?text=T1" alt="شعار الفريق الأول">
                             </div>
                         </div>
                     </div>
@@ -141,14 +150,14 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="team2">الفريق الثاني *</label>
-                            <input type="text" id="team2" required value="برينتفورد">
-                            <div class="auto-fill-notice">اكتب اسم الفريق وسيتم تعبئة الشعار تلقائياً</div>
+                            <input type="text" id="team2" required placeholder="ابدأ بكتابة اسم الفريق">
+                            <div class="auto-fill-notice">اكتب اسم الفريق (حرفين على الأقل) وسيتم تعبئة الشعار تلقائياً</div>
                         </div>
                         <div class="form-group">
                             <label for="team2-logo">رابط شعار الفريق الثاني</label>
                             <div class="logo-container">
-                                <input type="text" id="team2-logo" value="https://imgs.ysscores.com/teams/64/4791690118957.png">
-                                <img id="team2-preview" class="logo-preview" src="https://imgs.ysscores.com/teams/64/4791690118957.png" alt="شعار الفريق الثاني">
+                                <input type="text" id="team2-logo" placeholder="سيتم تعبئته تلقائياً">
+                                <img id="team2-preview" class="logo-preview" src="https://via.placeholder.com/40?text=T2" alt="شعار الفريق الثاني">
                             </div>
                         </div>
                     </div>
@@ -205,152 +214,146 @@ https://example.com/stream3</textarea>
     </div>
 
     <script>
-        // قاعدة بيانات شعارات الفرق
-        console.log("📋 تحميل قاعدة بيانات الفرق...");
+        // قاعدة بيانات شعارات الفرق والدوريات
+        console.log("📋 تحميل قاعدة بيانات الفرق والدوريات...");
         
         window.teamsDatabase = {
+            // قاعدة بيانات شعارات الدوريات
+            "leagues": {
+                "الدوري الانجليزي الممتاز": "https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png",
+                "الدوري الاسباني": "https://upload.wikimedia.org/wikipedia/fa/0/08/LaLiga_Santander_logo.png",
+                "الدوري الايطالي": "https://upload.wikimedia.org/wikipedia/ar/1/1e/Serie_A_logo_%282019%29.png",
+                "الدوري الالماني": "https://upload.wikimedia.org/wikipedia/ar/3/3a/Bundesliga_logo_%282017%29.png",
+                "الدوري الفرنسي": "https://upload.wikimedia.org/wikipedia/ar/2/2c/Ligue_1_Uber_Eats_logo.png",
+                "الدوري السعودي": "https://upload.wikimedia.org/wikipedia/ar/8/8e/Saudi_Professional_League_logo.png"
+            },
+
             // الدوري الإنجليزي الممتاز
             "premier_league": {
-                "نوتينغهام": "https://imgs.ysscores.com/teams/64/7741690119007.png",
-                "برينتفورد": "https://imgs.ysscores.com/teams/64/4791690118957.png",
-                "أرسنال": "https://imgs.ysscores.com/teams/64/1.png",
-                "تشيلسي": "https://imgs.ysscores.com/teams/64/4.png",
-                "ليفربول": "https://imgs.ysscores.com/teams/64/10.png",
-                "مانشستر يونايتد": "https://imgs.ysscores.com/teams/64/12.png",
-                "مانشستر سيتي": "https://imgs.ysscores.com/teams/64/11.png",
-                "توتنهام": "https://imgs.ysscores.com/teams/64/20.png",
-                "نيوكاسل": "https://imgs.ysscores.com/teams/64/97.png",
-                "أستون فيلا": "https://imgs.ysscores.com/teams/64/24.png",
-                "ويست هام": "https://imgs.ysscores.com/teams/64/25.png",
-                "بريتون": "https://imgs.ysscores.com/teams/64/131.png",
-                "فولهام": "https://imgs.ysscores.com/teams/64/34.png",
-                "كريستال بالاس": "https://imgs.ysscores.com/teams/64/6.png",
-                "وولفرهامبتون": "https://imgs.ysscores.com/teams/64/38.png",
-                "إيفرتون": "https://imgs.ysscores.com/teams/64/7.png",
-                "بورنموث": "https://imgs.ysscores.com/teams/64/127.png",
-                "ليدز يونايتد": "https://imgs.ysscores.com/teams/64/9.png",
-                "ليستر سيتي": "https://imgs.ysscores.com/teams/64/13.png",
-                "ساوثهامبتون": "https://imgs.ysscores.com/teams/64/17.png"
+                "نوتينغهام": "https://resources.premierleague.com/premierleague/badges/50/t25.png",
+                "برينتفورد": "https://resources.premierleague.com/premierleague/badges/50/t94.png",
+                "أرسنال": "https://resources.premierleague.com/premierleague/badges/50/t3.png",
+                "تشيلسي": "https://resources.premierleague.com/premierleague/badges/50/t8.png",
+                "ليفربول": "https://resources.premierleague.com/premierleague/badges/50/t14.png",
+                "مانشستر يونايتد": "https://resources.premierleague.com/premierleague/badges/50/t1.png",
+                "مانشستر سيتي": "https://resources.premierleague.com/premierleague/badges/50/t43.png",
+                "توتنهام": "https://resources.premierleague.com/premierleague/badges/50/t6.png",
+                "نيوكاسل": "https://resources.premierleague.com/premierleague/badges/50/t4.png",
+                "أستون فيلا": "https://resources.premierleague.com/premierleague/badges/50/t7.png",
+                "ويست هام": "https://resources.premierleague.com/premierleague/badges/50/t21.png",
+                "بريتون": "https://resources.premierleague.com/premierleague/badges/50/t36.png",
+                "فولهام": "https://resources.premierleague.com/premierleague/badges/50/t54.png",
+                "كريستال بالاس": "https://resources.premierleague.com/premierleague/badges/50/t31.png",
+                "وولفرهامبتون": "https://resources.premierleague.com/premierleague/badges/50/t39.png",
+                "إيفرتون": "https://resources.premierleague.com/premierleague/badges/50/t11.png",
+                "بورنموث": "https://resources.premierleague.com/premierleague/badges/50/t91.png",
+                "ليدز يونايتد": "https://resources.premierleague.com/premierleague/badges/50/t2.png",
+                "ليستر سيتي": "https://resources.premierleague.com/premierleague/badges/50/t13.png",
+                "ساوثهامبتون": "https://resources.premierleague.com/premierleague/badges/50/t20.png"
             },
 
             // الدوري الإسباني
             "la_liga": {
-                "ريال مدريد": "https://imgs.ysscores.com/teams/64/52.png",
-                "برشلونة": "https://imgs.ysscores.com/teams/64/49.png",
-                "أتلتيكو مدريد": "https://imgs.ysscores.com/teams/64/48.png",
-                "اشبيلية": "https://imgs.ysscores.com/teams/64/59.png",
-                "فيلارريال": "https://imgs.ysscores.com/teams/64/67.png",
-                "ريال بيتيس": "https://imgs.ysscores.com/teams/64/60.png",
-                "ريال سوسيداد": "https://imgs.ysscores.com/teams/64/64.png",
-                "أتلتيك بيلباو": "https://imgs.ysscores.com/teams/64/47.png",
-                "فالنسيا": "https://imgs.ysscores.com/teams/64/65.png",
-                "خيتافي": "https://imgs.ysscores.com/teams/64/54.png",
-                "اوساسونا": "https://imgs.ysscores.com/teams/64/57.png",
-                "سلتا فيغو": "https://imgs.ysscores.com/teams/64/51.png",
-                "رايو فايكانو": "https://imgs.ysscores.com/teams/64/61.png",
-                "ايلتشى": "https://imgs.ysscores.com/teams/64/53.png",
-                "خيمناستيك": "https://imgs.ysscores.com/teams/64/55.png",
-                "مليلية": "https://imgs.ysscores.com/teams/64/56.png",
-                "قرطبة": "https://imgs.ysscores.com/teams/64/50.png",
-                "ديبورتيفو لاكورونيا": "https://imgs.ysscores.com/teams/64/45.png",
-                "نادى الميريا": "https://imgs.ysscores.com/teams/64/46.png",
-                "نادى جرانادا": "https://imgs.ysscores.com/teams/64/58.png"
+                "ريال مدريد": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/86.png",
+                "برشلونة": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/83.png",
+                "أتلتيكو مدريد": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/1068.png",
+                "اشبيلية": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/243.png",
+                "فيلارريال": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/367.png",
+                "ريال بيتيس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/90.png",
+                "ريال سوسيداد": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/96.png",
+                "أتلتيك بيلباو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/331.png",
+                "فالنسيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/95.png",
+                "خيتافي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/244.png",
+                "اوساسونا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/97.png",
+                "سلتا فيغو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/463.png",
+                "رايو فايكانو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/536.png",
+                "ايلتشى": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/445.png",
+                "قرطبة": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/3675.png",
+                "ديبورتيفو لاكورونيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/89.png",
+                "نادى الميريا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/330.png",
+                "نادى جرانادا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/299.png"
             },
 
             // الدوري الإيطالي
             "serie_a": {
-                "يوفنتوس": "https://imgs.ysscores.com/teams/64/111.png",
-                "إنتر ميلان": "https://imgs.ysscores.com/teams/64/108.png",
-                "ميلان": "https://imgs.ysscores.com/teams/64/98.png",
-                "نابولي": "https://imgs.ysscores.com/teams/64/114.png",
-                "روما": "https://imgs.ysscores.com/teams/64/100.png",
-                "لاتسيو": "https://imgs.ysscores.com/teams/64/99.png",
-                "فيورنتينا": "https://imgs.ysscores.com/teams/64/109.png",
-                "أتالانتا": "https://imgs.ysscores.com/teams/64/102.png",
-                "بولونيا": "https://imgs.ysscores.com/teams/64/103.png",
-                "تورينو": "https://imgs.ysscores.com/teams/64/239.png",
-                "جنوى": "https://imgs.ysscores.com/teams/64/107.png",
-                "مونزا": "https://imgs.ysscores.com/teams/64/112.png",
-                "ليتشي": "https://imgs.ysscores.com/teams/64/115.png",
-                "فروزينوني": "https://imgs.ysscores.com/teams/64/116.png",
-                "ساسولو": "https://imgs.ysscores.com/teams/64/117.png",
-                "أودينيزي": "https://imgs.ysscores.com/teams/64/118.png",
-                "كالياري": "https://imgs.ysscores.com/teams/64/119.png",
-                "هيلاس فيرونا": "https://imgs.ysscores.com/teams/64/120.png",
-                "إمبولي": "https://imgs.ysscores.com/teams/64/121.png",
-                "ساليرنيتانا": "https://imgs.ysscores.com/teams/64/122.png"
+                "يوفنتوس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/111.png",
+                "إنتر ميلان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/110.png",
+                "ميلان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/103.png",
+                "نابولي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/114.png",
+                "روما": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/104.png",
+                "لاتسيو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/112.png",
+                "فيورنتينا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/109.png",
+                "أتالانتا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/102.png",
+                "بولونيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/113.png",
+                "تورينو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/239.png",
+                "جنوى": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/107.png",
+                "مونزا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/395.png",
+                "ليتشي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/115.png",
+                "ساسولو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/399.png",
+                "أودينيزي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/118.png",
+                "كالياري": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/119.png",
+                "هيلاس فيرونا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/120.png",
+                "إمبولي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/445.png",
+                "ساليرنيتانا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/585.png"
             },
 
             // الدوري الألماني
             "bundesliga": {
-                "بايرن ميونخ": "https://imgs.ysscores.com/teams/64/21.png",
-                "بوروسيا دورتموند": "https://imgs.ysscores.com/teams/64/28.png",
-                "باير ليفركوزن": "https://imgs.ysscores.com/teams/64/32.png",
-                "لايبزيغ": "https://imgs.ysscores.com/teams/64/224.png",
-                "يونيون برلين": "https://imgs.ysscores.com/teams/64/26.png",
-                "فولفسبورج": "https://imgs.ysscores.com/teams/64/31.png",
-                "آينتراخت فرانكفورت": "https://imgs.ysscores.com/teams/64/22.png",
-                "بوروسيا مونشنغلادباخ": "https://imgs.ysscores.com/teams/64/27.png",
-                "هوفنهايم": "https://imgs.ysscores.com/teams/64/33.png",
-                "شالكه": "https://imgs.ysscores.com/teams/64/30.png",
-                "ماينز": "https://imgs.ysscores.com/teams/64/29.png",
-                "كولن": "https://imgs.ysscores.com/teams/64/23.png",
-                "آوغسبورغ": "https://imgs.ysscores.com/teams/64/35.png",
-                "فيردر بريمن": "https://imgs.ysscores.com/teams/64/36.png",
-                "شتوتغارت": "https://imgs.ysscores.com/teams/64/37.png",
-                "باخوم": "https://imgs.ysscores.com/teams/64/39.png",
-                "دارمشتات": "https://imgs.ysscores.com/teams/64/40.png",
-                "هيرتا برلين": "https://imgs.ysscores.com/teams/64/41.png",
-                "بوروسيا مونشن": "https://imgs.ysscores.com/teams/64/42.png",
-                "هانوفر": "https://imgs.ysscores.com/teams/64/43.png"
+                "بايرن ميونخ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/132.png",
+                "بوروسيا دورتموند": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/124.png",
+                "باير ليفركوزن": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/138.png",
+                "لايبزيغ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/393.png",
+                "يونيون برلين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/125.png",
+                "فولفسبورج": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/131.png",
+                "آينتراخت فرانكفورت": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/182.png",
+                "بوروسيا مونشنغلادباخ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/127.png",
+                "هوفنهايم": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/399.png",
+                "شالكه": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/130.png",
+                "ماينز": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/128.png",
+                "كولن": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/123.png",
+                "آوغسبورغ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/384.png",
+                "فيردر بريمن": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/126.png",
+                "شتوتغارت": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/129.png"
             },
 
             // الدوري الفرنسي
             "ligue_1": {
-                "باريس سان جيرمان": "https://imgs.ysscores.com/teams/64/524.png",
-                "مارسيليا": "https://imgs.ysscores.com/teams/64/516.png",
-                "ليون": "https://imgs.ysscores.com/teams/64/515.png",
-                "موناكو": "https://imgs.ysscores.com/teams/64/548.png",
-                "ليل": "https://imgs.ysscores.com/teams/64/521.png",
-                "نيس": "https://imgs.ysscores.com/teams/64/522.png",
-                "رين": "https://imgs.ysscores.com/teams/64/529.png",
-                "نانت": "https://imgs.ysscores.com/teams/64/543.png",
-                "ستراسبورغ": "https://imgs.ysscores.com/teams/64/576.png",
-                "لانس": "https://imgs.ysscores.com/teams/64/547.png",
-                "رينيس": "https://imgs.ysscores.com/teams/64/530.png",
-                "مونبلييه": "https://imgs.ysscores.com/teams/64/518.png",
-                "بوردو": "https://imgs.ysscores.com/teams/64/526.png",
-                "سانت ايتيان": "https://imgs.ysscores.com/teams/64/527.png",
-                "تولوز": "https://imgs.ysscores.com/teams/64/537.png",
-                "انجيه": "https://imgs.ysscores.com/teams/64/538.png",
-                "متز": "https://imgs.ysscores.com/teams/64/545.png",
-                "كليرمون": "https://imgs.ysscores.com/teams/64/546.png",
-                "لوهافر": "https://imgs.ysscores.com/teams/64/549.png",
-                "باريس": "https://imgs.ysscores.com/teams/64/550.png"
+                "باريس سان جيرمان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/160.png",
+                "مارسيليا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/176.png",
+                "ليون": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/175.png",
+                "موناكو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/174.png",
+                "ليل": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/108.png",
+                "نيس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/181.png",
+                "رين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/179.png",
+                "نانت": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/173.png",
+                "ستراسبورغ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/176.png",
+                "لانس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/172.png",
+                "مونبلييه": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/178.png",
+                "بوردو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/171.png",
+                "سانت ايتيان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/180.png",
+                "تولوز": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/177.png",
+                "انجيه": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/371.png",
+                "متز": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/112.png"
             },
 
             // الدوري السعودي
             "saudi_league": {
-                "الهلال": "https://imgs.ysscores.com/teams/64/292.png",
-                "النصر": "https://imgs.ysscores.com/teams/64/293.png",
-                "الاتحاد": "https://imgs.ysscores.com/teams/64/294.png",
-                "الأهلي": "https://imgs.ysscores.com/teams/64/295.png",
-                "الشباب": "https://imgs.ysscores.com/teams/64/296.png",
-                "الفتح": "https://imgs.ysscores.com/teams/64/297.png",
-                "الاتفاق": "https://imgs.ysscores.com/teams/64/298.png",
-                "الرائد": "https://imgs.ysscores.com/teams/64/299.png",
-                "الفيحاء": "https://imgs.ysscores.com/teams/64/300.png",
-                "الخليج": "https://imgs.ysscores.com/teams/64/301.png",
-                "الطائي": "https://imgs.ysscores.com/teams/64/302.png",
-                "أبها": "https://imgs.ysscores.com/teams/64/303.png",
-                "الوحدة": "https://imgs.ysscores.com/teams/64/304.png",
-                "ضمك": "https://imgs.ysscores.com/teams/64/305.png",
-                "الباطن": "https://imgs.ysscores.com/teams/64/306.png",
-                "التعاون": "https://imgs.ysscores.com/teams/64/307.png",
-                "الحزم": "https://imgs.ysscores.com/teams/64/308.png",
-                "العدالة": "https://imgs.ysscores.com/teams/64/309.png",
-                "الوشم": "https://imgs.ysscores.com/teams/64/310.png",
-                "النجمة": "https://imgs.ysscores.com/teams/64/311.png"
+                "الهلال": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/150.png",
+                "النصر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/151.png",
+                "الاتحاد": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/152.png",
+                "الأهلي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/153.png",
+                "الشباب": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/154.png",
+                "الفتح": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/155.png",
+                "الاتفاق": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/156.png",
+                "الرائد": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/157.png",
+                "الفيحاء": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/158.png",
+                "الخليج": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/159.png",
+                "الطائي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/160.png",
+                "أبها": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/161.png",
+                "الوحدة": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/162.png",
+                "ضمك": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/163.png",
+                "الباطن": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/164.png",
+                "التعاون": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/165.png"
             },
 
             // دالة البحث عن الفريق
@@ -359,7 +362,7 @@ https://example.com/stream3</textarea>
                 
                 // البحث في جميع الدوريات
                 for (const league in this) {
-                    if (league === 'findTeamLogo' || league === 'getTeamsByLeague') continue;
+                    if (league === 'findTeamLogo' || league === 'getTeamsByLeague' || league === 'leagues') continue;
                     
                     for (const team in this[league]) {
                         if (team.toLowerCase().includes(teamName) || teamName.includes(team.toLowerCase())) {
@@ -407,10 +410,15 @@ https://example.com/stream3</textarea>
 
                 const leagueKey = leagueMap[leagueName];
                 return leagueKey ? this[leagueKey] : null;
+            },
+
+            // دالة الحصول على شعار الدوري
+            getLeagueLogo: function(leagueName) {
+                return this.leagues[leagueName] || null;
             }
         };
 
-        console.log("✅ تم تحميل قاعدة بيانات الفرق بنجاح");
+        console.log("✅ تم تحميل قاعدة بيانات الفرق والدوريات بنجاح");
     </script>
 
     <script>
@@ -473,20 +481,39 @@ https://example.com/stream3</textarea>
             }
         };
 
-        // نظام التعبئة التلقائية لشعارات الفرق
+        // نظام التعبئة التلقائية لشعارات الفرق والدوريات
         function setupAutoLogoFill() {
             const team1Input = document.getElementById('team1');
             const team2Input = document.getElementById('team2');
             const team1LogoInput = document.getElementById('team1-logo');
             const team2LogoInput = document.getElementById('team2-logo');
             const leagueInput = document.getElementById('league');
+            const leagueLogoInput = document.getElementById('league-logo');
             const team1Preview = document.getElementById('team1-preview');
             const team2Preview = document.getElementById('team2-preview');
+            const leaguePreview = document.getElementById('league-preview');
 
-            if (!team1Input || !team2Input || !team1LogoInput || !team2LogoInput) {
-                console.error("❌ لم يتم العثور على حقول الفرق");
+            if (!team1Input || !team2Input || !team1LogoInput || !team2LogoInput || !leagueInput || !leagueLogoInput) {
+                console.error("❌ لم يتم العثور على حقول الفرق والدوري");
                 return;
             }
+
+            // تحديث شعار الدوري عند تغيير الدوري
+            leagueInput.addEventListener('change', function() {
+                const leagueName = this.value;
+                const leagueLogo = window.teamsDatabase.getLeagueLogo(leagueName);
+                
+                if (leagueLogo) {
+                    leagueLogoInput.value = leagueLogo;
+                    leaguePreview.src = leagueLogo;
+                    console.log("✅ تم تحديث شعار الدوري:", leagueLogo);
+                } else {
+                    // إذا لم يتم العثور على شعار الدوري، استخدم شعار افتراضي
+                    leagueLogoInput.value = '';
+                    leaguePreview.src = 'https://via.placeholder.com/40?text=LOGO';
+                    console.log("⚠️ لم يتم العثور على شعار للدوري:", leagueName);
+                }
+            });
 
             // تحديث معاينات الشعارات
             function updateLogoPreviews() {
@@ -496,11 +523,15 @@ https://example.com/stream3</textarea>
                 if (team2LogoInput.value) {
                     team2Preview.src = team2LogoInput.value;
                 }
+                if (leagueLogoInput.value) {
+                    leaguePreview.src = leagueLogoInput.value;
+                }
             }
 
             // تحديث المعاينات عند تغيير الروابط
             team1LogoInput.addEventListener('input', updateLogoPreviews);
             team2LogoInput.addEventListener('input', updateLogoPreviews);
+            leagueLogoInput.addEventListener('input', updateLogoPreviews);
 
             // دالة للبحث عن الشعار
             function findLogo(teamName, leagueName) {
@@ -521,34 +552,44 @@ https://example.com/stream3</textarea>
                 return window.teamsDatabase.findTeamLogo(teamName);
             }
 
-            // تعبئة الشعار تلقائياً عند فقدان التركيز
-            team1Input.addEventListener('blur', function() {
-                const teamName = this.value.trim();
-                const leagueName = leagueInput.value.trim();
+            // تعبئة الشعار تلقائياً عند الكتابة (بعد حرفين)
+            function setupAutoFillOnInput(inputElement, logoInputElement, previewElement) {
+                let timeoutId;
                 
-                if (teamName && (!team1LogoInput.value || team1LogoInput.value.includes('via.placeholder.com'))) {
-                    const logoUrl = findLogo(teamName, leagueName);
-                    if (logoUrl) {
-                        team1LogoInput.value = logoUrl;
-                        team1Preview.src = logoUrl;
-                        console.log("✅ تم تعبئة شعار الفريق الأول:", logoUrl);
+                inputElement.addEventListener('input', function() {
+                    const teamName = this.value.trim();
+                    const leagueName = leagueInput.value.trim();
+                    
+                    // إلغاء المهلة السابقة
+                    clearTimeout(timeoutId);
+                    
+                    // إذا كان النص أقل من حرفين، امسح الشعار
+                    if (teamName.length < 2) {
+                        logoInputElement.value = '';
+                        previewElement.src = 'https://via.placeholder.com/40?text=T' + (inputElement.id === 'team1' ? '1' : '2');
+                        return;
                     }
-                }
-            });
+                    
+                    // تعيين مهلة للبحث بعد توقف المستخدم عن الكتابة
+                    timeoutId = setTimeout(() => {
+                        const logoUrl = findLogo(teamName, leagueName);
+                        if (logoUrl) {
+                            logoInputElement.value = logoUrl;
+                            previewElement.src = logoUrl;
+                            console.log("✅ تم تعبئة شعار الفريق تلقائياً:", logoUrl);
+                        } else {
+                            // إذا لم يتم العثور على شعار، امسح الشعار القديم
+                            logoInputElement.value = '';
+                            previewElement.src = 'https://via.placeholder.com/40?text=T' + (inputElement.id === 'team1' ? '1' : '2');
+                            console.log("⚠️ لم يتم العثور على شعار للفريق:", teamName);
+                        }
+                    }, 500); // انتظر 500 مللي ثانية بعد توقف الكتابة
+                });
+            }
 
-            team2Input.addEventListener('blur', function() {
-                const teamName = this.value.trim();
-                const leagueName = leagueInput.value.trim();
-                
-                if (teamName && (!team2LogoInput.value || team2LogoInput.value.includes('via.placeholder.com'))) {
-                    const logoUrl = findLogo(teamName, leagueName);
-                    if (logoUrl) {
-                        team2LogoInput.value = logoUrl;
-                        team2Preview.src = logoUrl;
-                        console.log("✅ تم تعبئة شعار الفريق الثاني:", logoUrl);
-                    }
-                }
-            });
+            // تفعيل التعبئة التلقائية للفريقين
+            setupAutoFillOnInput(team1Input, team1LogoInput, team1Preview);
+            setupAutoFillOnInput(team2Input, team2LogoInput, team2Preview);
 
             // اقتراحات الفرق عند الكتابة
             function setupTeamSuggestions(inputElement, logoInputElement, previewElement) {
@@ -586,7 +627,7 @@ https://example.com/stream3</textarea>
                     // إذا لم نجد اقتراحات في الدوري الحالي، ابحث في جميع الدوريات
                     if (suggestions.length === 0) {
                         for (const league in window.teamsDatabase) {
-                            if (league === 'findTeamLogo' || league === 'getTeamsByLeague') continue;
+                            if (league === 'findTeamLogo' || league === 'getTeamsByLeague' || league === 'leagues') continue;
                             
                             for (const team in window.teamsDatabase[league]) {
                                 if (team.toLowerCase().includes(query.toLowerCase())) {
@@ -935,6 +976,7 @@ https://example.com/stream3</textarea>
                         // تحديث معاينات الشعارات
                         document.getElementById('team1-preview').src = match.team1Logo || 'https://via.placeholder.com/40?text=T1';
                         document.getElementById('team2-preview').src = match.team2Logo || 'https://via.placeholder.com/40?text=T2';
+                        document.getElementById('league-preview').src = match.leagueLogo || 'https://via.placeholder.com/40?text=LOGO';
                         
                         formTitle.textContent = 'تعديل المباراة';
                         submitBtn.textContent = 'تحديث المباراة';
@@ -981,11 +1023,11 @@ https://example.com/stream3</textarea>
                 
                 // إعادة تعيين القيم الافتراضية
                 document.getElementById('league').value = 'الدوري الانجليزي الممتاز';
-                document.getElementById('league-logo').value = 'https://i.postimg.cc/Bb0WFJfJ/Picsart-25-01-18-03-49-12-620.png';
-                document.getElementById('team1').value = 'نوتينغهام';
-                document.getElementById('team1-logo').value = 'https://imgs.ysscores.com/teams/64/7741690119007.png';
-                document.getElementById('team2').value = 'برينتفورد';
-                document.getElementById('team2-logo').value = 'https://imgs.ysscores.com/teams/64/4791690118957.png';
+                document.getElementById('league-logo').value = 'https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png';
+                document.getElementById('team1').value = '';
+                document.getElementById('team1-logo').value = '';
+                document.getElementById('team2').value = '';
+                document.getElementById('team2-logo').value = '';
                 document.getElementById('match-time').value = '04:00م';
                 document.getElementById('channel').value = 'bein sport 2';
                 document.getElementById('commentator').value = 'أحمد البلوشي';
@@ -993,8 +1035,9 @@ https://example.com/stream3</textarea>
                 document.getElementById('links').value = 'https://example.com/stream1\nhttps://example.com/stream2\nhttps://example.com/stream3';
                 
                 // تحديث معاينات الشعارات
-                document.getElementById('team1-preview').src = 'https://imgs.ysscores.com/teams/64/7741690119007.png';
-                document.getElementById('team2-preview').src = 'https://imgs.ysscores.com/teams/64/4791690118957.png';
+                document.getElementById('team1-preview').src = 'https://via.placeholder.com/40?text=T1';
+                document.getElementById('team2-preview').src = 'https://via.placeholder.com/40?text=T2';
+                document.getElementById('league-preview').src = 'https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png';
             }
             
             // عرض الرسائل
