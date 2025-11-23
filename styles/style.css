@@ -389,3 +389,44 @@ textarea {
         padding: 4px 9px;
     }
 }
+
+
+/* أنماط نظام الاقتراحات التلقائية */
+.suggestions-box {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    width: calc(100% - 2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:hover {
+    background-color: #f5f5f5;
+}
+
+.suggestion-item img {
+    border-radius: 3px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* تعديلات على حقول الإدخال لاستيعاب الاقتراحات */
+.form-group {
+    position: relative;
+}
+        
