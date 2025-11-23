@@ -214,17 +214,17 @@ https://example.com/stream3</textarea>
     </div>
 
     <script>
-        // قاعدة بيانات شعارات الفرق والدوريات
+        // قاعدة بيانات شعارات الفرق والدوريات - إصدار محسن
         console.log("📋 تحميل قاعدة بيانات الفرق والدوريات...");
         
         window.teamsDatabase = {
-            // قاعدة بيانات شعارات الدوريات
+            // قاعدة بيانات شعارات الدوريات - روابط مباشرة وموثوقة
             "leagues": {
-                "الدوري الانجليزي الممتاز": "https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png",
-                "الدوري الاسباني": "https://upload.wikimedia.org/wikipedia/fa/0/08/LaLiga_Santander_logo.png",
-                "الدوري الايطالي": "https://upload.wikimedia.org/wikipedia/ar/1/1e/Serie_A_logo_%282019%29.png",
+                "الدوري الانجليزي الممتاز": "https://resources.premierleague.com/premierleague/badges/50/t1.png",
+                "الدوري الاسباني": "https://assets.laliga.com/assets/logos/laliga-v/laliga-v-300.jpg",
+                "الدوري الايطالي": "https://legacyseriea.it/wp-content/uploads/2021/08/Serie-A-2021-22.png",
                 "الدوري الالماني": "https://upload.wikimedia.org/wikipedia/ar/3/3a/Bundesliga_logo_%282017%29.png",
-                "الدوري الفرنسي": "https://upload.wikimedia.org/wikipedia/ar/2/2c/Ligue_1_Uber_Eats_logo.png",
+                "الدوري الفرنسي": "https://www.ligue1.com/-/media/Project/LFP/shared/Images/Ligue1-COM/Logo-Ligue1.png",
                 "الدوري السعودي": "https://upload.wikimedia.org/wikipedia/ar/8/8e/Saudi_Professional_League_logo.png"
             },
 
@@ -481,7 +481,7 @@ https://example.com/stream3</textarea>
             }
         };
 
-        // نظام التعبئة التلقائية لشعارات الفرق والدوريات
+        // نظام التعبئة التلقائية لشعارات الفرق والدوريات - إصدار محسن
         function setupAutoLogoFill() {
             const team1Input = document.getElementById('team1');
             const team2Input = document.getElementById('team2');
@@ -498,9 +498,9 @@ https://example.com/stream3</textarea>
                 return;
             }
 
-            // تحديث شعار الدوري عند تغيير الدوري
-            leagueInput.addEventListener('change', function() {
-                const leagueName = this.value;
+            // دالة لتحديث شعار الدوري
+            function updateLeagueLogo() {
+                const leagueName = leagueInput.value;
                 const leagueLogo = window.teamsDatabase.getLeagueLogo(leagueName);
                 
                 if (leagueLogo) {
@@ -513,18 +513,34 @@ https://example.com/stream3</textarea>
                     leaguePreview.src = 'https://via.placeholder.com/40?text=LOGO';
                     console.log("⚠️ لم يتم العثور على شعار للدوري:", leagueName);
                 }
+            }
+
+            // تحديث شعار الدوري عند تغيير الدوري
+            leagueInput.addEventListener('change', function() {
+                updateLeagueLogo();
+                
+                // عند تغيير الدوري، نتحقق من أن الفرق الحالية تنتمي للدوري الجديد
+                checkTeamsInCurrentLeague();
             });
 
             // تحديث معاينات الشعارات
             function updateLogoPreviews() {
                 if (team1LogoInput.value) {
                     team1Preview.src = team1LogoInput.value;
+                } else {
+                    team1Preview.src = 'https://via.placeholder.com/40?text=T1';
                 }
+                
                 if (team2LogoInput.value) {
                     team2Preview.src = team2LogoInput.value;
+                } else {
+                    team2Preview.src = 'https://via.placeholder.com/40?text=T2';
                 }
+                
                 if (leagueLogoInput.value) {
                     leaguePreview.src = leagueLogoInput.value;
+                } else {
+                    leaguePreview.src = 'https://via.placeholder.com/40?text=LOGO';
                 }
             }
 
@@ -550,6 +566,61 @@ https://example.com/stream3</textarea>
                 
                 // البحث في جميع الدوريات
                 return window.teamsDatabase.findTeamLogo(teamName);
+            }
+
+            // دالة للتحقق مما إذا كان الفريق ينتمي للدوري الحالي
+            function isTeamInCurrentLeague(teamName, leagueName) {
+                if (!teamName || !leagueName) return false;
+                
+                const leagueTeams = window.teamsDatabase.getTeamsByLeague(leagueName);
+                if (!leagueTeams) return false;
+                
+                for (const team in leagueTeams) {
+                    if (team.toLowerCase() === teamName.toLowerCase()) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // دالة للتحقق من أن الفرق الحالية تنتمي للدوري الجديد
+            function checkTeamsInCurrentLeague() {
+                const leagueName = leagueInput.value;
+                const team1Name = team1Input.value.trim();
+                const team2Name = team2Input.value.trim();
+                
+                // إذا كان الفريق الأول لا ينتمي للدوري الجديد، امسح شعاره
+                if (team1Name && !isTeamInCurrentLeague(team1Name, leagueName)) {
+                    team1LogoInput.value = '';
+                    team1Preview.src = 'https://via.placeholder.com/40?text=T1';
+                    console.log("🔄 تم مسح شعار الفريق الأول لأنه لا ينتمي للدوري الجديد");
+                }
+                
+                // إذا كان الفريق الثاني لا ينتمي للدوري الجديد، امسح شعاره
+                if (team2Name && !isTeamInCurrentLeague(team2Name, leagueName)) {
+                    team2LogoInput.value = '';
+                    team2Preview.src = 'https://via.placeholder.com/40?text=T2';
+                    console.log("🔄 تم مسح شعار الفريق الثاني لأنه لا ينتمي للدوري الجديد");
+                }
+                
+                // إعادة البحث عن الشعارات للفرق الحالية في الدوري الجديد
+                if (team1Name && team1Name.length >= 2) {
+                    const logoUrl = findLogo(team1Name, leagueName);
+                    if (logoUrl) {
+                        team1LogoInput.value = logoUrl;
+                        team1Preview.src = logoUrl;
+                        console.log("✅ تم تحديث شعار الفريق الأول للدوري الجديد:", logoUrl);
+                    }
+                }
+                
+                if (team2Name && team2Name.length >= 2) {
+                    const logoUrl = findLogo(team2Name, leagueName);
+                    if (logoUrl) {
+                        team2LogoInput.value = logoUrl;
+                        team2Preview.src = logoUrl;
+                        console.log("✅ تم تحديث شعار الفريق الثاني للدوري الجديد:", logoUrl);
+                    }
+                }
             }
 
             // تعبئة الشعار تلقائياً عند الكتابة (بعد حرفين)
@@ -681,6 +752,9 @@ https://example.com/stream3</textarea>
             // تفعيل نظام الاقتراحات
             setupTeamSuggestions(team1Input, team1LogoInput, team1Preview);
             setupTeamSuggestions(team2Input, team2LogoInput, team2Preview);
+
+            // تحديث شعار الدوري عند التحميل الأولي
+            updateLeagueLogo();
 
             console.log("✅ تم تفعيل نظام التعبئة التلقائية للشعارات");
         }
@@ -1023,7 +1097,7 @@ https://example.com/stream3</textarea>
                 
                 // إعادة تعيين القيم الافتراضية
                 document.getElementById('league').value = 'الدوري الانجليزي الممتاز';
-                document.getElementById('league-logo').value = 'https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png';
+                document.getElementById('league-logo').value = 'https://resources.premierleague.com/premierleague/badges/50/t1.png';
                 document.getElementById('team1').value = '';
                 document.getElementById('team1-logo').value = '';
                 document.getElementById('team2').value = '';
@@ -1037,7 +1111,7 @@ https://example.com/stream3</textarea>
                 // تحديث معاينات الشعارات
                 document.getElementById('team1-preview').src = 'https://via.placeholder.com/40?text=T1';
                 document.getElementById('team2-preview').src = 'https://via.placeholder.com/40?text=T2';
-                document.getElementById('league-preview').src = 'https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png';
+                document.getElementById('league-preview').src = 'https://resources.premierleague.com/premierleague/badges/50/t1.png';
             }
             
             // عرض الرسائل
