@@ -121,6 +121,15 @@
                                 <option value="الدوري الالماني">الدوري الالماني</option>
                                 <option value="الدوري الفرنسي">الدوري الفرنسي</option>
                                 <option value="الدوري السعودي">الدوري السعودي</option>
+                                <option value="دوري أبطال أوروبا">دوري أبطال أوروبا</option>
+                                <option value="دوري أبطال آسيا">دوري أبطال آسيا</option>
+                                <option value="كأس العالم">كأس العالم</option>
+                                <option value="كأس الأمم الأوروبية">كأس الأمم الأوروبية</option>
+                                <option value="كأس الأمم الأفريقية">كأس الأمم الأفريقية</option>
+                                <option value="كأس آسيا">كأس آسيا</option>
+                                <option value="كوبا أمريكا">كوبا أمريكا</option>
+                                <option value="كأس الكونكاكاف">كأس الكونكاكاف</option>
+                                <option value="كأس العرب">كأس العرب</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -214,18 +223,27 @@ https://example.com/stream3</textarea>
     </div>
 
     <script>
-        // قاعدة بيانات شعارات الفرق والدوريات - إصدار محسن
-        console.log("📋 تحميل قاعدة بيانات الفرق والدوريات...");
+        // قاعدة بيانات شاملة للفرق والدوريات والمنتخبات
+        console.log("📋 تحميل قاعدة بيانات الفرق والدوريات والمنتخبات...");
         
         window.teamsDatabase = {
-            // قاعدة بيانات شعارات الدوريات - روابط مباشرة وموثوقة
+            // قاعدة بيانات شعارات الدوريات والبطولات
             "leagues": {
-                "الدوري الانجليزي الممتاز": "https://i.postimg.cc/Bb0WFJfJ/Picsart-25-01-18-03-49-12-620.png",
-                "الدوري الاسباني": "https://i.postimg.cc/7Ynn7qN1/laliga-icon.png",
-                "الدوري الايطالي": "https://i.postimg.cc/Hx0VKknk/Serie-A-svg.webp",
-                "الدوري الالماني": "https://i.postimg.cc/52F9T2kY/Bundesliga-logo-(2017)-svg.webp",
-                "الدوري الفرنسي": "https://i.postimg.cc/zGnZTbcR/lega.png",
-                "الدوري السعودي": "https://i.postimg.cc/FR6nMN6Q/roshen.png"
+                "الدوري الانجليزي الممتاز": "https://resources.premierleague.com/premierleague/badges/50/t1.png",
+                "الدوري الاسباني": "https://assets.laliga.com/assets/logos/laliga-v/laliga-v-300.jpg",
+                "الدوري الايطالي": "https://legacyseriea.it/wp-content/uploads/2021/08/Serie-A-2021-22.png",
+                "الدوري الالماني": "https://upload.wikimedia.org/wikipedia/ar/3/3a/Bundesliga_logo_%282017%29.png",
+                "الدوري الفرنسي": "https://www.ligue1.com/-/media/Project/LFP/shared/Images/Ligue1-COM/Logo-Ligue1.png",
+                "الدوري السعودي": "https://upload.wikimedia.org/wikipedia/ar/8/8e/Saudi_Professional_League_logo.png",
+                "دوري أبطال أوروبا": "https://upload.wikimedia.org/wikipedia/ar/b/bf/UEFA_Champions_League_logo_2.svg",
+                "دوري أبطال آسيا": "https://upload.wikimedia.org/wikipedia/ar/7/7e/AFC_Champions_League_logo_%282021%E2%80%93present%29.svg",
+                "كأس العالم": "https://upload.wikimedia.org/wikipedia/ar/3/3c/2022_FIFA_World_Cup.svg",
+                "كأس الأمم الأوروبية": "https://upload.wikimedia.org/wikipedia/ar/0/0e/UEFA_Euro_2024_logo.svg",
+                "كأس الأمم الأفريقية": "https://upload.wikimedia.org/wikipedia/ar/1/1b/2023_Africa_Cup_of_Nations_logo.svg",
+                "كأس آسيا": "https://upload.wikimedia.org/wikipedia/ar/5/5a/AFC_Asian_Cup_2023_logo.svg",
+                "كوبا أمريكا": "https://upload.wikimedia.org/wikipedia/ar/2/27/Copa_Am%C3%A9rica_2024_logo.svg",
+                "كأس الكونكاكاف": "https://upload.wikimedia.org/wikipedia/ar/1/16/2023_CONCACAF_Gold_Cup_logo.svg",
+                "كأس العرب": "https://upload.wikimedia.org/wikipedia/ar/6/6a/2021_FIFA_Arab_Cup_logo.svg"
             },
 
             // الدوري الإنجليزي الممتاز
@@ -267,11 +285,7 @@ https://example.com/stream3</textarea>
                 "اوساسونا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/97.png",
                 "سلتا فيغو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/463.png",
                 "رايو فايكانو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/536.png",
-                "ايلتشى": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/445.png",
-                "قرطبة": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/3675.png",
-                "ديبورتيفو لاكورونيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/89.png",
-                "نادى الميريا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/330.png",
-                "نادى جرانادا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/299.png"
+                "ايلتشى": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/445.png"
             },
 
             // الدوري الإيطالي
@@ -285,16 +299,7 @@ https://example.com/stream3</textarea>
                 "فيورنتينا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/109.png",
                 "أتالانتا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/102.png",
                 "بولونيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/113.png",
-                "تورينو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/239.png",
-                "جنوى": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/107.png",
-                "مونزا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/395.png",
-                "ليتشي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/115.png",
-                "ساسولو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/399.png",
-                "أودينيزي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/118.png",
-                "كالياري": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/119.png",
-                "هيلاس فيرونا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/120.png",
-                "إمبولي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/445.png",
-                "ساليرنيتانا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/585.png"
+                "تورينو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/239.png"
             },
 
             // الدوري الألماني
@@ -306,14 +311,7 @@ https://example.com/stream3</textarea>
                 "يونيون برلين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/125.png",
                 "فولفسبورج": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/131.png",
                 "آينتراخت فرانكفورت": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/182.png",
-                "بوروسيا مونشنغلادباخ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/127.png",
-                "هوفنهايم": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/399.png",
-                "شالكه": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/130.png",
-                "ماينز": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/128.png",
-                "كولن": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/123.png",
-                "آوغسبورغ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/384.png",
-                "فيردر بريمن": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/126.png",
-                "شتوتغارت": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/129.png"
+                "بوروسيا مونشنغلادباخ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/127.png"
             },
 
             // الدوري الفرنسي
@@ -325,35 +323,202 @@ https://example.com/stream3</textarea>
                 "ليل": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/108.png",
                 "نيس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/181.png",
                 "رين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/179.png",
-                "نانت": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/173.png",
-                "ستراسبورغ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/176.png",
-                "لانس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/172.png",
-                "مونبلييه": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/178.png",
-                "بوردو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/171.png",
-                "سانت ايتيان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/180.png",
-                "تولوز": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/177.png",
-                "انجيه": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/371.png",
-                "متز": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/112.png"
+                "نانت": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/173.png"
             },
 
             // الدوري السعودي
             "saudi_league": {
+                "الهلال": "https://upload.wikimedia.org/wikipedia/ar/archive/1/12/20230512223726%21Al_Hilal_SFC_logo_2022.svg",
+                "النصر": "https://upload.wikimedia.org/wikipedia/ar/thumb/a/ac/Al_Nassr_FC_Logo.svg/1513px-Al_Nassr_FC_Logo.svg.png",
+                "الاتحاد": "https://upload.wikimedia.org/wikipedia/ar/thumb/e/e1/Ittihad_logo.svg/1759px-Ittihad_logo.svg.png",
+                "الأهلي": "https://upload.wikimedia.org/wikipedia/ar/thumb/b/b2/Al-Ahli_Logo.svg/1511px-Al-Ahli_Logo.svg.png",
+                "الشباب": "https://upload.wikimedia.org/wikipedia/ar/archive/1/1c/20231126084956%21Shabab-logo.png",
+                "القادسية": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Al-Qadsiah_Logo.svg",
+                "الاتفاق": "https://upload.wikimedia.org/wikipedia/ar/thumb/3/3b/%D8%B4%D8%B9%D8%A7%D8%B1_%D9%86%D8%A7%D8%AF%D9%8A_%D8%A7%D9%84%D8%A7%D8%AA%D9%81%D8%A7%D9%82_2022.svg/1200px-%D8%B4%D8%B9%D8%A7%D8%B1_%D9%86%D8%A7%D8%AF%D9%8A_%D8%A7%D9%84%D8%A7%D8%AA%D9%81%D8%A7%D9%82_2022.svg.png",
+                "التعاون": "https://upload.wikimedia.org/wikipedia/ar/c/c6/%D8%B4%D8%B9%D8%A7%D8%B1_%D9%86%D8%A7%D8%AF%D9%8A_%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%88%D9%86.svg"
+            },
+
+            // دوري أبطال أوروبا
+            "champions_league": {
+                "ريال مدريد": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/86.png",
+                "برشلونة": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/83.png",
+                "بايرن ميونخ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/132.png",
+                "مانشستر سيتي": "https://resources.premierleague.com/premierleague/badges/50/t43.png",
+                "باريس سان جيرمان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/160.png",
+                "يوفنتوس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/111.png",
+                "تشيلسي": "https://resources.premierleague.com/premierleague/badges/50/t8.png",
+                "ليفربول": "https://resources.premierleague.com/premierleague/badges/50/t14.png",
+                "مانشستر يونايتد": "https://resources.premierleague.com/premierleague/badges/50/t1.png",
+                "أتلتيكو مدريد": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/1068.png",
+                "إنتر ميلان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/110.png",
+                "ميلان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/103.png",
+                "بوروسيا دورتموند": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/124.png",
+                "أرسنال": "https://resources.premierleague.com/premierleague/badges/50/t3.png",
+                "توتنهام": "https://resources.premierleague.com/premierleague/badges/50/t6.png",
+                "نابولي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/114.png"
+            },
+
+            // دوري أبطال آسيا
+            "afc_champions_league": {
                 "الهلال": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/150.png",
                 "النصر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/151.png",
                 "الاتحاد": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/152.png",
                 "الأهلي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/153.png",
-                "الشباب": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/154.png",
-                "الفتح": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/155.png",
-                "الاتفاق": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/156.png",
-                "الرائد": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/157.png",
-                "الفيحاء": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/158.png",
-                "الخليج": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/159.png",
-                "الطائي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/160.png",
-                "أبها": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/161.png",
-                "الوحدة": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/162.png",
-                "ضمك": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/163.png",
-                "الباطن": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/164.png",
-                "التعاون": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/165.png"
+                "الاتحاد السوري": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/9846.png",
+                "باختاكور": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/10304.png",
+                "استقلال": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/10308.png",
+                "برسبوليس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/10307.png",
+                "الهلال الأزرق": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/10309.png",
+                "كاوازاكي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/10310.png",
+                "أوراوا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/10311.png",
+                "غوانغجو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/10312.png",
+                "شاندونغ": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/10313.png",
+                "جيونبوك": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/10314.png",
+                "اولسان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/10315.png"
+            },
+
+            // كأس العالم
+            "world_cup": {
+                "البرازيل": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/bra.png",
+                "الأرجنتين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/arg.png",
+                "فرنسا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/fra.png",
+                "ألمانيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ger.png",
+                "إسبانيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/esp.png",
+                "إنجلترا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/eng.png",
+                "البرتغال": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/por.png",
+                "هولندا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ned.png",
+                "بلجيكا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/bel.png",
+                "كرواتيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/cro.png",
+                "إيطاليا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ita.png",
+                "الأوروغواي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/uru.png",
+                "الدنمارك": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/den.png",
+                "سويسرا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/sui.png",
+                "الولايات المتحدة": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/usa.png",
+                "المكسيك": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/mex.png",
+                "السنغال": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/sen.png",
+                "المغرب": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/mar.png",
+                "تونس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/tun.png",
+                "مصر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/egy.png",
+                "الجزائر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/alg.png",
+                "نيجيريا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/nga.png",
+                "الكاميرون": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/cmr.png",
+                "غانا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/gha.png",
+                "كوت ديفوار": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/civ.png",
+                "اليابان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/jpn.png",
+                "كوريا الجنوبية": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/kor.png",
+                "إيران": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/irn.png",
+                "السعودية": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ksa.png",
+                "قطر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/qat.png",
+                "الإمارات": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/uae.png",
+                "أستراليا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/aus.png"
+            },
+
+            // كأس الأمم الأوروبية
+            "euro": {
+                "فرنسا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/fra.png",
+                "ألمانيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ger.png",
+                "إسبانيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/esp.png",
+                "إنجلترا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/eng.png",
+                "البرتغال": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/por.png",
+                "هولندا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ned.png",
+                "بلجيكا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/bel.png",
+                "كرواتيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/cro.png",
+                "إيطاليا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ita.png",
+                "الدنمارك": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/den.png",
+                "سويسرا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/sui.png",
+                "السويد": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/swe.png",
+                "بولندا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/pol.png",
+                "أوكرانيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ukr.png",
+                "النمسا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/aut.png",
+                "تركيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/tur.png"
+            },
+
+            // كأس الأمم الأفريقية
+            "africa_cup": {
+                "مصر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/egy.png",
+                "الجزائر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/alg.png",
+                "المغرب": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/mar.png",
+                "تونس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/tun.png",
+                "السنغال": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/sen.png",
+                "نيجيريا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/nga.png",
+                "الكاميرون": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/cmr.png",
+                "غانا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/gha.png",
+                "كوت ديفوار": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/civ.png",
+                "مالي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/mli.png",
+                "بوركينا فاسو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/buf.png",
+                "جمهورية الكونغو الديمقراطية": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/cod.png",
+                "غينيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/gui.png",
+                "جنوب أفريقيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/rsa.png",
+                "زامبيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/zam.png",
+                "أنغولا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ang.png"
+            },
+
+            // كأس آسيا
+            "asian_cup": {
+                "اليابان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/jpn.png",
+                "كوريا الجنوبية": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/kor.png",
+                "إيران": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/irn.png",
+                "السعودية": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ksa.png",
+                "قطر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/qat.png",
+                "الإمارات": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/uae.png",
+                "أستراليا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/aus.png",
+                "الصين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/chn.png",
+                "العراق": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/irq.png",
+                "أوزبكستان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/uzb.png",
+                "عمان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/oma.png",
+                "الأردن": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/jor.png",
+                "فلسطين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ple.png",
+                "سوريا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/syr.png",
+                "لبنان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/lib.png",
+                "البحرين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/bhr.png"
+            },
+
+            // كوبا أمريكا
+            "copa_america": {
+                "البرازيل": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/bra.png",
+                "الأرجنتين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/arg.png",
+                "الأوروغواي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/uru.png",
+                "كولومبيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/col.png",
+                "تشيلي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/chi.png",
+                "بيرو": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/per.png",
+                "الإكوادور": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ecu.png",
+                "باراغواي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/par.png",
+                "فنزويلا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ven.png",
+                "بوليفيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/bol.png"
+            },
+
+            // كأس الكونكاكاف
+            "concacaf": {
+                "الولايات المتحدة": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/usa.png",
+                "المكسيك": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/mex.png",
+                "كندا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/can.png",
+                "كوستاريكا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/crc.png",
+                "بنما": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/pan.png",
+                "جامايكا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/jam.png",
+                "هايتي": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/hti.png",
+                "السلفادور": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/slv.png",
+                "هندوراس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/hon.png",
+                "غواتيمالا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/guat.png"
+            },
+
+            // كأس العرب
+            "arab_cup": {
+                "السعودية": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ksa.png",
+                "قطر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/qat.png",
+                "الإمارات": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/uae.png",
+                "مصر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/egy.png",
+                "المغرب": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/mar.png",
+                "الجزائر": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/alg.png",
+                "تونس": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/tun.png",
+                "العراق": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/irq.png",
+                "الأردن": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/jor.png",
+                "عمان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/oma.png",
+                "البحرين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/bhr.png",
+                "سوريا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/syr.png",
+                "لبنان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/lib.png",
+                "فلسطين": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/ple.png",
+                "السودان": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/sud.png",
+                "ليبيا": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/lby.png"
             },
 
             // دالة البحث عن الفريق
@@ -405,7 +570,43 @@ https://example.com/stream3</textarea>
                     
                     'الدوري السعودي': 'saudi_league',
                     'سعودي': 'saudi_league',
-                    'saudi league': 'saudi_league'
+                    'saudi league': 'saudi_league',
+                    
+                    'دوري أبطال أوروبا': 'champions_league',
+                    'دوري ابطال اوروبا': 'champions_league',
+                    'champions league': 'champions_league',
+                    
+                    'دوري أبطال آسيا': 'afc_champions_league',
+                    'دوري ابطال اسيا': 'afc_champions_league',
+                    'afc champions league': 'afc_champions_league',
+                    
+                    'كأس العالم': 'world_cup',
+                    'كاس العالم': 'world_cup',
+                    'world cup': 'world_cup',
+                    
+                    'كأس الأمم الأوروبية': 'euro',
+                    'كأس الامم الاوروبية': 'euro',
+                    'euro cup': 'euro',
+                    
+                    'كأس الأمم الأفريقية': 'africa_cup',
+                    'كأس الامم الافريقية': 'africa_cup',
+                    'africa cup': 'africa_cup',
+                    
+                    'كأس آسيا': 'asian_cup',
+                    'كأس اسيا': 'asian_cup',
+                    'asian cup': 'asian_cup',
+                    
+                    'كوبا أمريكا': 'copa_america',
+                    'كوبا امريكا': 'copa_america',
+                    'copa america': 'copa_america',
+                    
+                    'كأس الكونكاكاف': 'concacaf',
+                    'كأس الكونكاكاف الذهبية': 'concacaf',
+                    'concacaf gold cup': 'concacaf',
+                    
+                    'كأس العرب': 'arab_cup',
+                    'كأس العرب fifa': 'arab_cup',
+                    'arab cup': 'arab_cup'
                 };
 
                 const leagueKey = leagueMap[leagueName];
@@ -418,8 +619,11 @@ https://example.com/stream3</textarea>
             }
         };
 
-        console.log("✅ تم تحميل قاعدة بيانات الفرق والدوريات بنجاح");
+        console.log("✅ تم تحميل قاعدة بيانات الفرق والدوريات والمنتخبات بنجاح");
     </script>
+
+    <!-- باقي الكود يبقى كما هو بدون تغيير -->
+    <!-- ... -->
 
     <script>
         // إعدادات Firebase
