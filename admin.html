@@ -133,6 +133,34 @@
             max-height: 80px;
             overflow-y: auto;
         }
+
+        .link-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .link-type-btn {
+            padding: 8px 15px;
+            border: 1px solid #434C75;
+            background: #151825;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .link-type-btn.active {
+            background: #434C75;
+            color: white;
+        }
+
+        .link-input-section {
+            display: none;
+        }
+
+        .link-input-section.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -250,10 +278,25 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="links">روابط المشاهدة * (كل رابط في سطر جديد)</label>
-                            <textarea id="links" required>https://example.com/stream1
+                            <label for="links">روابط المشاهدة</label>
+                            <div class="link-type-selector">
+                                <button type="button" class="link-type-btn active" data-type="regular">روابط عادية</button>
+                                <button type="button" class="link-type-btn" data-type="xmtv">رابط XPola مباشر</button>
+                            </div>
+                            
+                            <!-- قسم الروابط العادية -->
+                            <div id="regular-links-section" class="link-input-section active">
+                                <textarea id="links" placeholder="كل رابط في سطر جديد">https://example.com/stream1
 https://example.com/stream2
 https://example.com/stream3</textarea>
+                                <div class="auto-fill-notice">أدخل روابط المشاهدة العادية (كل رابط في سطر جديد)</div>
+                            </div>
+                            
+                            <!-- قسم رابط XPola المباشر -->
+                            <div id="xmtv-links-section" class="link-input-section">
+                                <textarea id="xmtv-link" placeholder="xmtv://...">xmtv://WwoKICAKICAKIAogIAogICJodHRwczovL2JkZDAwLjRyb3V3YW5kYS1zaG9wLnN0b3JlL2xpdmUvMzEwMDk5ODgwMDUvaW5kZXgubTN1OD90PWIydm9SNHZJREE5WGItcUJrenZrX3cmZT0xNzU4MTE2NTM2fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgWUMgKDI0NFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvMTMxZjI2ZDktYWZiMC00ODBlLTg2OTAtZTQ2MDA3ZGU5ZmM4Lm0zdTh8Y2FzdD1mYWxzZXxuYW1lPScgICAgICBudW1iZXIgKDM2MFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvYmIxYTQxMTktNjVmOS00MGRjLTk4NjctMTI3ZjJhNjk3M2QxLm0zdTh8ZGV2aWNlY2FuYXJ5PWZhbHNlfGNhc3Q9ZmFsc2V8bmFtZT0nICAgbnVtYmVyICAoNDgwUCkg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAKICAKICAiaHR0cHM6Ly9jZG5mZXN0LmNvbS9HMS03MjBwL3ZpZGVvLm0zdTg/dG9rZW49MlpSdnVtNVJ4SXdlRzNkZXZpY2VjYW5hcnk9ZmFsc2V8Y2FzdD1mYWxzZXxuYW1lPScgICAgRzEgKDcyMFApICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAogIAogIAogIAogIAoKCgoKICAgICJodHRwczovL2Rva2tvMW5ldy5uZXdrc28ucnUvZG9ra28xL3ByZW1pdW05MS9tb25vLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTI5LjAuMC4wIFNhZmFyaS81MzcuMzZ8cmVmZXJlcj1odHRwczovL25ld2VtYmVkcGxheS54eXovfG5hbWU9ICcgICAgIERPSyAoNzIwUCkgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIsCiAgCiAgImh0dHBzOi8vd28uY21hLmZvb3RiYWxsaWkuaXIvaGxzMi9iMi5tM3U4fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgV0FDRUwtVFYgICAgICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAoKCiJodHRwczovL2dpdGh1Yi5jb20vbzJ3cy94cG9sYS1wbGF5ZXIvcmF3L3JlZnMvaGVhZHMvbWFpbi8xLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLy81LjAgKGlQaG9uZTsgQ1BVIGlQaG9uZSBPUyAxNl82IGxpa2UgTWFjIE9TIFgpIEFwcGxlV2ViS2l0Ly82MDUuMS4xNSAoS0hUTUwsIGxpa2UgR2Vja28pIFZlcnNpb24vLzE2LjYgTW9iaWxlLy8xNUUxNDggU2FmYXJpLy82MDQuMXxyZWZlcmVyPWh0dHBzOi8vd3d3LnlhcmlnYS5saXZlL3xuYW1lPSAnICAgICB4cCAo2YXYqti52K/YrykgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIKXQ==</textarea>
+                                <div class="auto-fill-notice">أدخل رابط XPola المباشر (xmtv://) - سيتم استخدام هذا الرابط مباشرة دون تشفير</div>
+                            </div>
                         </div>
                     </div>
                     
@@ -1015,25 +1058,6 @@ https://example.com/stream3</textarea>
             console.log("✅ تم تفعيل نظام التعبئة التلقائية للشعارات");
         }
 
-        // دالة لإنشاء روابط xmtv مشفرة
-        function createXmtvLink(linksArray) {
-            if (!linksArray || !Array.isArray(linksArray) || linksArray.length === 0) {
-                return null;
-            }
-            
-            try {
-                // تحويل مصفوفة الروابط إلى JSON ثم تشفيرها base64
-                const linksJson = JSON.stringify(linksArray);
-                const encodedLinks = btoa(linksJson);
-                
-                // إنشاء رابط xmtv
-                return "xmtv://" + encodedLinks;
-            } catch (error) {
-                console.error("❌ خطأ في إنشاء رابط xmtv:", error);
-                return null;
-            }
-        }
-
         // دالة لنسخ الروابط إلى الحافظة
         function copyToClipboard(text) {
             if (!text) {
@@ -1071,36 +1095,21 @@ https://example.com/stream3</textarea>
             document.body.removeChild(textArea);
         }
 
-        // دالة لفتح رابط xmtv
-        window.openXmtvLink = function(matchId) {
-            if (!firebaseDb) {
-                alert("❌ قاعدة البيانات غير متاحة");
-                return;
-            }
-            
-            firebaseDb.ref('matches/' + matchId).once('value')
-                .then(function(snapshot) {
-                    const match = snapshot.val();
-                    const xmtvLink = createXmtvLink(match.links);
-                    
-                    if (xmtvLink) {
-                        // محاولة فتح الرابط في تطبيق XPola
-                        window.location.href = xmtvLink;
-                        
-                        // إذا لم يفتح التطبيق، نعرض رسالة
-                        setTimeout(() => {
-                            if (confirm("⚠️ إذا لم يفتح التطبيق تلقائياً، قد تحتاج إلى تثبيت XPola Player أولاً. هل تريد الذهاب إلى متجر التطبيقات؟")) {
-                                window.open("https://play.google.com/store/apps/details?id=com.xpola.player", "_blank");
-                            }
-                        }, 2000);
-                    } else {
-                        alert("❌ لا توجد روابط متاحة لهذه المباراة");
+        // دالة لفتح رابط XPola
+        window.openXpolaApp = function(xmtvLink, googlePlayLink) {
+            if (xmtvLink && xmtvLink.trim() !== '') {
+                // محاولة فتح الرابط في تطبيق XPola
+                window.location.href = xmtvLink;
+                
+                // إذا لم يفتح التطبيق، نعرض رسالة
+                setTimeout(() => {
+                    if (confirm("⚠️ إذا لم يفتح التطبيق تلقائياً، قد تحتاج إلى تثبيت XPola Player أولاً. هل تريد الذهاب إلى متجر التطبيقات؟")) {
+                        window.open(googlePlayLink || "https://play.google.com/store/apps/details?id=com.xpola.player", "_blank");
                     }
-                })
-                .catch(error => {
-                    console.error("❌ خطأ في جلب بيانات المباراة:", error);
-                    alert("❌ حدث خطأ في جلب بيانات المباراة");
-                });
+                }, 2000);
+            } else {
+                alert("❌ لا توجد روابط XPola متاحة");
+            }
         };
 
         // الانتظار حتى تحميل الصفحة
@@ -1121,10 +1130,38 @@ https://example.com/stream3</textarea>
             const formMessage = document.getElementById('form-message');
             const matchesList = document.getElementById('matches-list');
             
+            // عناصر اختيار نوع الروابط
+            const linkTypeButtons = document.querySelectorAll('.link-type-btn');
+            const regularLinksSection = document.getElementById('regular-links-section');
+            const xmtvLinksSection = document.getElementById('xmtv-links-section');
+            
             let currentEditId = null;
             
             // تفعيل نظام التعبئة التلقائية
             setTimeout(setupAutoLogoFill, 500);
+            
+            // تفعيل نظام اختيار نوع الروابط
+            linkTypeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    
+                    // إزالة النشاط من جميع الأزرار
+                    linkTypeButtons.forEach(btn => btn.classList.remove('active'));
+                    // إضافة النشاط للزر المحدد
+                    this.classList.add('active');
+                    
+                    // إخفاء جميع أقسام الروابط
+                    regularLinksSection.classList.remove('active');
+                    xmtvLinksSection.classList.remove('active');
+                    
+                    // إظهار القسم المحدد
+                    if (type === 'regular') {
+                        regularLinksSection.classList.add('active');
+                    } else if (type === 'xmtv') {
+                        xmtvLinksSection.classList.add('active');
+                    }
+                });
+            });
             
             // التحقق من حالة المصادقة
             if (firebaseAuth) {
@@ -1218,6 +1255,17 @@ https://example.com/stream3</textarea>
                     return;
                 }
                 
+                // تحديد نوع الروابط المستخدمة
+                const activeLinkType = document.querySelector('.link-type-btn.active').getAttribute('data-type');
+                let linksData = [];
+                let xmtvLink = '';
+                
+                if (activeLinkType === 'regular') {
+                    linksData = document.getElementById('links').value.split('\n').filter(link => link.trim() !== '');
+                } else if (activeLinkType === 'xmtv') {
+                    xmtvLink = document.getElementById('xmtv-link').value.trim();
+                }
+                
                 // جمع البيانات من النموذج
                 const matchData = {
                     league: document.getElementById('league').value,
@@ -1230,7 +1278,9 @@ https://example.com/stream3</textarea>
                     channel: document.getElementById('channel').value,
                     commentator: document.getElementById('commentator').value,
                     date: document.getElementById('match-date').value,
-                    links: document.getElementById('links').value.split('\n').filter(link => link.trim() !== ''),
+                    links: linksData,
+                    xmtvLink: xmtvLink,
+                    linkType: activeLinkType,
                     createdAt: Date.now()
                 };
                 
@@ -1328,12 +1378,40 @@ https://example.com/stream3</textarea>
                     const matchId = childSnapshot.key;
                     const match = childSnapshot.val();
                     
-                    // إنشاء رابط xmtv للروابط
-                    const xmtvLink = createXmtvLink(match.links);
                     const googlePlayLink = "https://play.google.com/store/apps/details?id=com.xpola.player";
                     
                     const matchItem = document.createElement('div');
                     matchItem.className = 'match-item';
+                    
+                    let linksContent = '';
+                    
+                    if (match.linkType === 'regular' && match.links && match.links.length > 0) {
+                        linksContent = `
+                            <strong>روابط المشاهدة (${match.links.length}):</strong>
+                            ${match.links.map((link, index) => 
+                                `<div class="link-item">
+                                    <span>${index + 1}. ${link}</span>
+                                    <button class="btn btn-small" onclick="copyToClipboard('${link.replace(/'/g, "\\'")}')">نسخ</button>
+                                </div>`
+                            ).join('')}
+                        `;
+                    } else if (match.linkType === 'xmtv' && match.xmtvLink) {
+                        linksContent = `
+                            <div class="xmtv-section">
+                                <strong>رابط XPola المباشر:</strong>
+                                <div class="xmtv-link-preview">
+                                    ${match.xmtvLink.substring(0, 100)}...
+                                </div>
+                                <div class="xmtv-actions">
+                                    <a class="btn btn-success btn-small" onclick="openXpolaApp('${match.xmtvLink.replace(/'/g, "\\'")}', '${googlePlayLink}')">فتح في XPola</a>
+                                    <button class="btn btn-info btn-small" onclick="copyToClipboard('${match.xmtvLink.replace(/'/g, "\\'")}')">نسخ رابط xmtv</button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        linksContent = '<div class="link-item">لا توجد روابط متاحة</div>';
+                    }
+                    
                     matchItem.innerHTML = `
                         <div class="match-header">
                             <h4>${match.league}</h4>
@@ -1358,32 +1436,11 @@ https://example.com/stream3</textarea>
                             <div>${match.commentator}</div>
                         </div>
                         <div class="links-container">
-                            <strong>روابط المشاهدة (${match.links ? match.links.length : 0}):</strong>
-                            ${match.links ? match.links.map((link, index) => 
-                                `<div class="link-item">
-                                    <span>${index + 1}. ${link}</span>
-                                    <button class="btn btn-small" onclick="copyToClipboard('${link.replace(/'/g, "\\'")}')">نسخ</button>
-                                </div>`
-                            ).join('') : '<div class="link-item">لا توجد روابط</div>'}
+                            ${linksContent}
                             
-                            <!-- قسم روابط xmtv -->
-                            <div class="xmtv-section">
-                                <strong>روابط تشغيل XPola Player:</strong>
-                                
-                                ${xmtvLink ? `
-                                <div class="xmtv-link-preview">
-                                    ${xmtvLink.substring(0, 100)}...
-                                </div>
-                                <div class="xmtv-actions">
-                                    <button class="btn btn-success btn-small" onclick="openXmtvLink('${matchId}')">فتح في XPola</button>
-                                    <button class="btn btn-info btn-small" onclick="copyToClipboard('${xmtvLink}')">نسخ رابط xmtv</button>
-                                </div>
-                                ` : '<div class="link-item">لا توجد روابط xmtv متاحة</div>'}
-                                
-                                <div class="xmtv-actions" style="margin-top: 15px;">
-                                    <button class="btn btn-warning btn-small" onclick="window.open('${googlePlayLink}', '_blank')">تحميل XPola Player</button>
-                                    <button class="btn btn-secondary btn-small" onclick="copyToClipboard('${googlePlayLink}')">نسخ رابط التحميل</button>
-                                </div>
+                            <div class="xmtv-actions" style="margin-top: 15px;">
+                                <button class="btn btn-warning btn-small" onclick="window.open('${googlePlayLink}', '_blank')">تحميل XPola Player</button>
+                                <button class="btn btn-secondary btn-small" onclick="copyToClipboard('${googlePlayLink}')">نسخ رابط التحميل</button>
                             </div>
                         </div>
                     `;
@@ -1416,7 +1473,26 @@ https://example.com/stream3</textarea>
                         document.getElementById('channel').value = match.channel || '';
                         document.getElementById('commentator').value = match.commentator || '';
                         document.getElementById('match-date').value = match.date || '';
-                        document.getElementById('links').value = match.links ? match.links.join('\n') : '';
+                        
+                        // تعبئة نوع الروابط المناسب
+                        const linkType = match.linkType || 'regular';
+                        document.querySelectorAll('.link-type-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.getAttribute('data-type') === linkType) {
+                                btn.classList.add('active');
+                            }
+                        });
+                        
+                        regularLinksSection.classList.remove('active');
+                        xmtvLinksSection.classList.remove('active');
+                        
+                        if (linkType === 'regular') {
+                            document.getElementById('links').value = match.links ? match.links.join('\n') : '';
+                            regularLinksSection.classList.add('active');
+                        } else if (linkType === 'xmtv') {
+                            document.getElementById('xmtv-link').value = match.xmtvLink || '';
+                            xmtvLinksSection.classList.add('active');
+                        }
                         
                         // تحديث معاينات الشعارات
                         document.getElementById('team1-preview').src = match.team1Logo || 'https://via.placeholder.com/40?text=T1';
@@ -1478,6 +1554,17 @@ https://example.com/stream3</textarea>
                 document.getElementById('commentator').value = 'أحمد البلوشي';
                 document.getElementById('match-date').value = 'الأحد 23 نوفمبر 2025';
                 document.getElementById('links').value = 'https://example.com/stream1\nhttps://example.com/stream2\nhttps://example.com/stream3';
+                document.getElementById('xmtv-link').value = 'xmtv://WwoKICAKICAKIAogIAogICJodHRwczovL2JkZDAwLjRyb3V3YW5kYS1zaG9wLnN0b3JlL2xpdmUvMzEwMDk5ODgwMDUvaW5kZXgubTN1OD90PWIydm9SNHZJREE5WGItcUJrenZrX3cmZT0xNzU4MTE2NTM2fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgWUMgKDI0NFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvMTMxZjI2ZDktYWZiMC00ODBlLTg2OTAtZTQ2MDA3ZGU5ZmM4Lm0zdTh8Y2FzdD1mYWxzZXxuYW1lPScgICAgICBudW1iZXIgKDM2MFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvYmIxYTQxMTktNjVmOS00MGRjLTk4NjctMTI3ZjJhNjk3M2QxLm0zdTh8ZGV2aWNlY2FuYXJ5PWZhbHNlfGNhc3Q9ZmFsc2V8bmFtZT0nICAgbnVtYmVyICAoNDgwUCkg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAKICAKICAiaHR0cHM6Ly9jZG5mZXN0LmNvbS9HMS03MjBwL3ZpZGVvLm0zdTg/dG9rZW49MlpSdnVtNVJ4SXdlRzNkZXZpY2VjYW5hcnk9ZmFsc2V8Y2FzdD1mYWxzZXxuYW1lPScgICAgRzEgKDcyMFApICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAogIAogIAogIAogIAoKCgoKICAgICJodHRwczovL2Rva2tvMW5ldy5uZXdrc28ucnUvZG9ra28xL3ByZW1pdW05MS9tb25vLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTI5LjAuMC4wIFNhZmFyaS81MzcuMzZ8cmVmZXJlcj1odHRwczovL25ld2VtYmVkcGxheS54eXovfG5hbWU9ICcgICAgIERPSyAoNzIwUCkgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIsCiAgCiAgImh0dHBzOi8vd28uY21hLmZvb3RiYWxsaWkuaXIvaGxzMi9iMi5tM3U4fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgV0FDRUwtVFYgICAgICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAoKCiJodHRwczovL2dpdGh1Yi5jb20vbzJ3cy94cG9sYS1wbGF5ZXIvcmF3L3JlZnMvaGVhZHMvbWFpbi8xLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLy81LjAgKGlQaG9uZTsgQ1BVIGlQaG9uZSBPUyAxNl82IGxpa2UgTWFjIE9TIFgpIEFwcGxlV2ViS2l0Ly82MDUuMS4xNSAoS0hUTUwsIGxpa2UgR2Vja28pIFZlcnNpb24vLzE2LjYgTW9iaWxlLy8xNUUxNDggU2FmYXJpLy82MDQuMXxyZWZlcmVyPWh0dHBzOi8vd3d3LnlhcmlnYS5saXZlL3xuYW1lPSAnICAgICB4cCAo2YXYqti52K/YrykgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIKXQ==';
+                
+                // إعادة تعيين نوع الروابط إلى الافتراضي
+                document.querySelectorAll('.link-type-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-type') === 'regular') {
+                        btn.classList.add('active');
+                    }
+                });
+                regularLinksSection.classList.add('active');
+                xmtvLinksSection.classList.remove('active');
                 
                 // تحديث معاينات الشعارات
                 document.getElementById('team1-preview').src = 'https://via.placeholder.com/40?text=T1';
