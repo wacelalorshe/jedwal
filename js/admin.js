@@ -44,6 +44,53 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let currentEditId = null;
     
+    // ========== بيانات الاختبار ==========
+    window.testCredentials = {
+        email: "www735981122@gmail.com",
+        password: "Ww735981122",
+        firebaseEmail: "wacel@gmail.com",
+        firebasePassword: "Ww735981122"
+    };
+    
+    // ========== أزرار إضافية ==========
+    // زر تعبئة بيانات الاختبار
+    const autoFillBtn = document.createElement('button');
+    autoFillBtn.textContent = "تعبئة بيانات الاختبار";
+    autoFillBtn.className = "btn btn-info";
+    autoFillBtn.style.marginTop = "10px";
+    autoFillBtn.style.marginRight = "10px";
+    autoFillBtn.onclick = function() {
+        document.getElementById('email').value = window.testCredentials.email;
+        document.getElementById('password').value = window.testCredentials.password;
+        showMessage(loginMessage, "🔧 تم تعبئة بيانات الاختبار تلقائياً", "info");
+    };
+    
+    // زر تعبئة بيانات Firebase
+    const autoFillFirebaseBtn = document.createElement('button');
+    autoFillFirebaseBtn.textContent = "تعبئة بيانات Firebase";
+    autoFillFirebaseBtn.className = "btn btn-warning";
+    autoFillFirebaseBtn.style.marginTop = "10px";
+    autoFillFirebaseBtn.onclick = function() {
+        document.getElementById('email').value = window.testCredentials.firebaseEmail;
+        document.getElementById('password').value = window.testCredentials.firebasePassword;
+        showMessage(loginMessage, "🔧 تم تعبئة بيانات Firebase", "info");
+    };
+    
+    // إضافة الأزرار إلى قسم تسجيل الدخول
+    if (document.getElementById('login-form')) {
+        const formRow = document.querySelector('#login-form .form-row');
+        if (formRow) {
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.display = 'flex';
+            buttonContainer.style.gap = '10px';
+            buttonContainer.style.marginTop = '10px';
+            buttonContainer.appendChild(autoFillBtn);
+            buttonContainer.appendChild(autoFillFirebaseBtn);
+            formRow.appendChild(buttonContainer);
+        }
+    }
+    // ========== نهاية الأزرار الإضافية ==========
+    
     // تفعيل نظام التعبئة التلقائية
     setTimeout(setupAutoLogoFill, 500);
     
@@ -76,31 +123,39 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Firebase Database:", db);
         console.log("Firebase Auth:", auth);
         
-        if (db) {
-            // اختبار قراءة البيانات
-            get(ref(db, 'matches')).then(snapshot => {
-                console.log("✅ اختبار القراءة ناجح");
-                console.log("📊 بيانات matches:", snapshot.val());
-                console.log("🔢 عدد المباريات:", snapshot.size);
-                showMessage(formMessage, "✅ اختبار الاتصال ناجح - قاعدة البيانات متاحة", "success");
-            }).catch(error => {
-                console.error("❌ اختبار القراءة فاشل:", error);
-                showMessage(formMessage, "❌ اختبار الاتصال فاشل: " + error.message, "error");
-            });
-            
-            // اختبار الكتابة
-            const testRef = ref(db, 'test');
-            set(testRef, {
-                testTime: new Date().toISOString(),
-                message: "اختبار اتصال Firebase"
-            }).then(() => {
-                console.log("✅ اختبار الكتابة ناجح");
-                // مسح البيانات الاختبارية
-                remove(testRef);
-            }).catch(error => {
-                console.error("❌ اختبار الكتابة فاشل:", error);
-            });
+        showMessage(formMessage, "🔍 جاري اختبار اتصال Firebase...", "info");
+        
+        if (!db) {
+            showMessage(formMessage, "❌ قاعدة البيانات غير متاحة", "error");
+            return;
         }
+        
+        // اختبار قراءة البيانات
+        get(ref(db, 'matches')).then(snapshot => {
+            console.log("✅ اختبار القراءة ناجح");
+            console.log("📊 بيانات matches:", snapshot.val());
+            console.log("🔢 عدد المباريات:", snapshot.size);
+            showMessage(formMessage, "✅ اختبار الاتصال ناجح - قاعدة البيانات متاحة", "success");
+        }).catch(error => {
+            console.error("❌ اختبار القراءة فاشل:", error);
+            showMessage(formMessage, "❌ اختبار الاتصال فاشل: " + error.message, "error");
+        });
+        
+        // اختبار الكتابة
+        const testRef = ref(db, 'test');
+        set(testRef, {
+            testTime: new Date().toISOString(),
+            message: "اختبار اتصال Firebase"
+        }).then(() => {
+            console.log("✅ اختبار الكتابة ناجح");
+            // مسح البيانات الاختبارية
+            setTimeout(() => {
+                remove(testRef);
+                console.log("🗑️ تم مسح بيانات الاختبار");
+            }, 3000);
+        }).catch(error => {
+            console.error("❌ اختبار الكتابة فاشل:", error);
+        });
     };
     
     // ربط زر اختبار الاتصال
@@ -380,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
     
-    // التحقق من حالة المصادقة
+    // ========== التحقق من حالة المصادقة ==========
     console.log("🔍 التحقق من حالة المصادقة...");
     console.log("auth object:", auth);
 
@@ -413,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
         loadMatches();
     }
     
-    // تسجيل الدخول الاحتياطي للمستخدم التجريبي
+    // ========== تسجيل الدخول الاحتياطي ==========
     window.enableTestMode = function() {
         console.log("🔧 تفعيل وضع الاختبار...");
         
@@ -422,16 +477,37 @@ document.addEventListener('DOMContentLoaded', function() {
         dashboardSection.classList.remove('hidden');
         
         // إظهار رسالة
-        showMessage(loginMessage, "🔧 وضع الاختبار مفعل - يمكنك إضافة المباريات", "info");
+        showMessage(loginMessage, "🔧 وضع الاختبار مفعل - يمكنك إضافة وتعديل المباريات", "info");
         
         // تحميل المباريات
         loadMatches();
         
-        // إضافة زر لتسجيل الخروج من وضع الاختبار
+        // تغيير نص زر تسجيل الخروج
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', function() {
+            logoutBtn.textContent = "الخروج من وضع الاختبار";
+            logoutBtn.onclick = function() {
                 location.reload(); // إعادة تحميل الصفحة
-            });
+            };
+        }
+        
+        // إضافة إشعار في لوحة التحكم
+        const testNotice = document.createElement('div');
+        testNotice.className = 'alert alert-warning';
+        testNotice.style.margin = '10px';
+        testNotice.style.padding = '10px';
+        testNotice.style.borderRadius = '5px';
+        testNotice.style.backgroundColor = '#fff3cd';
+        testNotice.style.border = '1px solid #ffeaa7';
+        testNotice.innerHTML = `
+            <strong>⚠️ وضع الاختبار مفعل</strong>
+            <p>أنت الآن في وضع الاختبار. يمكنك إضافة وتعديل وحذف المباريات، ولكن البيانات لن تحفظ في Firebase.</p>
+            <p>للتسجيل الحقيقي، أعد تحميل الصفحة وحاول تسجيل الدخول مرة أخرى.</p>
+        `;
+        
+        // إضافة الإشعار في بداية لوحة التحكم
+        const dashboardContainer = document.querySelector('.container');
+        if (dashboardContainer) {
+            dashboardContainer.insertBefore(testNotice, dashboardContainer.firstChild);
         }
     };
     
@@ -447,20 +523,39 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('login-form').appendChild(testLoginBtn);
     }
     
-    // تسجيل الدخول
+    // ========== تسجيل الدخول الرئيسي ==========
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         console.log("🔄 معالجة تسجيل الدخول...");
         
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const loginBtn = loginForm.querySelector('button[type="submit"]');
+        
+        // التحقق من البيانات المدخلة
+        console.log("📧 البريد المدخل:", email);
+        console.log("🔐 كلمة المرور مدخلة:", password ? "نعم" : "لا");
+        
+        // إذا كانت بيانات الاختبار، استخدم وضع الاختبار مباشرة
+        if (email === "www735981122@gmail.com" && password === "Ww735981122") {
+            console.log("🔧 استخدام بيانات الاختبار، جاري التبديل إلى وضع الاختبار...");
+            showMessage(loginMessage, "🔧 استخدام بيانات الاختبار - جاري التحميل...", "info");
+            setTimeout(() => {
+                window.enableTestMode();
+            }, 500);
+            return;
+        }
         
         loginBtn.disabled = true;
         loginBtn.textContent = "جاري تسجيل الدخول...";
         
-        if (!auth || !auth.signInWithEmailAndPassword) {
-            console.error("❌ خدمة المصادقة غير متاحة");
+        // اختبار اتصال Firebase أولاً
+        console.log("🔍 اختبار اتصال Firebase...");
+        console.log("auth object:", auth);
+        console.log("signInWithEmailAndPassword موجود:", auth && typeof auth.signInWithEmailAndPassword);
+        
+        if (!auth || typeof auth.signInWithEmailAndPassword !== 'function') {
+            console.error("❌ خدمة المصادقة غير متاحة أو غير مهيئة");
             showMessage(loginMessage, "❌ خدمة المصادقة غير متاحة. جاري التبديل إلى وضع الاختبار...", "error");
             setTimeout(() => {
                 window.enableTestMode();
@@ -470,38 +565,81 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        console.log("📤 محاولة تسجيل الدخول مع:", email);
+        
+        // محاولة تسجيل الدخول
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                console.log("✅ تم تسجيل الدخول بنجاح:", userCredential.user.email);
+                console.log("✅ تم تسجيل الدخول بنجاح!");
+                console.log("👤 بيانات المستخدم:", {
+                    email: userCredential.user.email,
+                    uid: userCredential.user.uid,
+                    emailVerified: userCredential.user.emailVerified
+                });
+                
+                // تحديث واجهة المستخدم
                 showMessage(loginMessage, `✅ تم تسجيل الدخول بنجاح! مرحباً ${userCredential.user.email}`, "success");
+                
+                // إخفاء قسم التسجيل وإظهار لوحة التحكم
+                loginSection.classList.add('hidden');
+                dashboardSection.classList.remove('hidden');
+                
+                // تحميل المباريات
+                loadMatches();
             })
             .catch((error) => {
                 console.error("❌ خطأ في تسجيل الدخول:", error);
+                console.error("كود الخطأ:", error.code);
+                console.error("رسالة الخطأ:", error.message);
                 
                 let errorMessage = "❌ خطأ في تسجيل الدخول";
-                let errorCode = error.code || error.message;
+                let errorCode = error.code || '';
                 
                 // تحليل أخطاء Firebase الشائعة
                 if (errorCode.includes('invalid-credential') || errorCode.includes('wrong-password')) {
                     errorMessage = "❌ البريد الإلكتروني أو كلمة المرور غير صحيحة";
                 } else if (errorCode.includes('user-not-found')) {
                     errorMessage = "❌ لم يتم العثور على مستخدم بهذا البريد الإلكتروني";
+                } else if (errorCode.includes('invalid-email')) {
+                    errorMessage = "❌ عنوان البريد الإلكتروني غير صالح";
                 } else if (errorCode.includes('too-many-requests')) {
                     errorMessage = "❌ تم إجراء محاولات كثيرة. حاول مرة أخرى لاحقاً";
                 } else if (errorCode.includes('network-request-failed')) {
                     errorMessage = "❌ خطأ في الاتصال بالشبكة. تحقق من اتصالك بالإنترنت";
+                } else if (errorCode.includes('auth/invalid-credential')) {
+                    errorMessage = "❌ بيانات الاعتماد غير صالحة. تحقق من البريد وكلمة المرور";
                 } else {
                     errorMessage = `❌ ${error.message || errorCode}`;
                 }
                 
                 showMessage(loginMessage, errorMessage, "error");
                 
-                // اقتراح وضع الاختبار
-                setTimeout(() => {
-                    if (confirm("هل ترغب في استخدام وضع الاختبار للوصول إلى لوحة التحكم؟")) {
-                        window.enableTestMode();
-                    }
-                }, 1500);
+                // إذا كانت المشكلة في بيانات wacel@gmail.com، عرض خيارات بديلة
+                if (email === "wacel@gmail.com") {
+                    setTimeout(() => {
+                        const useTest = confirm("بيانات wacel@gmail.com لا تعمل. هل تريد استخدام بيانات الاختبار بدلاً من ذلك؟");
+                        
+                        if (useTest) {
+                            // استخدام بيانات الاختبار
+                            console.log("🔧 استخدام بيانات الاختبار...");
+                            document.getElementById('email').value = window.testCredentials.email;
+                            document.getElementById('password').value = window.testCredentials.password;
+                            showMessage(loginMessage, "🔧 تم تعبئة بيانات الاختبار. انقر تسجيل الدخول مرة أخرى", "info");
+                        } else {
+                            // اختبار اتصال Firebase
+                            window.testFirebaseConnection();
+                        }
+                    }, 1500);
+                } else {
+                    // اقتراح وضع الاختبار للمستخدمين الآخرين
+                    setTimeout(() => {
+                        const useTestMode = confirm("هل ترغب في استخدام وضع الاختبار للوصول إلى لوحة التحكم؟");
+                        
+                        if (useTestMode) {
+                            window.enableTestMode();
+                        }
+                    }, 1500);
+                }
             })
             .finally(() => {
                 loginBtn.disabled = false;
@@ -509,12 +647,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
     
-    // تسجيل الخروج
+    // ========== تسجيل الخروج ==========
     logoutBtn.addEventListener('click', function() {
         if (auth && auth.signOut) {
             signOut(auth)
                 .then(() => {
                     showMessage(loginMessage, "✅ تم تسجيل الخروج بنجاح", "success");
+                    location.reload(); // إعادة تحميل الصفحة بعد تسجيل الخروج
                 })
                 .catch((error) => {
                     console.error('❌ خطأ في تسجيل الخروج:', error);
@@ -527,18 +666,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // إرسال نموذج المباراة
+    // ========== إرسال نموذج المباراة ==========
     matchForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // التحقق من حالة المصادقة
         if (!auth || !auth.currentUser) {
-            showMessage(formMessage, "❌ يجب تسجيل الدخول أولاً", "error");
-            return;
+            showMessage(formMessage, "⚠️ أنت في وضع الاختبار. البيانات ستخزن محلياً فقط", "warning");
         }
         
         if (!db) {
-            showMessage(formMessage, "❌ قاعدة البيانات غير متاحة", "error");
-            return;
+            showMessage(formMessage, "❌ قاعدة البيانات غير متاحة. البيانات ستخزن محلياً فقط", "error");
         }
         
         // تحديد نوع الروابط المستخدمة
@@ -582,53 +720,124 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentEditId) {
             // تحديث مباراة موجودة
             console.log("✏️ تحديث مباراة موجودة:", currentEditId);
-            const matchRef = ref(db, 'matches/' + currentEditId);
             
-            update(matchRef, matchData)
-                .then(() => {
-                    console.log("✅ تم تحديث المباراة بنجاح في Firebase");
-                    showMessage(formMessage, "✅ تم تحديث المباراة بنجاح!", "success");
-                    resetForm();
-                })
-                .catch(error => {
-                    console.error("❌ خطأ في تحديث المباراة:", error);
-                    showMessage(formMessage, "❌ حدث خطأ أثناء تحديث المباراة: " + error.message, "error");
-                })
-                .finally(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "تحديث المباراة";
-                });
+            if (db) {
+                const matchRef = ref(db, 'matches/' + currentEditId);
+                
+                update(matchRef, matchData)
+                    .then(() => {
+                        console.log("✅ تم تحديث المباراة بنجاح في Firebase");
+                        showMessage(formMessage, "✅ تم تحديث المباراة بنجاح!", "success");
+                        resetForm();
+                    })
+                    .catch(error => {
+                        console.error("❌ خطأ في تحديث المباراة:", error);
+                        showMessage(formMessage, "❌ حدث خطأ أثناء تحديث المباراة: " + error.message, "error");
+                        saveToLocalStorage(matchData, currentEditId, true);
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "تحديث المباراة";
+                    });
+            } else {
+                // حفظ محلي إذا كان Firebase غير متاح
+                saveToLocalStorage(matchData, currentEditId, true);
+                submitBtn.disabled = false;
+                submitBtn.textContent = "تحديث المباراة";
+            }
         } else {
             // إضافة مباراة جديدة
             console.log("➕ إضافة مباراة جديدة");
-            const matchesRef = ref(db, 'matches');
             
-            push(matchesRef, matchData)
-                .then((result) => {
-                    console.log("✅ تم إضافة المباراة بنجاح في Firebase، المعرف:", result.key);
-                    showMessage(formMessage, "✅ تم إضافة المباراة بنجاح!", "success");
-                    resetForm();
-                    
-                    // التحقق من أن البيانات محفوظة
-                    setTimeout(() => {
-                        get(ref(db, 'matches/' + result.key)).then(snapshot => {
-                            if (snapshot.exists()) {
-                                console.log("✅ تأكيد: البيانات محفوظة بشكل صحيح", snapshot.val());
-                            }
-                        });
-                    }, 1000);
-                })
-                .catch(error => {
-                    console.error("❌ خطأ في إضافة المباراة:", error);
-                    console.error("تفاصيل الخطأ:", error.code, error.message);
-                    showMessage(formMessage, "❌ حدث خطأ أثناء إضافة المباراة: " + error.message, "error");
-                })
-                .finally(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "إضافة المباراة";
-                });
+            if (db) {
+                const matchesRef = ref(db, 'matches');
+                
+                push(matchesRef, matchData)
+                    .then((result) => {
+                        console.log("✅ تم إضافة المباراة بنجاح في Firebase، المعرف:", result.key);
+                        showMessage(formMessage, "✅ تم إضافة المباراة بنجاح!", "success");
+                        resetForm();
+                        
+                        // التحقق من أن البيانات محفوظة
+                        setTimeout(() => {
+                            get(ref(db, 'matches/' + result.key)).then(snapshot => {
+                                if (snapshot.exists()) {
+                                    console.log("✅ تأكيد: البيانات محفوظة بشكل صحيح", snapshot.val());
+                                }
+                            });
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        console.error("❌ خطأ في إضافة المباراة:", error);
+                        console.error("تفاصيل الخطأ:", error.code, error.message);
+                        showMessage(formMessage, "❌ حدث خطأ أثناء إضافة المباراة: " + error.message, "error");
+                        saveToLocalStorage(matchData, null, false);
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "إضافة المباراة";
+                    });
+            } else {
+                // حفظ محلي إذا كان Firebase غير متاح
+                saveToLocalStorage(matchData, null, false);
+                submitBtn.disabled = false;
+                submitBtn.textContent = "إضافة المباراة";
+            }
         }
     });
+    
+    // دالة للحفظ المحلي (Local Storage)
+    function saveToLocalStorage(matchData, matchId, isUpdate) {
+        try {
+            let matches = JSON.parse(localStorage.getItem('localMatches')) || {};
+            
+            if (!matchId) {
+                matchId = 'local_' + Date.now();
+            }
+            
+            matches[matchId] = matchData;
+            localStorage.setItem('localMatches', JSON.stringify(matches));
+            
+            console.log("💾 تم الحفظ محلياً:", matchId);
+            showMessage(formMessage, "💾 تم الحفظ محلياً (لأن Firebase غير متاح)", "info");
+            
+            if (!isUpdate) {
+                resetForm();
+            }
+            
+            // تحديث القائمة
+            loadMatches();
+            
+        } catch (error) {
+            console.error("❌ خطأ في الحفظ المحلي:", error);
+            showMessage(formMessage, "❌ فشل في الحفظ محلياً: " + error.message, "error");
+        }
+    }
+    
+    // دالة لتحميل المباريات المحلية
+    function loadLocalMatches() {
+        try {
+            const localMatches = JSON.parse(localStorage.getItem('localMatches')) || {};
+            console.log("📦 المباريات المحلية:", localMatches);
+            
+            if (Object.keys(localMatches).length > 0) {
+                const localNotice = document.createElement('div');
+                localNotice.className = 'alert alert-info';
+                localNotice.style.margin = '10px';
+                localNotice.style.padding = '10px';
+                localNotice.innerHTML = `
+                    <strong>📦 بيانات محلية</strong>
+                    <p>يوجد ${Object.keys(localMatches).length} مباراة مخزنة محلياً لأن Firebase غير متاح</p>
+                `;
+                matchesList.appendChild(localNotice);
+            }
+            
+            return localMatches;
+        } catch (error) {
+            console.error("❌ خطأ في تحميل المباريات المحلية:", error);
+            return {};
+        }
+    }
     
     // إلغاء التعديل
     cancelBtn.addEventListener('click', resetForm);
@@ -637,7 +846,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadMatches() {
         if (!db) {
             console.error("❌ قاعدة البيانات غير متاحة");
-            matchesList.innerHTML = '<div class="error">❌ قاعدة البيانات غير متاحة</div>';
+            showMessage(formMessage, "⚠️ Firebase غير متصل. جاري تحميل البيانات المحلية...", "warning");
+            
+            // تحميل المباريات المحلية
+            const localMatches = loadLocalMatches();
+            displayLocalMatches(localMatches);
             return;
         }
         
@@ -649,13 +862,121 @@ document.addEventListener('DOMContentLoaded', function() {
             function(snapshot) {
                 console.log("📊 تم استلام بيانات المباريات من Firebase");
                 displayMatchesInAdmin(snapshot);
+                
+                // تحميل المباريات المحلية أيضاً
+                loadLocalMatches();
             }, 
             function(error) {
-                console.error("❌ خطأ في تحميل المباريات:", error);
-                matchesList.innerHTML = '<div class="error">❌ حدث خطأ في تحميل المباريات</div>';
+                console.error("❌ خطأ في تحميل المباريات من Firebase:", error);
+                showMessage(formMessage, "❌ خطأ في تحميل المباريات من Firebase", "error");
+                
+                // تحميل المباريات المحلية كبديل
+                const localMatches = loadLocalMatches();
+                displayLocalMatches(localMatches);
             }
         );
     }
+    
+    // عرض المباريات المحلية
+    function displayLocalMatches(localMatches) {
+        if (Object.keys(localMatches).length === 0) {
+            matchesList.innerHTML = '<div class="loading">لا توجد مباريات مخزنة محلياً</div>';
+            return;
+        }
+        
+        console.log(`📦 عرض المباريات المحلية: ${Object.keys(localMatches).length} مباراة`);
+        
+        matchesList.innerHTML = '';
+        
+        Object.entries(localMatches).forEach(([matchId, match]) => {
+            const googlePlayLink = "https://play.google.com/store/apps/details?id=com.xpola.player";
+            
+            const matchItem = document.createElement('div');
+            matchItem.className = 'match-item';
+            matchItem.style.border = '2px dashed #ffc107';
+            
+            let linksContent = '';
+            
+            if (match.linkType === 'regular' && match.links && match.links.length > 0) {
+                linksContent = `
+                    <strong>روابط المشاهدة (${match.links.length}):</strong>
+                    ${match.links.map((link, index) => 
+                        `<div class="link-item">
+                            <span>${index + 1}. ${link}</span>
+                            <button class="btn btn-small" onclick="copyToClipboard('${link.replace(/'/g, "\\'")}')">نسخ</button>
+                        </div>`
+                    ).join('')}
+                `;
+            } else if (match.linkType === 'xmtv' && match.xmtvLink) {
+                linksContent = `
+                    <div class="xmtv-section">
+                        <strong>رابط XPola المباشر:</strong>
+                        <div class="xmtv-link-preview">
+                            ${match.xmtvLink.substring(0, 100)}...
+                        </div>
+                        <div class="xmtv-actions">
+                            <a class="btn btn-success btn-small" onclick="openXpolaApp('${match.xmtvLink.replace(/'/g, "\\'")}', '${googlePlayLink}')">فتح في XPola</a>
+                            <button class="btn btn-info btn-small" onclick="copyToClipboard('${match.xmtvLink.replace(/'/g, "\\'")}')">نسخ رابط xmtv</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                linksContent = '<div class="link-item">لا توجد روابط متاحة</div>';
+            }
+            
+            matchItem.innerHTML = `
+                <div class="match-header">
+                    <h4>${match.league} <span style="color: #ffc107; font-size: 12px;">(محلي)</span></h4>
+                    <div class="actions">
+                        <button class="btn btn-primary" onclick="editMatch('${matchId}')">تعديل</button>
+                        <button class="btn btn-danger" onclick="deleteLocalMatch('${matchId}')">حذف</button>
+                    </div>
+                </div>
+                <div class="match-teams">
+                    <div class="match-team">
+                        <img src="${match.team1Logo || 'https://via.placeholder.com/50?text=T1'}" alt="${match.team1}" onerror="this.src='https://via.placeholder.com/50?text=T1'">
+                        <span>${match.team1}</span>
+                    </div>
+                    <div class="match-time">${match.time}</div>
+                    <div class="match-team">
+                        <img src="${match.team2Logo || 'https://via.placeholder.com/50?text=T2'}" alt="${match.team2}" onerror="this.src='https://via.placeholder.com/50?text=T2'">
+                        <span>${match.team2}</span>
+                    </div>
+                </div>
+                <div class="match-details">
+                    <div>${match.channel}</div>
+                    <div>${match.commentator}</div>
+                </div>
+                <div class="links-container">
+                    ${linksContent}
+                    
+                    <div class="xmtv-actions" style="margin-top: 15px;">
+                        <button class="btn btn-warning btn-small" onclick="window.open('${googlePlayLink}', '_blank')">تحميل XPola Player</button>
+                        <button class="btn btn-secondary btn-small" onclick="copyToClipboard('${googlePlayLink}')">نسخ رابط التحميل</button>
+                    </div>
+                </div>
+            `;
+            
+            matchesList.appendChild(matchItem);
+        });
+    }
+    
+    // دالة لحذف المباريات المحلية
+    window.deleteLocalMatch = function(matchId) {
+        if (confirm('⚠️ هل أنت متأكد من حذف هذه المباراة المحلية؟')) {
+            try {
+                let matches = JSON.parse(localStorage.getItem('localMatches')) || {};
+                delete matches[matchId];
+                localStorage.setItem('localMatches', JSON.stringify(matches));
+                console.log("🗑️ تم حذف المباراة المحلية:", matchId);
+                showMessage(formMessage, "✅ تم حذف المباراة المحلية بنجاح!", "success");
+                loadMatches();
+            } catch (error) {
+                console.error("❌ خطأ في حذف المباراة المحلية:", error);
+                showMessage(formMessage, "❌ حدث خطأ أثناء حذف المباراة المحلية: " + error.message, "error");
+            }
+        }
+    };
     
     function displayMatchesInAdmin(snapshot) {
         matchesList.innerHTML = '';
@@ -746,12 +1067,34 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // تعريف الدوال العالمية
     window.editMatch = function(matchId) {
+        console.log("✏️ تحرير المباراة:", matchId);
+        
+        // تحقق إذا كانت مباراة محلية
+        if (matchId.startsWith('local_')) {
+            try {
+                const matches = JSON.parse(localStorage.getItem('localMatches')) || {};
+                const match = matches[matchId];
+                
+                if (!match) {
+                    showMessage(formMessage, "❌ لم يتم العثور على المباراة المحلية", "error");
+                    return;
+                }
+                
+                console.log("📝 بيانات المباراة المحلية للتحرير:", match);
+                fillFormWithMatchData(match, matchId);
+                return;
+            } catch (error) {
+                console.error("❌ خطأ في تحميل بيانات المباراة المحلية:", error);
+                showMessage(formMessage, "❌ حدث خطأ أثناء تحميل بيانات المباراة المحلية", "error");
+                return;
+            }
+        }
+        
+        // إذا كانت مباراة من Firebase
         if (!db) {
             showMessage(formMessage, "❌ قاعدة البيانات غير متاحة", "error");
             return;
         }
-        
-        console.log("✏️ تحرير المباراة:", matchId);
         
         const matchRef = ref(db, 'matches/' + matchId);
         
@@ -759,50 +1102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(function(snapshot) {
                 const match = snapshot.val();
                 console.log("📝 بيانات المباراة للتحرير:", match);
-                
-                // تعبئة النموذج بالبيانات
-                document.getElementById('league').value = match.league || '';
-                document.getElementById('league-logo').value = match.leagueLogo || '';
-                document.getElementById('team1').value = match.team1 || '';
-                document.getElementById('team1-logo').value = match.team1Logo || '';
-                document.getElementById('team2').value = match.team2 || '';
-                document.getElementById('team2-logo').value = match.team2Logo || '';
-                document.getElementById('match-time').value = match.time || '';
-                document.getElementById('channel').value = match.channel || '';
-                document.getElementById('commentator').value = match.commentator || '';
-                document.getElementById('match-date').value = match.date || '';
-                
-                // تعبئة نوع الروابط المناسب
-                const linkType = match.linkType || 'regular';
-                document.querySelectorAll('.link-type-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.getAttribute('data-type') === linkType) {
-                        btn.classList.add('active');
-                    }
-                });
-                
-                regularLinksSection.classList.remove('active');
-                xmtvLinksSection.classList.remove('active');
-                
-                if (linkType === 'regular') {
-                    document.getElementById('links').value = match.links ? match.links.join('\n') : '';
-                    regularLinksSection.classList.add('active');
-                } else if (linkType === 'xmtv') {
-                    document.getElementById('xmtv-link').value = match.xmtvLink || '';
-                    xmtvLinksSection.classList.add('active');
-                }
-                
-                // تحديث معاينات الشعارات
-                document.getElementById('team1-preview').src = match.team1Logo || 'https://via.placeholder.com/40?text=T1';
-                document.getElementById('team2-preview').src = match.team2Logo || 'https://via.placeholder.com/40?text=T2';
-                document.getElementById('league-preview').src = match.leagueLogo || 'https://via.placeholder.com/40?text=LOGO';
-                
-                formTitle.textContent = 'تعديل المباراة';
-                submitBtn.textContent = 'تحديث المباراة';
-                cancelBtn.classList.remove('hidden');
-                currentEditId = matchId;
-                
-                matchForm.scrollIntoView({ behavior: 'smooth' });
+                fillFormWithMatchData(match, matchId);
             })
             .catch(error => {
                 console.error("❌ خطأ في تحميل بيانات المباراة:", error);
@@ -810,8 +1110,60 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     };
     
+    // دالة مساعدة لملء النموذج
+    function fillFormWithMatchData(match, matchId) {
+        document.getElementById('league').value = match.league || '';
+        document.getElementById('league-logo').value = match.leagueLogo || '';
+        document.getElementById('team1').value = match.team1 || '';
+        document.getElementById('team1-logo').value = match.team1Logo || '';
+        document.getElementById('team2').value = match.team2 || '';
+        document.getElementById('team2-logo').value = match.team2Logo || '';
+        document.getElementById('match-time').value = match.time || '';
+        document.getElementById('channel').value = match.channel || '';
+        document.getElementById('commentator').value = match.commentator || '';
+        document.getElementById('match-date').value = match.date || '';
+        
+        // تعبئة نوع الروابط المناسب
+        const linkType = match.linkType || 'regular';
+        document.querySelectorAll('.link-type-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-type') === linkType) {
+                btn.classList.add('active');
+            }
+        });
+        
+        regularLinksSection.classList.remove('active');
+        xmtvLinksSection.classList.remove('active');
+        
+        if (linkType === 'regular') {
+            document.getElementById('links').value = match.links ? match.links.join('\n') : '';
+            regularLinksSection.classList.add('active');
+        } else if (linkType === 'xmtv') {
+            document.getElementById('xmtv-link').value = match.xmtvLink || '';
+            xmtvLinksSection.classList.add('active');
+        }
+        
+        // تحديث معاينات الشعارات
+        document.getElementById('team1-preview').src = match.team1Logo || 'https://via.placeholder.com/40?text=T1';
+        document.getElementById('team2-preview').src = match.team2Logo || 'https://via.placeholder.com/40?text=T2';
+        document.getElementById('league-preview').src = match.leagueLogo || 'https://via.placeholder.com/40?text=LOGO';
+        
+        formTitle.textContent = 'تعديل المباراة';
+        submitBtn.textContent = 'تحديث المباراة';
+        cancelBtn.classList.remove('hidden');
+        currentEditId = matchId;
+        
+        matchForm.scrollIntoView({ behavior: 'smooth' });
+    }
+    
     window.deleteMatch = function(matchId) {
         if (confirm('⚠️ هل أنت متأكد من حذف هذه المباراة؟')) {
+            // تحقق إذا كانت مباراة محلية
+            if (matchId.startsWith('local_')) {
+                window.deleteLocalMatch(matchId);
+                return;
+            }
+            
             if (!db) {
                 showMessage(formMessage, "❌ قاعدة البيانات غير متاحة", "error");
                 return;
@@ -881,6 +1233,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // اختبار الاتصال تلقائياً بعد تحميل الصفحة
     setTimeout(() => {
+        console.log("🔧 اختبار اتصال تلقائي...");
         window.testFirebaseConnection();
     }, 2000);
 });
