@@ -519,6 +519,16 @@
             border-top: 2px solid #e2e8f0;
         }
         
+        .localstorage-info {
+            background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+        }
+        
         @media (max-width: 768px) {
             .form-row {
                 flex-direction: column;
@@ -577,6 +587,15 @@
                     🔗 رابط قاعدة البيانات: <span id="db-url"></span>
                 </div>
                 
+                <!-- معلومات localStorage -->
+                <div id="localstorage-info" class="localstorage-info hidden">
+                    <strong>💾 بيانات التخزين المحلي:</strong><br>
+                    🔑 UID: <span id="ls-uid">جاري التحميل...</span><br>
+                    📧 البريد: <span id="ls-email">جاري التحميل...</span><br>
+                    ⏰ آخر دخول: <span id="ls-last-login">جاري التحميل...</span><br>
+                    🔢 عدد الدخول: <span id="ls-login-count">جاري التحميل...</span>
+                </div>
+                
                 <form id="login-form">
                     <div class="form-row">
                         <div class="form-group">
@@ -593,6 +612,7 @@
                         <button type="submit" class="btn btn-primary">🚀 تسجيل الدخول</button>
                         <button type="button" class="btn btn-warning" onclick="showFirebaseRules()">⚙️ عرض قواعد Firebase</button>
                         <button type="button" class="btn btn-info" onclick="testConnection()">🔗 اختبار الاتصال</button>
+                        <button type="button" class="btn btn-success" onclick="showLocalStorageData()">💾 عرض التخزين المحلي</button>
                     </div>
                     
                     <div id="login-message"></div>
@@ -779,6 +799,44 @@ https://stream3.example.com"></textarea>
         let currentUser = null;
 
         // ============================================
+        // فحص localStorage عند تحميل الصفحة
+        // ============================================
+        console.log("🔍 فحص بيانات localStorage:");
+        console.log("🔑 UID مخزن:", localStorage.getItem('admin_uid'));
+        console.log("📧 البريد مخزن:", localStorage.getItem('admin_email'));
+        console.log("⏰ آخر دخول:", localStorage.getItem('last_login'));
+        console.log("🔢 عدد الدخول:", localStorage.getItem('login_count') || 0);
+        
+        // تحديث معلومات localStorage في الواجهة
+        function updateLocalStorageDisplay() {
+            const lsInfo = document.getElementById('localstorage-info');
+            if (lsInfo) {
+                const uid = localStorage.getItem('admin_uid');
+                if (uid) {
+                    lsInfo.classList.remove('hidden');
+                    document.getElementById('ls-uid').textContent = uid.substring(0, 12) + '...';
+                    document.getElementById('ls-email').textContent = localStorage.getItem('admin_email') || 'غير محدد';
+                    
+                    const lastLogin = localStorage.getItem('last_login');
+                    if (lastLogin) {
+                        const date = new Date(lastLogin);
+                        document.getElementById('ls-last-login').textContent = 
+                            date.toLocaleDateString('ar-SA') + ' ' + date.toLocaleTimeString('ar-SA');
+                    } else {
+                        document.getElementById('ls-last-login').textContent = 'غير محدد';
+                    }
+                    
+                    document.getElementById('ls-login-count').textContent = localStorage.getItem('login_count') || '0';
+                } else {
+                    lsInfo.classList.add('hidden');
+                }
+            }
+        }
+        
+        // استدعاء العرض الأولي
+        setTimeout(updateLocalStorageDisplay, 500);
+        
+        // ============================================
         // دوال المساعدة العامة
         // ============================================
         function showMessage(element, message, type) {
@@ -856,6 +914,32 @@ https://stream3.example.com"></textarea>
         }
 
         // ============================================
+        // دالة لعرض بيانات localStorage
+        // ============================================
+        window.showLocalStorageData = function() {
+            const data = {
+                'admin_uid': localStorage.getItem('admin_uid'),
+                'admin_email': localStorage.getItem('admin_email'),
+                'last_login': localStorage.getItem('last_login'),
+                'login_count': localStorage.getItem('login_count') || '0'
+            };
+            
+            console.log("📦 بيانات localStorage:", data);
+            
+            let formattedData = "📊 بيانات التخزين المحلي:\n\n";
+            for (const [key, value] of Object.entries(data)) {
+                formattedData += `${key}: ${value || 'غير موجود'}\n`;
+            }
+            
+            alert(formattedData);
+            
+            // نسخ البيانات إلى الحافظة
+            navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(() => {
+                console.log("✅ تم نسخ بيانات localStorage إلى الحافظة");
+            });
+        };
+
+        // ============================================
         // دوال الاختبار والتصحيح
         // ============================================
         window.testEncryption = function() {
@@ -864,18 +948,6 @@ https://stream3.example.com"></textarea>
                 alert("❌ نظام الحماية غير محمل");
                 return;
             }
-            
-            // في أي مكان في admin.html
-console.log("🔑 UID مخزن في localStorage:", localStorage.getItem('admin_uid'));
-
-// عند تسجيل الدخول الناجح
-if (user && user.uid === '43tnQLWaiHdRjcoKBXIiuRk8EFy1') {
-    localStorage.setItem('admin_uid', user.uid);
-    localStorage.setItem('admin_email', user.email);
-    console.log("✅ تم حفظ بيانات المدير في localStorage");
-}
-    
-            
             
             const testText = "https://example.com/test-stream";
             console.log("🔍 اختبار التشفير:");
@@ -932,20 +1004,21 @@ if (user && user.uid === '43tnQLWaiHdRjcoKBXIiuRk8EFy1') {
 {
   "rules": {
     ".read": true,
-    ".write": "auth != null",
+    ".write": "auth != null && auth.uid == '43tnQLWaiHdRjcoKBXIiuRk8EFy1'",
     
     "matches": {
       ".read": true,
-      ".write": "auth != null",
+      ".write": "auth != null && auth.uid == '43tnQLWaiHdRjcoKBXIiuRk8EFy1'",
       
       "$matchId": {
         ".validate": "
-          newData.hasChildren(['league', 'team1', 'team2', 'encrypted', 'domain']) &&
+          newData.hasChildren(['league', 'team1', 'team2', 'encrypted', 'domain', 'timestamp']) &&
           newData.child('league').isString() &&
           newData.child('team1').isString() &&
           newData.child('team2').isString() &&
           newData.child('encrypted').val() === true &&
-          newData.child('domain').isString()
+          newData.child('domain').isString() &&
+          newData.child('timestamp').isNumber()
         "
       }
     },
@@ -1446,22 +1519,41 @@ if (user && user.uid === '43tnQLWaiHdRjcoKBXIiuRk8EFy1') {
                         // تحديث معلومات المستخدم
                         document.getElementById('current-user').textContent = `${user.email} (${user.uid.substring(0, 8)}...)`;
                         
-                        // عرض UID للمستخدم
-                        const uidDisplay = document.getElementById('uid-display');
-                        if (uidDisplay) {
-                            uidDisplay.classList.remove('hidden');
-                            uidDisplay.innerHTML = `
-                                <strong>🔑 UID الخاص بك (انسخه):</strong> ${user.uid}<br>
-                                <small>استخدم هذا الرقم في قواعد Firebase</small>
-                            `;
+                        // ============================================
+                        // حفظ بيانات المدير في localStorage
+                        // ============================================
+                        console.log("🔑 UID مخزن مسبقاً:", localStorage.getItem('admin_uid'));
+                        
+                        if (user && user.uid === '43tnQLWaiHdRjcoKBXIiuRk8EFy1') {
+                            localStorage.setItem('admin_uid', user.uid);
+                            localStorage.setItem('admin_email', user.email);
+                            localStorage.setItem('last_login', new Date().toISOString());
+                            localStorage.setItem('login_count', 
+                                parseInt(localStorage.getItem('login_count') || 0) + 1
+                            );
                             
-                            // نسخ UID تلقائياً
-                            setTimeout(() => {
-                                navigator.clipboard.writeText(user.uid).then(() => {
-                                    console.log("✅ تم نسخ UID إلى الحافظة");
-                                });
-                            }, 1000);
+                            console.log("✅ تم حفظ بيانات المدير في localStorage:", {
+                                uid: user.uid,
+                                email: user.email,
+                                last_login: new Date().toLocaleString(),
+                                login_count: localStorage.getItem('login_count')
+                            });
+                            
+                            // تحديث عرض localStorage
+                            updateLocalStorageDisplay();
+                            
+                            // عرض معلومات إضافية
+                            const loginInfo = document.createElement('div');
+                            loginInfo.className = 'encryption-status';
+                            loginInfo.innerHTML = `
+                                <strong>📊 إحصائيات الدخول:</strong><br>
+                                🔢 عدد مرات الدخول: ${localStorage.getItem('login_count')}<br>
+                                ⏰ آخر دخول: ${new Date().toLocaleString('ar-SA')}<br>
+                                🔑 UID: ${user.uid.substring(0, 12)}...
+                            `;
+                            document.getElementById('login-message').appendChild(loginInfo);
                         }
+                        // ============================================
                         
                         // تحميل المباريات
                         if (firebaseDb) {
@@ -1754,7 +1846,5 @@ if (user && user.uid === '43tnQLWaiHdRjcoKBXIiuRk8EFy1') {
             console.log("✅ تم تحميل لوحة التحكم بنجاح!");
         });
     </script>
-
-
 </body>
 </html>
