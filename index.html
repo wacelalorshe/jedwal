@@ -7,12 +7,42 @@
     
     <!-- تحميل أنظمة الحماية أولاً -->
     <script src="js/protection.js"></script>
-    <script src="js/security.js"></script>
     <link rel="stylesheet" href="styles/style.css">
     
     <!-- تحميل Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
+    <style>
+        .hidden { display: none !important; }
+        .loading { text-align: center; padding: 20px; color: #666; }
+        .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .match-box { 
+            display: block; 
+            background: white; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            padding: 15px; 
+            margin: 10px 0; 
+            text-decoration: none; 
+            color: inherit;
+            transition: transform 0.2s;
+        }
+        .match-box:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .match-info { display: flex; justify-content: space-between; align-items: center; }
+        .match-time { background: #007bff; color: white; padding: 5px 15px; border-radius: 20px; }
+        .admin-link { 
+            display: block; 
+            text-align: center; 
+            margin: 20px auto; 
+            padding: 10px 20px; 
+            background: #28a745; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            width: fit-content;
+        }
+    </style>
 </head>
 <body>
     <div id="protection-message" style="display:none; background:red; color:white; padding:10px; text-align:center;">
@@ -31,6 +61,12 @@
         // التحقق من النطاق أولاً
         if (!window.DataProtector || !window.DataProtector.checkOrigin()) {
             document.getElementById('protection-message').style.display = 'block';
+            document.body.innerHTML = `
+                <div style="text-align:center; padding:50px;">
+                    <h2 style="color:red;">⛔ الوصول ممنوع</h2>
+                    <p>الموقع الحالي غير مصرح له بعرض المحتوى</p>
+                </div>
+            `;
             throw new Error("الموقع غير مصرح");
         }
 
@@ -95,6 +131,8 @@
         function displayMatches(snapshot) {
             const matchesContainer = document.getElementById('matches-container');
             const protector = window.DataProtector;
+            
+            if (!matchesContainer) return;
             matchesContainer.innerHTML = '';
             
             if (!snapshot.exists()) {
@@ -108,44 +146,54 @@
             let currentLeague = '';
             let hasMatches = false;
             
-            // ترتيب المباريات حسب الوقت
+            // تحويل المباريات إلى مصفوفة
             const matchesArray = Object.entries(matches).map(([key, value]) => {
                 return { id: key, ...value };
             });
             
-            matchesArray.forEach(match => {
+            // فرز حسب التاريخ (الأحدث أولاً)
+            matchesArray.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            
+            matchesArray.forEach(matchData => {
                 hasMatches = true;
                 
                 // فك تشفير البيانات إذا كانت مشفرة
-                const decryptedMatch = protector.decryptMatch(match);
+                const match = protector.decryptMatch(matchData);
                 
                 // إذا تغير الدوري، نضيف عنوان الدوري الجديد
-                if (decryptedMatch.league !== currentLeague) {
-                    currentLeague = decryptedMatch.league;
+                if (match.league !== currentLeague) {
+                    currentLeague = match.league;
                     
                     const leagueContainer = document.createElement('div');
-                    leagueContainer.className = 'flex-container';
+                    leagueContainer.className = 'league-header';
+                    leagueContainer.style.cssText = `
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        background: #f8f9fa;
+                        padding: 10px 15px;
+                        border-radius: 8px;
+                        margin: 20px 0 10px 0;
+                    `;
                     leagueContainer.innerHTML = `
-                        <b>${decryptedMatch.league}</b>
-                        <div class="img">
-                            <img src="${decryptedMatch.leagueLogo || 'https://i.postimg.cc/Bb0WFJfJ/Picsart-25-01-18-03-49-12-620.png'}" 
-                                 style="width: 80px; height: 45px;" 
-                                 alt="${decryptedMatch.league}"
-                                 onerror="this.src='https://via.placeholder.com/80x45?text=LOGO'">
-                        </div>
+                        <b style="font-size: 18px;">${match.league}</b>
+                        <img src="${match.leagueLogo || 'https://via.placeholder.com/80x45?text=LOGO'}" 
+                             style="width: 80px; height: 45px; object-fit: contain;" 
+                             alt="${match.league}"
+                             onerror="this.src='https://via.placeholder.com/80x45?text=LOGO'">
                     `;
                     
                     matchesContainer.appendChild(leagueContainer);
                 }
                 
-                // إنشاء رابط المشاهدة المشفر
+                // إنشاء رابط المشاهدة
                 let watchLink = "#";
                 let linksArray = [];
                 
-                if (decryptedMatch.linkType === 'regular' && decryptedMatch.links && decryptedMatch.links.length > 0) {
-                    linksArray = decryptedMatch.links;
-                } else if (decryptedMatch.linkType === 'xmtv' && decryptedMatch.xmtvLink) {
-                    watchLink = decryptedMatch.xmtvLink;
+                if (match.linkType === 'regular' && match.links && match.links.length > 0) {
+                    linksArray = match.links;
+                } else if (match.linkType === 'xmtv' && match.xmtvLink) {
+                    watchLink = match.xmtvLink;
                 }
                 
                 // إذا كانت روابط عادية، ننشئ رابط xmtv مشفر
@@ -154,6 +202,7 @@
                         watchLink = protector.createXmtvLink(linksArray);
                     } catch (error) {
                         console.error("❌ خطأ في إنشاء رابط xmtv:", error);
+                        watchLink = linksArray[0] || "#";
                     }
                 }
                 
@@ -162,25 +211,49 @@
                 matchElement.href = watchLink;
                 matchElement.className = 'match-box';
                 matchElement.target = "_blank";
+                matchElement.style.cssText = `
+                    display: block;
+                    background: white;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin: 10px 0;
+                    text-decoration: none;
+                    color: inherit;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                `;
+                matchElement.onmouseover = function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                };
+                matchElement.onmouseout = function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                };
+                
                 matchElement.innerHTML = `
-                    <div class='match-info'>
-                        <div>
-                            <img src='${decryptedMatch.team1Logo || 'https://via.placeholder.com/40?text=T1'}' 
-                                 alt='${decryptedMatch.team1}'
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="${match.team1Logo || 'https://via.placeholder.com/40?text=T1'}" 
+                                 alt="${match.team1}"
+                                 style="width: 40px; height: 40px; object-fit: contain;"
                                  onerror="this.src='https://via.placeholder.com/40?text=T1'">
-                            <p>${decryptedMatch.team1 || 'فريق 1'}</p>
+                            <p style="margin: 0; font-weight: bold;">${match.team1 || 'فريق 1'}</p>
                         </div>
-                        <div><span class='match-time'>${decryptedMatch.time || '00:00'}</span></div>
-                        <div>
-                            <img src='${decryptedMatch.team2Logo || 'https://via.placeholder.com/40?text=T2'}' 
-                                 alt='${decryptedMatch.team2}'
+                        <div style="background: #007bff; color: white; padding: 5px 15px; border-radius: 20px;">
+                            ${match.time || '00:00'}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="${match.team2Logo || 'https://via.placeholder.com/40?text=T2'}" 
+                                 alt="${match.team2}"
+                                 style="width: 40px; height: 40px; object-fit: contain;"
                                  onerror="this.src='https://via.placeholder.com/40?text=T2'">
-                            <p>${decryptedMatch.team2 || 'فريق 2'}</p>
+                            <p style="margin: 0; font-weight: bold;">${match.team2 || 'فريق 2'}</p>
                         </div>
                     </div>
-                    <div class='match-details'>
-                        <div>${decryptedMatch.channel || 'قناة غير محددة'}</div>
-                        <div>${decryptedMatch.commentator || 'معلق غير محدد'}</div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px; color: #666; font-size: 14px;">
+                        <div>${match.channel || 'قناة غير محددة'}</div>
+                        <div>${match.commentator || 'معلق غير محدد'}</div>
                     </div>
                 `;
                 
@@ -193,29 +266,6 @@
                 console.log("✅ تم عرض جميع المباريات بنجاح");
             }
         }
-
-        // دالة مساعدة لتصحيح الأخطاء
-        window.debugFirebase = function() {
-            console.log("🔍 تصحيح أخطاء Firebase:");
-            console.log("DataProtector:", window.DataProtector);
-            
-            if (firebaseDb) {
-                firebaseDb.ref('matches').once('value')
-                    .then(snapshot => {
-                        const matches = snapshot.val();
-                        console.log("📊 عدد المباريات:", snapshot.numChildren());
-                        console.log("🔐 بيانات أول مباراة (مشفرة):", Object.values(matches)[0]);
-                    })
-                    .catch(error => {
-                        console.error("❌ خطأ في جلب البيانات:", error);
-                    });
-            }
-        }
-
-        // تفعيل التصحيح بعد تحميل الصفحة
-        setTimeout(() => {
-            window.debugFirebase();
-        }, 2000);
     </script>
 </body>
 </html>
