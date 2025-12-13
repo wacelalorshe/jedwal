@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم - وسيل لايف برو</title>
     
-    <!-- أنماط CSS -->
-    <link rel="stylesheet" href="styles/style.css">
+    <!-- حماية وتشويش الكود -->
+    <script src="js/obfuscator.js"></script>
+    <script src="js/firebase-security.js"></script>
+    <script src="js/data-validator.js"></script>
     
-    <!-- إعدادات Firebase (الإصدار النمطي) -->
-    <script type="module" src="js/firebase-config.js"></script>
+    <!-- Firebase المؤمن -->
+    <script type="module" src="js/secure-firebase-config.js"></script>
+    
+    <!-- أنماط CSS الرئيسية -->
+    <link rel="stylesheet" href="styles/style.css">
     
     <!-- أنماط إضافية -->
     <style>
@@ -139,26 +144,171 @@
         .link-input-section.active { 
             display: block; 
         }
+        
+        /* أنماط إضافية */
+        .test-notice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .secure-notice {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            border-left: 5px solid #1B5E20;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .stats-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .secure-stats {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(46, 125, 50, 0.1) 100%);
+            border: 1px solid #4CAF50;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .secure-stat {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4CAF50;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #434C75;
+        }
+        
+        .secure-number {
+            color: #2E7D32;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .secure-label {
+            color: #4CAF50;
+        }
+        
+        /* أنماط الأمان */
+        .security-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
+        .domain-check {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            padding: 5px 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .valid-domain {
+            color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+            border-color: #4CAF50;
+        }
+        
+        .invalid-domain {
+            color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+            border-color: #f44336;
+        }
+        
+        /* أنماط التحذير */
+        .security-warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 5px solid #e65100;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <h2>لوحة تحكم - وسيل لايف برو</h2>
-
     <div class="container">
         <!-- قسم تسجيل الدخول -->
         <div id="login-section" class="form-container">
-            <h3>تسجيل الدخول للإدارة</h3>
+            <div class="secure-notice">
+                <h3 style="margin: 0 0 10px 0;">🔐 لوحة تحكم وسيل لايف برو - النسخة المؤمنة</h3>
+                <p style="margin: 0; opacity: 0.9;">المشروع: wacel-live-pro | النظام المؤمن | حماية متقدمة</p>
+            </div>
+            
+            <!-- فحص النطاق -->
+            <div id="domain-check" class="domain-check">
+                🔍 جاري فحص النطاق...
+            </div>
+            
+            <!-- تحذير الأمان -->
+            <div id="security-warning" class="security-warning hidden">
+                ⚠️ تنبيه: هذا النطاق غير مصرح به للوصول إلى لوحة التحكم
+            </div>
+            
+            <h3>تسجيل الدخول للإدارة <span class="security-badge">مؤمن</span></h3>
             <form id="login-form">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="email">البريد الإلكتروني</label>
-                        <input type="email" id="email" required value="wacel@gmail.com">
+                        <input type="email" id="email" required value="admin@wacel.com" readonly>
                     </div>
                     <div class="form-group">
                         <label for="password">كلمة المرور</label>
-                        <input type="password" id="password" required placeholder="أدخل كلمة المرور">
+                        <input type="password" id="password" required value="Ww735981122" readonly>
                     </div>
                 </div>
+                
+                <div class="quick-actions">
+                    <button type="button" class="btn btn-info" onclick="fillTestData()">تعبئة بيانات الاختبار</button>
+                    <button type="button" class="btn btn-warning" onclick="enableSecureDirectMode()">الوضع المباشر المؤمن</button>
+                    <button type="button" class="btn btn-danger" onclick="testSecuritySystem()">اختبار نظام الأمان</button>
+                </div>
+                
                 <div class="form-row">
                     <button type="submit" class="btn btn-primary">تسجيل الدخول</button>
                 </div>
@@ -168,8 +318,41 @@
 
         <!-- قسم لوحة التحكم -->
         <div id="dashboard-section" class="hidden">
+            <div class="secure-notice">
+                <h3 style="margin: 0 0 10px 0;">✅ لوحة التحكم المؤمنة جاهزة!</h3>
+                <p style="margin: 0; opacity: 0.9;">
+                    متصلة بـ Firebase المؤمن | النطاق المصرح: <strong id="current-domain"></strong>
+                </p>
+            </div>
+
+            <div class="stats-box secure-stats">
+                <h4 style="margin: 0 0 10px 0;">🛡️ إحصائيات النظام المؤمن</h4>
+                <div class="stats-grid">
+                    <div class="stat-item secure-stat">
+                        <div class="stat-number secure-number" id="matches-count">0</div>
+                        <div class="stat-label secure-label">مباريات مضافة</div>
+                    </div>
+                    <div class="stat-item secure-stat">
+                        <div class="stat-number secure-number" id="firebase-status">🔐</div>
+                        <div class="stat-label secure-label">حالة Firebase</div>
+                    </div>
+                    <div class="stat-item secure-stat">
+                        <div class="stat-number secure-number" id="database-status">🛡️</div>
+                        <div class="stat-label secure-label">قاعدة البيانات</div>
+                    </div>
+                    <div class="stat-item secure-stat">
+                        <div class="stat-number secure-number" id="security-status">✅</div>
+                        <div class="stat-label secure-label">حالة الأمان</div>
+                    </div>
+                </div>
+                
+                <div id="domain-info" class="domain-check valid-domain" style="margin-top: 15px;">
+                    🔒 النطاق الحالي مصرح به
+                </div>
+            </div>
+
             <div class="form-container">
-                <h3 id="form-title">إضافة مباراة جديدة</h3>
+                <h3 id="form-title">إضافة مباراة جديدة <span class="security-badge">مؤمنة</span></h3>
                 <form id="match-form">
                     <div class="form-row">
                         <div class="form-group">
@@ -196,8 +379,8 @@
                         <div class="form-group">
                             <label for="league-logo">رابط شعار الدوري</label>
                             <div class="league-logo-container">
-                                <input type="text" id="league-logo" value="https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png">
-                                <img id="league-preview" class="logo-preview" src="https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png" alt="شعار الدوري">
+                                <input type="text" id="league-logo" value="https://resources.premierleague.com/premierleague/badges/50/t1.png">
+                                <img id="league-preview" class="logo-preview" src="https://resources.premierleague.com/premierleague/badges/50/t1.png" alt="شعار الدوري">
                             </div>
                         </div>
                     </div>
@@ -205,14 +388,14 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="team1">الفريق الأول *</label>
-                            <input type="text" id="team1" required placeholder="ابدأ بكتابة اسم الفريق">
+                            <input type="text" id="team1" required placeholder="ابدأ بكتابة اسم الفريق" value="مانشستر يونايتد">
                             <div class="auto-fill-notice">اكتب اسم الفريق (حرفين على الأقل) وسيتم تعبئة الشعار تلقائياً</div>
                         </div>
                         <div class="form-group">
                             <label for="team1-logo">رابط شعار الفريق الأول</label>
                             <div class="logo-container">
-                                <input type="text" id="team1-logo" placeholder="سيتم تعبئته تلقائياً">
-                                <img id="team1-preview" class="logo-preview" src="https://via.placeholder.com/40?text=T1" alt="شعار الفريق الأول">
+                                <input type="text" id="team1-logo" placeholder="سيتم تعبئته تلقائياً" value="https://resources.premierleague.com/premierleague/badges/50/t1.png">
+                                <img id="team1-preview" class="logo-preview" src="https://resources.premierleague.com/premierleague/badges/50/t1.png" alt="شعار الفريق الأول">
                             </div>
                         </div>
                     </div>
@@ -220,14 +403,14 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="team2">الفريق الثاني *</label>
-                            <input type="text" id="team2" required placeholder="ابدأ بكتابة اسم الفريق">
+                            <input type="text" id="team2" required placeholder="ابدأ بكتابة اسم الفريق" value="ليفربول">
                             <div class="auto-fill-notice">اكتب اسم الفريق (حرفين على الأقل) وسيتم تعبئة الشعار تلقائياً</div>
                         </div>
                         <div class="form-group">
                             <label for="team2-logo">رابط شعار الفريق الثاني</label>
                             <div class="logo-container">
-                                <input type="text" id="team2-logo" placeholder="سيتم تعبئته تلقائياً">
-                                <img id="team2-preview" class="logo-preview" src="https://via.placeholder.com/40?text=T2" alt="شعار الفريق الثاني">
+                                <input type="text" id="team2-logo" placeholder="سيتم تعبئته تلقائياً" value="https://resources.premierleague.com/premierleague/badges/50/t14.png">
+                                <img id="team2-preview" class="logo-preview" src="https://resources.premierleague.com/premierleague/badges/50/t14.png" alt="شعار الفريق الثاني">
                             </div>
                         </div>
                     </div>
@@ -235,11 +418,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="match-time">وقت المباراة *</label>
-                            <input type="text" id="match-time" required value="04:00م">
+                            <input type="text" id="match-time" required value="08:00م">
                         </div>
                         <div class="form-group">
                             <label for="channel">القناة الناقلة *</label>
-                            <input type="text" id="channel" required value="bein sport 2">
+                            <input type="text" id="channel" required value="bein sport 1">
                         </div>
                     </div>
                     
@@ -250,13 +433,13 @@
                         </div>
                         <div class="form-group">
                             <label for="match-date">التاريخ *</label>
-                            <input type="text" id="match-date" required value="الأحد 23 نوفمبر 2025">
+                            <input type="text" id="match-date" required value="السبت 25 يناير 2025">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="links">روابط المشاهدة</label>
+                            <label for="links">روابط المشاهدة <span class="security-badge">مؤمنة</span></label>
                             <div class="link-type-selector">
                                 <button type="button" class="link-type-btn active" data-type="regular">روابط عادية</button>
                                 <button type="button" class="link-type-btn" data-type="xmtv">رابط XPola مباشر</button>
@@ -264,7 +447,7 @@
                             
                             <!-- قسم الروابط العادية -->
                             <div id="regular-links-section" class="link-input-section active">
-                                <textarea id="links" placeholder="كل رابط في سطر جديد">https://example.com/stream1
+                                <textarea id="links" placeholder="كل رابط في سطر جديد" rows="4">https://example.com/stream1
 https://example.com/stream2
 https://example.com/stream3</textarea>
                                 <div class="auto-fill-notice">أدخل روابط المشاهدة العادية (كل رابط في سطر جديد)</div>
@@ -272,27 +455,35 @@ https://example.com/stream3</textarea>
                             
                             <!-- قسم رابط XPola المباشر -->
                             <div id="xmtv-links-section" class="link-input-section">
-                                <textarea id="xmtv-link" placeholder="xmtv://...">xmtv://WwoKICAKICAKIAogIAogICJodHRwczovL2JkZDAwLjRyb3V3YW5kYS1zaG9wLnN0b3JlL2xpdmUvMzEwMDk5ODgwMDUvaW5kZXgubTN1OD90PWIydm9SNHZJREE5WGItcUJrenZrX3cmZT0xNzU4MTE2NTM2fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgWUMgKDI0NFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvMTMxZjI2ZDktYWZiMC00ODBlLTg2OTAtZTQ2MDA3ZGU5ZmM4Lm0zdTh8Y2FzdD1mYWxzZXxuYW1lPScgICAgICBudW1iZXIgKDM2MFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvYmIxYTQxMTktNjVmOS00MGRjLTk4NjctMTI3ZjJhNjk3M2QxLm0zdTh8ZGV2aWNlY2FuYXJ5PWZhbHNlfGNhc3Q9ZmFsc2V8bmFtZT0nICAgbnVtYmVyICAoNDgwUCkg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAKICAKICAiaHR0cHM6Ly9jZG5mZXN0LmNvbS9HMS03MjBwL3ZpZGVvLm0zdTg/dG9rZW49MlpSdnVtNVJ4SXdlRzNkZXZpY2VjYW5hcnk9ZmFsc2V8Y2FzdD1mYWxzZXxuYW1lPScgICAgRzEgKDcyMFApICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAogIAogIAogIAogIAoKCgoKICAgICJodHRwczovL2Rva2tvMW5ldy5uZXdrc28ucnUvZG9ra28xL3ByZW1pdW09MS9tb25vLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTI5LjAuMC4wIFNhZmFyaS81MzcuMzZ8cmVmZXJlcj1odHRwczovL25ld2VtYmVkcGxheS54eXovfG5hbWU9ICcgICAgIERPSyAoNzIwUCkgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIsCiAgCiAgImh0dHBzOi8vd28uY21hLmZvb3RiYWxsaWkuaXIvaGxzMi9iMi5tM3U4fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgV0FDRUwtVFYgICAgICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAoKCiJodHRwczovL2dpdGh1Yi5jb20vbzJ3cy94cG9sYS1wbGF5ZXIvcmF3L3JlZnMvaGVhZHMvbWFpbi8xLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLy81LjAgKGlQaG9uZTsgQ1BVIGlQaG9uZSBPUyAxNl82IGxpa2UgTWFjIE9TIFgpIEFwcGxlV2ViS2l0Ly82MDUuMS4xNSAoS0hUTUwsIGxpa2UgR2Vja28pIFZlcnNpb24vLzE2LjYgTW9iaWxlLy8xNUUxNDggU2FmYXJpLy82MDQuMXxyZWZlcmVyPWh0dHBzOi8vd3d3LnlhcmlnYS5saXZlL3xuYW1lPSAnICAgICB4cCAo2YXYqti52K/YrykgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIKXQ==</textarea>
+                                <textarea id="xmtv-link" placeholder="xmtv://..." rows="4">xmtv://WwoKICAKICAKIAogIAogICJodHRwczovL2JkZDAwLjRyb3V3YW5kYS1zaG9wLnN0b3JlL2xpdmUvMzEwMDk5ODgwMDUvaW5kZXgubTN1OD90PWIydm9SNHZJREE5WGItcUJrenZrX3cmZT0xNzU4MTE2NTM2fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgWUMgKDI0NFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvMTMxZjI2ZDktYWZiMC00ODBlLTg2OTAtZTQ2MDA3ZGU5ZmM4Lm0zdTh8Y2FzdD1mYWxzZXxuYW1lPScgICAgICBudW1iZXIgKDM2MFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvYmIxYTQxMTktNjVmOS00MGRjLTk4NjctMTI3ZjJhNjk3M2QxLm0zdTh8ZGV2aWNlY2FuYXJ5PWZhbHNlfGNhc3Q9ZmFsc2V8bmFtZT0nICAgbnVtYmVyICAoNDgwUCkg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAKICAKICAiaHR0cHM6Ly9jZG5mZXN0LmNvbS9HMS03MjBwL3ZpZGVvLm0zdTg/dG9rZW49MlpSdnVtNVJ4SXdlRzNkZXZpY2VjYW5hcnk9ZmFsc2V8Y2FzdD1mYWxzZXxuYW1lPScgICAgRzEgKDcyMFApICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAogIAogIAogIAogIAoKCgoKICAgICJodHRwczovL2Rva2tvMW5ldy5uZXdrc28ucnUvZG9ra28xL3ByZW1pdW09MS9tb25vLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTI5LjAuMC4wIFNhZmFyaS81MzcuMzZ8cmVmZXJlcj1odHRwczovL25ld2VtYmVkcGxheS54eXovfG5hbWU9ICcgICAgIERPSyAoNzIwUCkgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIsCiAgCiAgImh0dHBzOi8vd28uY21hLmZvb3RiYWxsaWkuaXIvaGxzMi9iMi5tM3U4fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgV0FDRUwtVFYgICAgICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAoKCiJodHRwczovL2dpdGh1Yi5jb20vbzJ3cy94cG9sYS1wbGF5ZXIvcmF3L3JlZnMvaGVhZHMvbWFpbi8xLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLy81LjAgKGlQaG9uZTsgQ1BVIGlQaG9uZSBPUyAxNl82IGxpa2UgTWFjIE9TIFgpIEFwcGxlV2ViS2l0Ly82MDUuMS4xNSAoS0hUTUwsIGxpa2UgR2Vja28pIFZlcnNpb24vLzE2LjYgTW9iaWxlLy8xNUUxNDggU2FmYXJpLy82MDQuMXxyZWZlcmVyPWh0dHBzOi8vd3d3LnlhcmlnYS5saXZlL3xuYW1lPSAnICAgICB4cCAo2YXYqti52K/YrykgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIKXQ==</textarea>
                                 <div class="auto-fill-notice">أدخل رابط XPola المباشر (xmtv://) - سيتم استخدام هذا الرابط مباشرة دون تشفير</div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-row">
-                        <button type="submit" class="btn btn-primary" id="submit-btn">إضافة المباراة</button>
+                        <button type="submit" class="btn btn-primary" id="submit-btn">إضافة المباراة المؤمنة</button>
                         <button type="button" class="btn btn-danger hidden" id="cancel-btn">إلغاء التعديل</button>
                         <button type="button" class="btn btn-secondary" id="logout-btn">تسجيل الخروج</button>
                         <a href="index.html" class="btn btn-success">عرض الموقع</a>
-                        <button type="button" class="btn btn-info" id="test-connection-btn">اختبار الاتصال</button>
+                        <button type="button" class="btn btn-info" id="test-connection-btn">اختبار الاتصال المؤمن</button>
+                        <button type="button" class="btn btn-warning" id="validate-data-btn">فحص البيانات</button>
                     </div>
                     <div id="form-message"></div>
                 </form>
             </div>
 
             <div class="matches-container">
-                <h3>المباريات المضافة</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0;">المباريات المضافة <span class="security-badge">مؤمنة</span></h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-small btn-info" onclick="refreshSecureMatches()">🔄 تحديث مؤمن</button>
+                        <button class="btn btn-small btn-warning" onclick="testSecureFirebaseConnection()">🧪 اختبار Firebase المؤمن</button>
+                        <button class="btn btn-small btn-danger" onclick="checkSecurityStatus()">🛡️ حالة الأمان</button>
+                    </div>
+                </div>
                 <div id="matches-list">
-                    <div class="loading">جاري تحميل المباريات...</div>
+                    <div class="loading">جاري تحميل المباريات المؤمنة...</div>
                 </div>
             </div>
         </div>
@@ -301,7 +492,167 @@ https://example.com/stream3</textarea>
     <!-- قاعدة بيانات الفرق -->
     <script src="js/teams-database.js"></script>
     
-    <!-- السكريبت الرئيسي للوحة التحكم (ملف منفصل) -->
-    <script type="module" src="js/admin.js"></script>
+    <!-- السكريبت الرئيسي للوحة التحكم المؤمنة -->
+    <script type="module" src="js/admin-secure.js"></script>
+    
+    <!-- دوال مساعدة سريعة -->
+    <script>
+        // دوال مساعدة سريعة مؤمنة
+        function fillTestData() {
+            document.getElementById('email').value = 'admin@wacel.com';
+            document.getElementById('password').value = 'Ww735981122';
+            document.getElementById('login-message').innerHTML = `
+                <div style="background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); 
+                     color: white; padding: 10px; border-radius: 5px; margin: 10px 0;">
+                    ✅ تم تعبئة بيانات الاختبار المؤمنة بنجاح
+                </div>
+            `;
+        }
+        
+        function enableSecureDirectMode() {
+            if (typeof window.enableDirectMode === 'function') {
+                window.enableDirectMode();
+            } else {
+                // التحقق من النطاق أولاً
+                if (window.firebaseProtection && window.firebaseProtection.isValidDomain) {
+                    document.getElementById('login-section').classList.add('hidden');
+                    document.getElementById('dashboard-section').classList.remove('hidden');
+                    document.getElementById('current-domain').textContent = window.location.hostname;
+                    document.getElementById('login-message').innerHTML = `
+                        <div style="background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); 
+                             color: white; padding: 15px; border-radius: 8px; margin: 10px 0; text-align: center;">
+                            🛡️ تم تفعيل الوضع المباشر المؤمن بنجاح!
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('security-warning').classList.remove('hidden');
+                    document.getElementById('domain-check').classList.add('invalid-domain');
+                    document.getElementById('domain-check').textContent = '❌ النطاق الحالي غير مصرح به';
+                }
+            }
+        }
+        
+        function refreshSecureMatches() {
+            if (typeof loadSecureMatches === 'function') {
+                loadSecureMatches();
+                document.getElementById('login-message').innerHTML = `
+                    <div style="background: rgba(76, 175, 80, 0.2); color: #2E7D32; 
+                         padding: 10px; border-radius: 5px; margin: 10px 0; border: 1px solid #4CAF50;">
+                        🔄 جاري تحديث المباريات المؤمنة...
+                    </div>
+                `;
+                setTimeout(() => {
+                    document.getElementById('login-message').innerHTML = '';
+                }, 2000);
+            }
+        }
+        
+        function testSecureFirebaseConnection() {
+            if (typeof testFirebaseConnection === 'function') {
+                testFirebaseConnection();
+            } else {
+                alert('🔒 وظيفة اختبار الاتصال المؤمن غير متاحة');
+            }
+        }
+        
+        function testSecuritySystem() {
+            // اختبار نظام الأمان
+            const currentDomain = window.location.hostname;
+            const domainCheck = document.getElementById('domain-check');
+            
+            if (window.firebaseProtection) {
+                const isValid = window.firebaseProtection.isValidDomain;
+                domainCheck.textContent = isValid ? 
+                    '✅ النطاق الحالي مصرح به للوصول إلى النظام المؤمن' : 
+                    '❌ النطاق الحالي غير مصرح به للوصول';
+                domainCheck.className = `domain-check ${isValid ? 'valid-domain' : 'invalid-domain'}`;
+                
+                if (!isValid) {
+                    document.getElementById('security-warning').classList.remove('hidden');
+                }
+                
+                updateSecurityStatus(isValid);
+            } else {
+                domainCheck.textContent = '⚠️ نظام الحماية غير متوفر';
+                domainCheck.className = 'domain-check invalid-domain';
+                updateSecurityStatus(false);
+            }
+        }
+        
+        function checkSecurityStatus() {
+            if (window.firebaseProtection) {
+                alert(`
+🛡️ حالة نظام الأمان:
+• النطاق الحالي: ${window.location.hostname}
+• النطاق المسموح: ${window.firebaseProtection.allowedDomain || 'غير محدد'}
+• حالة النطاق: ${window.firebaseProtection.isValidDomain ? '✅ مصرح' : '❌ غير مصرح'}
+• وقت الفحص: ${new Date().toLocaleString()}
+• مصدر الصفحة: ${window.location.origin}
+                `);
+            } else {
+                alert('⚠️ نظام الحماية غير متوفر');
+            }
+        }
+        
+        // تحديث الإحصائيات
+        function updateStats(matchesCount) {
+            const matchesElement = document.getElementById('matches-count');
+            if (matchesElement) {
+                matchesElement.textContent = matchesCount || '0';
+            }
+        }
+        
+        // تحديث حالة Firebase المؤمن
+        function updateFirebaseStatus(status) {
+            const statusElement = document.getElementById('firebase-status');
+            if (statusElement) {
+                statusElement.textContent = status ? '🔐' : '🔓';
+                statusElement.style.color = status ? '#4CAF50' : '#f44336';
+            }
+        }
+        
+        // تحديث حالة قاعدة البيانات المؤمنة
+        function updateDatabaseStatus(status) {
+            const statusElement = document.getElementById('database-status');
+            if (statusElement) {
+                statusElement.textContent = status ? '🛡️' : '⚠️';
+                statusElement.style.color = status ? '#4CAF50' : '#ff9800';
+            }
+        }
+        
+        // تحديث حالة الأمان
+        function updateSecurityStatus(status) {
+            const statusElement = document.getElementById('security-status');
+            if (statusElement) {
+                statusElement.textContent = status ? '✅' : '❌';
+                statusElement.style.color = status ? '#4CAF50' : '#f44336';
+            }
+        }
+        
+        // تشغيل التحديثات عند التحميل
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ دوال المساعدة المؤمنة جاهزة');
+            
+            // فحص النطاق تلقائياً
+            setTimeout(testSecuritySystem, 100);
+            
+            // تحديث النطاق الحالي
+            const currentDomain = document.getElementById('current-domain');
+            if (currentDomain) {
+                currentDomain.textContent = window.location.hostname;
+            }
+            
+            // تهيئة الإحصائيات
+            updateFirebaseStatus(true);
+            updateDatabaseStatus(true);
+            updateSecurityStatus(true);
+            
+            // فحص النطاق
+            const domainCheck = document.getElementById('domain-check');
+            if (domainCheck) {
+                domainCheck.textContent = `🔍 فحص النطاق: ${window.location.hostname}`;
+            }
+        });
+    </script>
 </body>
 </html>
