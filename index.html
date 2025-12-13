@@ -3,305 +3,185 @@
 <head>
     <meta charset='UTF-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - وسيل لايف برو</title>
+    <title>وسيل لايف برو - بث المباريات</title>
+    
+    <!-- أنظمة الحماية -->
+    <script src="js/security.js"></script>
+    
+    <!-- قاعدة بيانات الفرق -->
+    <script src="js/teams-database.js"></script>
     
     <!-- أنماط CSS -->
     <link rel="stylesheet" href="styles/style.css">
     
     <!-- إعدادات Firebase (الإصدار النمطي) -->
     <script type="module" src="js/firebase-config.js"></script>
-    
-    <!-- أنماط إضافية -->
-    <style>
-        /* أنماط نظام الاقتراحات التلقائية */
-        .suggestions-box { 
-            position: absolute; 
-            background: white; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            max-height: 200px; 
-            overflow-y: auto; 
-            z-index: 1000; 
-            width: calc(100% - 2px); 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-            margin-top: 2px; 
-        }
-        .suggestion-item { 
-            padding: 8px 12px; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            border-bottom: 1px solid #f0f0f0; 
-        }
-        .suggestion-item:hover { 
-            background-color: #f5f5f5; 
-        }
-        .suggestion-item img { 
-            border-radius: 3px; 
-        }
-        .hidden { 
-            display: none; 
-        }
-        .form-group { 
-            position: relative; 
-        }
-        .logo-preview { 
-            width: 40px; 
-            height: 40px; 
-            object-fit: contain; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            margin-left: 10px; 
-        }
-        .logo-container { 
-            display: flex; 
-            align-items: center; 
-            margin-top: 5px; 
-        }
-        .auto-fill-notice { 
-            font-size: 12px; 
-            color: #666; 
-            margin-top: 5px; 
-        }
-        .league-logo-container { 
-            display: flex; 
-            align-items: center; 
-            margin-top: 5px; 
-        }
-        .xmtv-section { 
-            background: rgba(67, 76, 117, 0.1); 
-            border-radius: 8px; 
-            padding: 15px; 
-            margin-top: 15px; 
-        }
-        .xmtv-actions { 
-            display: flex; 
-            gap: 8px; 
-            flex-wrap: wrap; 
-            margin-top: 8px; 
-        }
-        .btn-small { 
-            padding: 6px 12px; 
-            font-size: 12px; 
-        }
-        .btn-warning { 
-            background: #ffc107; 
-            color: #000; 
-        }
-        .link-item { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: #151825; 
-            padding: 10px; 
-            border-radius: 5px; 
-            margin-bottom: 5px; 
-            word-break: break-all; 
-            text-align: left; 
-            font-size: 12px; 
-        }
-        .link-item span { 
-            flex: 1; 
-            margin-right: 10px; 
-        }
-        .xmtv-link-preview { 
-            background: #1a1f3c; 
-            padding: 10px; 
-            border-radius: 5px; 
-            margin: 10px 0; 
-            font-family: monospace; 
-            font-size: 11px; 
-            word-break: break-all; 
-            max-height: 80px; 
-            overflow-y: auto; 
-        }
-        .link-type-selector { 
-            display: flex; 
-            gap: 10px; 
-            margin-bottom: 10px; 
-        }
-        .link-type-btn { 
-            padding: 8px 15px; 
-            border: 1px solid #434C75; 
-            background: #151825; 
-            color: white; 
-            border-radius: 5px; 
-            cursor: pointer; 
-        }
-        .link-type-btn.active { 
-            background: #434C75; 
-            color: white; 
-        }
-        .link-input-section { 
-            display: none; 
-        }
-        .link-input-section.active { 
-            display: block; 
-        }
-    </style>
 </head>
 <body>
-    <h2>لوحة تحكم - وسيل لايف برو</h2>
-
-    <div class="container">
-        <!-- قسم تسجيل الدخول -->
-        <div id="login-section" class="form-container">
-            <h3>تسجيل الدخول للإدارة</h3>
-            <form id="login-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="email">البريد الإلكتروني</label>
-                        <input type="email" id="email" required value="www735981122@gmail.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">كلمة المرور</label>
-                        <input type="password" id="password" required placeholder="أدخل كلمة المرور">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <button type="submit" class="btn btn-primary">تسجيل الدخول</button>
-                </div>
-                <div id="login-message"></div>
-            </form>
-        </div>
-
-        <!-- قسم لوحة التحكم -->
-        <div id="dashboard-section" class="hidden">
-            <div class="form-container">
-                <h3 id="form-title">إضافة مباراة جديدة</h3>
-                <form id="match-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="league">الدوري *</label>
-                            <select id="league" required>
-                                <option value="">اختر الدوري</option>
-                                <option value="الدوري الانجليزي الممتاز" selected>الدوري الانجليزي الممتاز</option>
-                                <option value="الدوري الاسباني">الدوري الاسباني</option>
-                                <option value="الدوري الايطالي">الدوري الايطالي</option>
-                                <option value="الدوري الالماني">الدوري الالماني</option>
-                                <option value="الدوري الفرنسي">الدوري الفرنسي</option>
-                                <option value="الدوري السعودي">الدوري السعودي</option>
-                                <option value="دوري أبطال أوروبا">دوري أبطال أوروبا</option>
-                                <option value="دوري أبطال آسيا">دوري أبطال آسيا</option>
-                                <option value="كأس العالم">كأس العالم</option>
-                                <option value="كأس الأمم الأوروبية">كأس الأمم الأوروبية</option>
-                                <option value="كأس الأمم الأفريقية">كأس الأمم الأفريقية</option>
-                                <option value="كأس آسيا">كأس آسيا</option>
-                                <option value="كوبا أمريكا">كوبا أمريكا</option>
-                                <option value="كأس الكونكاكاف">كأس الكونكاكاف</option>
-                                <option value="كأس العرب">كأس العرب</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="league-logo">رابط شعار الدوري</label>
-                            <div class="league-logo-container">
-                                <input type="text" id="league-logo" value="https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png">
-                                <img id="league-preview" class="logo-preview" src="https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png" alt="شعار الدوري">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="team1">الفريق الأول *</label>
-                            <input type="text" id="team1" required placeholder="ابدأ بكتابة اسم الفريق">
-                            <div class="auto-fill-notice">اكتب اسم الفريق (حرفين على الأقل) وسيتم تعبئة الشعار تلقائياً</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="team1-logo">رابط شعار الفريق الأول</label>
-                            <div class="logo-container">
-                                <input type="text" id="team1-logo" placeholder="سيتم تعبئته تلقائياً">
-                                <img id="team1-preview" class="logo-preview" src="https://via.placeholder.com/40?text=T1" alt="شعار الفريق الأول">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="team2">الفريق الثاني *</label>
-                            <input type="text" id="team2" required placeholder="ابدأ بكتابة اسم الفريق">
-                            <div class="auto-fill-notice">اكتب اسم الفريق (حرفين على الأقل) وسيتم تعبئة الشعار تلقائياً</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="team2-logo">رابط شعار الفريق الثاني</label>
-                            <div class="logo-container">
-                                <input type="text" id="team2-logo" placeholder="سيتم تعبئته تلقائياً">
-                                <img id="team2-preview" class="logo-preview" src="https://via.placeholder.com/40?text=T2" alt="شعار الفريق الثاني">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="match-time">وقت المباراة *</label>
-                            <input type="text" id="match-time" required value="04:00م">
-                        </div>
-                        <div class="form-group">
-                            <label for="channel">القناة الناقلة *</label>
-                            <input type="text" id="channel" required value="bein sport 2">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="commentator">اسم المعلق *</label>
-                            <input type="text" id="commentator" required value="أحمد البلوشي">
-                        </div>
-                        <div class="form-group">
-                            <label for="match-date">التاريخ *</label>
-                            <input type="text" id="match-date" required value="الأحد 23 نوفمبر 2025">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="links">روابط المشاهدة</label>
-                            <div class="link-type-selector">
-                                <button type="button" class="link-type-btn active" data-type="regular">روابط عادية</button>
-                                <button type="button" class="link-type-btn" data-type="xmtv">رابط XPola مباشر</button>
-                            </div>
-                            
-                            <!-- قسم الروابط العادية -->
-                            <div id="regular-links-section" class="link-input-section active">
-                                <textarea id="links" placeholder="كل رابط في سطر جديد">https://example.com/stream1
-https://example.com/stream2
-https://example.com/stream3</textarea>
-                                <div class="auto-fill-notice">أدخل روابط المشاهدة العادية (كل رابط في سطر جديد)</div>
-                            </div>
-                            
-                            <!-- قسم رابط XPola المباشر -->
-                            <div id="xmtv-links-section" class="link-input-section">
-                                <textarea id="xmtv-link" placeholder="xmtv://...">xmtv://WwoKICAKICAKIAogIAogICJodHRwczovL2JkZDAwLjRyb3V3YW5kYS1zaG9wLnN0b3JlL2xpdmUvMzEwMDk5ODgwMDUvaW5kZXgubTN1OD90PWIydm9SNHZJREE5WGItcUJrenZrX3cmZT0xNzU4MTE2NTM2fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgWUMgKDI0NFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvMTMxZjI2ZDktYWZiMC00ODBlLTg2OTAtZTQ2MDA3ZGU5ZmM4Lm0zdTh8Y2FzdD1mYWxzZXxuYW1lPScgICAgICBudW1iZXIgKDM2MFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvYmIxYTQxMTktNjVmOS00MGRjLTk4NjctMTI3ZjJhNjk3M2QxLm0zdTh8ZGV2aWNlY2FuYXJ5PWZhbHNlfGNhc3Q9ZmFsc2V8bmFtZT0nICAgbnVtYmVyICAoNDgwUCkg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAKICAKICAiaHR0cHM6Ly9jZG5mZXN0LmNvbS9HMS03MjBwL3ZpZGVvLm0zdTg/dG9rZW49MlpSdnVtNVJ4SXdlRzNkZXZpY2VjYW5hcnk9ZmFsc2V8Y2FzdD1mYWxzZXxuYW1lPScgICAgRzEgKDcyMFApICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAogIAogIAogIAogIAoKCgoKICAgICJodHRwczovL2Rva2tvMW5ldy5uZXdrc28ucnUvZG9ra28xL3ByZW1pdW09MS9tb25vLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTI5LjAuMC4wIFNhZmFyaS81MzcuMzZ8cmVmZXJlcj1odHRwczovL25ld2VtYmVkcGxheS54eXovfG5hbWU9ICcgICAgIERPSyAoNzIwUCkgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIsCiAgCiAgImh0dHBzOi8vd28uY21hLmZvb3RiYWxsaWkuaXIvaGxzMi9iMi5tM3U4fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgV0FDRUwtVFYgICAgICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAoKCiJodHRwczovL2dpdGh1Yi5jb20vbzJ3cy94cG9sYS1wbGF5ZXIvcmF3L3JlZnMvaGVhZHMvbWFpbi8xLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLy81LjAgKGlQaG9uZTsgQ1BVIGlQaG9uZSBPUyAxNl82IGxpa2UgTWFjIE9TIFgpIEFwcGxlV2ViS2l0Ly82MDUuMS4xNSAoS0hUTUwsIGxpa2UgR2Vja28pIFZlcnNpb24vLzE2LjYgTW9iaWxlLy8xNUUxNDggU2FmYXJpLy82MDQuMXxyZWZlcmVyPWh0dHBzOi8vd3d3LnlhcmlnYS5saXZlL3xuYW1lPSAnICAgICB4cCAo2YXYqti52K/YrykgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIKXQ==</textarea>
-                                <div class="auto-fill-notice">أدخل رابط XPola المباشر (xmtv://) - سيتم استخدام هذا الرابط مباشرة دون تشفير</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <button type="submit" class="btn btn-primary" id="submit-btn">إضافة المباراة</button>
-                        <button type="button" class="btn btn-danger hidden" id="cancel-btn">إلغاء التعديل</button>
-                        <button type="button" class="btn btn-secondary" id="logout-btn">تسجيل الخروج</button>
-                        <a href="index.html" class="btn btn-success">عرض الموقع</a>
-                        <button type="button" class="btn btn-info" id="test-connection-btn">اختبار الاتصال</button>
-                    </div>
-                    <div id="form-message"></div>
-                </form>
-            </div>
-
-            <div class="matches-container">
-                <h3>المباريات المضافة</h3>
-                <div id="matches-list">
-                    <div class="loading">جاري تحميل المباريات...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- قاعدة بيانات الفرق -->
-    <script src="js/teams-database.js"></script>
+    <h2 id="page-title">جاري التحميل...</h2>
     
-    <!-- السكريبت الرئيسي للوحة التحكم (ملف منفصل) -->
-    <script type="module" src="js/admin.js"></script>
+    <div id="matches-container">
+        <div class="loading">جاري تحميل المباريات...</div>
+    </div>
+    
+    <a href="admin.html" class="admin-link">لوحة التحكم</a>
+
+    <!-- السكريبت الرئيسي للصفحة -->
+    <script type="module">
+        // استيراد خدمات Firebase
+        import { db } from "./js/firebase-config.js";
+        import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        
+        console.log("🚀 بدء تحميل الصفحة الرئيسية...");
+        
+        // الانتظار حتى تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // تحديث التاريخ في العنوان
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('page-title').textContent = `مباريات اليوم | ${today.toLocaleDateString('ar-AR', options)}`;
+            
+            // تحميل المباريات
+            loadMatches();
+        });
+
+        function loadMatches() {
+            const matchesContainer = document.getElementById('matches-container');
+            
+            if (!db) {
+                matchesContainer.innerHTML = '<div class="error">❌ قاعدة البيانات غير متاحة</div>';
+                return;
+            }
+
+            console.log("🔄 جاري تحميل المباريات من Firebase...");
+            
+            // إنشاء مرجع لقاعدة البيانات
+            const matchesRef = ref(db, 'matches');
+            
+            // الاستماع للتحديثات في قاعدة البيانات
+            onValue(matchesRef, 
+                function(snapshot) {
+                    console.log("📥 تم استلام البيانات من Firebase");
+                    displayMatches(snapshot);
+                }, 
+                function(error) {
+                    console.error("❌ خطأ في تحميل المباريات:", error);
+                    matchesContainer.innerHTML = 
+                        '<div class="error">❌ حدث خطأ في تحميل المباريات. يرجى المحاولة لاحقاً.</div>';
+                }
+            );
+        }
+
+        function displayMatches(snapshot) {
+            const matchesContainer = document.getElementById('matches-container');
+            matchesContainer.innerHTML = '';
+            
+            if (!snapshot.exists()) {
+                matchesContainer.innerHTML = '<div class="loading">لا توجد مباريات اليوم</div>';
+                return;
+            }
+            
+            const matches = snapshot.val();
+            console.log("📊 عدد المباريات المستلمة:", Object.keys(matches).length);
+            
+            let currentLeague = '';
+            let hasMatches = false;
+            
+            // ترتيب المباريات حسب الوقت أو التاريخ إذا كان متوفراً
+            const matchesArray = Object.entries(matches).map(([key, value]) => {
+                return { id: key, ...value };
+            });
+            
+            matchesArray.forEach(match => {
+                hasMatches = true;
+                
+                // إذا تغير الدوري، نضيف عنوان الدوري الجديد
+                if (match.league !== currentLeague) {
+                    currentLeague = match.league;
+                    
+                    const leagueContainer = document.createElement('div');
+                    leagueContainer.className = 'flex-container';
+                    leagueContainer.innerHTML = `
+                        <b>${match.league}</b>
+                        <div class="img">
+                            <img src="${match.leagueLogo || 'https://i.postimg.cc/Bb0WFJfJ/Picsart-25-01-18-03-49-12-620.png'}" 
+                                 style="width: 80px; height: 45px;" 
+                                 alt="${match.league}"
+                                 onerror="this.src='https://via.placeholder.com/80x45?text=LOGO'">
+                        </div>
+                    `;
+                    
+                    matchesContainer.appendChild(leagueContainer);
+                }
+                
+                // إنشاء رابط المشاهدة المشفر (base64)
+                let watchLink = "#";
+                try {
+                    const encodedLinks = btoa(JSON.stringify(match.links || []));
+                    watchLink = "xmtv://" + encodedLinks;
+                } catch (error) {
+                    console.error("❌ خطأ في ترميز روابط المشاهدة:", error);
+                    watchLink = "#";
+                }
+                
+                // إنشاء عنصر المباراة
+                const matchElement = document.createElement('a');
+                matchElement.href = watchLink;
+                matchElement.className = 'match-box';
+                matchElement.target = "_blank";
+                matchElement.innerHTML = `
+                    <div class='match-info'>
+                        <div>
+                            <img src='${match.team1Logo || 'https://via.placeholder.com/40?text=T1'}' 
+                                 alt='${match.team1}'
+                                 onerror="this.src='https://via.placeholder.com/40?text=T1'">
+                            <p>${match.team1 || 'فريق 1'}</p>
+                        </div>
+                        <div><span class='match-time'>${match.time || '00:00'}</span></div>
+                        <div>
+                            <img src='${match.team2Logo || 'https://via.placeholder.com/40?text=T2'}' 
+                                 alt='${match.team2}'
+                                 onerror="this.src='https://via.placeholder.com/40?text=T2'">
+                            <p>${match.team2 || 'فريق 2'}</p>
+                        </div>
+                    </div>
+                    <div class='match-details'>
+                        <div>${match.channel || 'قناة غير محددة'}</div>
+                        <div>${match.commentator || 'معلق غير محدد'}</div>
+                    </div>
+                `;
+                
+                matchesContainer.appendChild(matchElement);
+            });
+            
+            if (!hasMatches) {
+                matchesContainer.innerHTML = '<div class="loading">لا توجد مباريات متاحة حالياً</div>';
+            } else {
+                console.log("✅ تم عرض جميع المباريات بنجاح");
+            }
+        }
+
+        // دالة مساعدة لتصحيح الأخطاء
+        window.debugFirebase = function() {
+            console.log("🔍 تصحيح أخطاء Firebase:");
+            console.log("Firebase Database:", db);
+            
+            if (db) {
+                // اختبار جلب البيانات
+                import { get, ref } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+                get(ref(db, 'matches')).then(snapshot => {
+                    console.log("📊 بيانات matches:", snapshot.val());
+                    console.log("🔢 عدد المباريات:", snapshot.size);
+                }).catch(error => {
+                    console.error("❌ خطأ في جلب البيانات:", error);
+                });
+            }
+        }
+
+        // تفعيل التصحيح بعد تحميل الصفحة
+        setTimeout(() => {
+            window.debugFirebase();
+        }, 2000);
+    </script>
 </body>
 </html>
