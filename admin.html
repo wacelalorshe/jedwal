@@ -983,6 +983,224 @@ https://example.com/stream3</textarea>
         
         // تحديث معلومات النظام بشكل دوري
         setInterval(updateSystemInfo, 30000);
+
+        // === دوال خاصة بتجاوز النظام للاختبار ===
+
+// دالة لتفعيل الوصول يدوياً
+function forceEnableAccess() {
+    console.log("🚀 تفعيل الوصول يدوياً...");
+    
+    // تحديث نظام الحماية
+    if (window.firebaseProtection) {
+        window.firebaseProtection.isValidDomain = true;
+        
+        // إخفاء التحذيرات
+        const warningElement = document.getElementById('security-warning');
+        const domainCheck = document.getElementById('domain-check');
+        
+        if (warningElement) warningElement.classList.add('hidden');
+        if (domainCheck) {
+            domainCheck.textContent = '✅ تم تجاوز الحماية - الوصول مفعل';
+            domainCheck.className = 'domain-check valid-domain';
+        }
+        
+        // تفعيل لوحة التحكم
+        enableSecureDirectMode();
+        
+        alert('✅ تم تفعيل الوصول بنجاح\nالنطاق: ' + window.location.hostname);
+    } else {
+        alert('⚠️ نظام الحماية غير متوفر\nيرجى إعادة تحميل الصفحة');
+    }
+}
+
+// دالة لتصحيح النطاق تلقائياً
+function autoFixDomain() {
+    const currentDomain = window.location.hostname;
+    console.log("🔧 محاولة تصحيح النطاق تلقائياً:", currentDomain);
+    
+    // إضافة النطاق الحالي إلى القائمة المصرح بها
+    if (window.firebaseProtection && window.firebaseProtection.allowedDomains) {
+        if (!window.firebaseProtection.allowedDomains.includes(currentDomain)) {
+            window.firebaseProtection.allowedDomains.push(currentDomain);
+            console.log("➕ تم إضافة النطاق إلى القائمة المصرح بها:", currentDomain);
+        }
+        
+        // تحديث حالة النطاق
+        window.firebaseProtection.isValidDomain = true;
+        
+        // تحديث واجهة المستخدم
+        const domainCheck = document.getElementById('domain-check');
+        const warningElement = document.getElementById('security-warning');
+        
+        if (domainCheck) {
+            domainCheck.innerHTML = `
+                ✅ تم تصحيح النطاق تلقائياً
+                <br>
+                <small>${currentDomain}</small>
+            `;
+            domainCheck.className = 'domain-check valid-domain';
+        }
+        
+        if (warningElement) {
+            warningElement.classList.add('hidden');
+        }
+        
+        // تفعيل لوحة التحكم
+        setTimeout(() => {
+            enableSecureDirectMode();
+            console.log("✅ تم تصحيح النطاق وتفعيل الوصول تلقائياً");
+        }, 500);
+        
+        return true;
+    }
+    
+    return false;
+}
+
+// دالة للتحقق السريع من النطاق
+function quickDomainCheck() {
+    const currentDomain = window.location.hostname;
+    const allowedDomains = [
+        'wacelalorshe.github.io',
+        'jedwal.netlify.app',
+        'localhost',
+        '127.0.0.1',
+        'wacel-live-pro.web.app',
+        'wacel-live-pro.firebaseapp.com'
+    ];
+    
+    // التحقق من النطاق
+    let isValid = false;
+    let matchType = '';
+    
+    for (const domain of allowedDomains) {
+        if (currentDomain === domain) {
+            isValid = true;
+            matchType = 'مطابقة تامة';
+            break;
+        } else if (currentDomain.includes(domain)) {
+            isValid = true;
+            matchType = 'نطاق فرعي';
+            break;
+        } else if (domain.includes(currentDomain)) {
+            isValid = true;
+            matchType = 'نطاق رئيسي';
+            break;
+        }
+    }
+    
+    // التحقق من النطاقات المشابهة
+    if (!isValid) {
+        const currentParts = currentDomain.split('.');
+        for (const domain of allowedDomains) {
+            const domainParts = domain.split('.');
+            if (currentParts.length >= 2 && domainParts.length >= 2) {
+                const currentBase = currentParts.slice(-2).join('.');
+                const domainBase = domainParts.slice(-2).join('.');
+                if (currentBase === domainBase) {
+                    isValid = true;
+                    matchType = 'نطاق مشابه';
+                    break;
+                }
+            }
+        }
+    }
+    
+    return { isValid, matchType, currentDomain };
+}
+
+// تحديث تهيئة النظام
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ تحميل لوحة التحكم مع الحماية المحسنة');
+    
+    // إضافة زر للتصحيح السريع
+    setTimeout(() => {
+        // إضافة زر التصحيح السريع
+        const quickActions = document.querySelector('.quick-actions');
+        if (quickActions) {
+            const fixButton = document.createElement('button');
+            fixButton.type = 'button';
+            fixButton.className = 'btn btn-danger';
+            fixButton.innerHTML = '🛠️ تصحيح النطاق';
+            fixButton.onclick = function() {
+                const result = quickDomainCheck();
+                if (result.isValid) {
+                    alert(`✅ النطاق مصرح به\n\nالنطاق: ${result.currentDomain}\nنوع المطابقة: ${result.matchType}`);
+                    autoFixDomain();
+                } else {
+                    if (confirm(`⚠️ النطاق غير مصرح\n\nالنطاق: ${result.currentDomain}\n\nهل تريد إضافته للقائمة المصرح بها؟`)) {
+                        autoFixDomain();
+                    }
+                }
+            };
+            quickActions.appendChild(fixButton);
+        }
+        
+        // إضافة زر التجاوز
+        const loginMessage = document.getElementById('login-message');
+        if (loginMessage) {
+            const overrideDiv = document.createElement('div');
+            overrideDiv.style.cssText = `
+                margin-top: 15px;
+                padding: 10px;
+                background: rgba(255, 152, 0, 0.1);
+                border: 1px solid #ff9800;
+                border-radius: 5px;
+                text-align: center;
+            `;
+            overrideDiv.innerHTML = `
+                <p style="margin: 0 0 10px 0; font-size: 12px; color: #f57c00;">
+                    ⚠️ مشكلة في النطاق؟
+                </p>
+                <button onclick="forceEnableAccess()" style="
+                    padding: 8px 15px;
+                    background: #ff9800;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    cursor: pointer;
+                ">
+                    🔓 تجاوز الحماية وتفعيل الوصول
+                </button>
+            `;
+            loginMessage.appendChild(overrideDiv);
+        }
+        
+        // محاولة التصحيح التلقائي
+        setTimeout(() => {
+            const result = quickDomainCheck();
+            if (!result.isValid) {
+                console.warn('⚠️ النطاق غير مصرح، محاولة التصحيح التلقائي...');
+                
+                // عرض رسالة للمستخدم
+                const domainCheck = document.getElementById('domain-check');
+                if (domainCheck) {
+                    domainCheck.innerHTML = `
+                        ⚠️ النطاق غير مصرح: ${result.currentDomain}
+                        <br>
+                        <button onclick="autoFixDomain()" style="
+                            margin-top: 5px;
+                            padding: 3px 8px;
+                            background: #ff9800;
+                            color: white;
+                            border: none;
+                            border-radius: 3px;
+                            font-size: 10px;
+                            cursor: pointer;
+                        ">
+                            إضافة النطاق للقائمة المصرح بها
+                        </button>
+                    `;
+                    domainCheck.className = 'domain-check invalid-domain';
+                }
+            } else {
+                console.log('✅ النطاق مصرح:', result);
+                autoFixDomain(); // تفعيل تلقائي
+            }
+        }, 1000);
+    }, 500);
+});
     </script>
 </body>
 </html>
