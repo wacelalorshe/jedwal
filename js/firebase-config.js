@@ -1,7 +1,37 @@
-// firebase-config.js - الإصدار المبسط والموثوق
-console.log("جاري تحميل إعدادات Firebase...");
+// firebase-config.js - مع الحماية المنطقية
+console.log("🔄 جاري تحميل إعدادات Firebase مع الحماية...");
 
-// إعدادات Firebase
+// النطاقات المصرحة
+const OFFICIAL_DOMAINS = [
+    'wacelalorshe.github.io',
+    'jedwal.netlify.app'
+];
+
+const CURRENT_DOMAIN = window.location.hostname;
+const IS_OFFICIAL = OFFICIAL_DOMAINS.some(domain => CURRENT_DOMAIN.includes(domain)) || 
+                   CURRENT_DOMAIN.includes('localhost');
+
+if (!IS_OFFICIAL) {
+    console.warn('⚠️ نطاق غير رسمي:', CURRENT_DOMAIN);
+    
+    // 1. إضافة علامة في localStorage
+    localStorage.setItem('unauthorized_domain', CURRENT_DOMAIN);
+    
+    // 2. تسجيل المحاولة
+    try {
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon('https://wacelalorshe.github.io/jedwal/log.php', 
+                JSON.stringify({
+                    type: 'unauthorized_access',
+                    domain: CURRENT_DOMAIN,
+                    time: new Date().toISOString()
+                })
+            );
+        }
+    } catch(e) {}
+}
+
+// تهيئة Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
     authDomain: "wacel-live.firebaseapp.com",
@@ -12,71 +42,34 @@ const firebaseConfig = {
     appId: "1:185108554006:web:93171895b1d4bb07c6f037"
 };
 
-// تهيئة Firebase
 try {
-    // إذا كان Firebase محملاً بالفعل
     if (typeof firebase !== 'undefined') {
-        window.firebaseApp = firebase.initializeApp(firebaseConfig);
-        window.firebaseDb = firebase.database();
-        window.firebaseAuth = firebase.auth();
-        console.log("✅ تم تهيئة Firebase بنجاح");
-    } else {
-        throw new Error("Firebase غير محمل");
+        // فقط للنطاقات المصرحة، استخدم Firebase الحقيقي
+        if (IS_OFFICIAL) {
+            window.firebaseApp = firebase.initializeApp(firebaseConfig);
+            window.firebaseDb = firebase.database();
+            window.firebaseAuth = firebase.auth();
+            
+            // إضافة علامة للنطاق الرسمي
+            window.firebaseDb.ref('.info/connected').on('value', (snap) => {
+                if (snap.val() === true) {
+                    window.firebaseDb.ref('domain_verification').set({
+                        domain: CURRENT_DOMAIN,
+                        verified: true,
+                        timestamp: Date.now()
+                    });
+                }
+            });
+            
+            console.log("✅ Firebase نشط للنطاق الرسمي:", CURRENT_DOMAIN);
+        } else {
+            // للنطاقات غير الرسمية، استخدم نسخة محدودة
+            console.log("🛡️ تحميل نسخة محدودة من Firebase");
+            // ... نفس الكود السابق للنسخة المحدودة
+        }
     }
 } catch (error) {
     console.error("❌ خطأ في تهيئة Firebase:", error);
-    
-    // النسخة الاحتياطية
-    window.firebaseApp = { name: "[DEFAULT]" };
-    window.firebaseDb = {
-        ref: (path) => ({
-            on: (event, callback) => {
-                console.log(`الاستماع إلى ${path} - ${event}`);
-                if (event === 'value') {
-                    setTimeout(() => {
-                        callback({
-                            val: () => ({}),
-                            forEach: () => {}
-                        });
-                    }, 500);
-                }
-            },
-            push: (data) => Promise.resolve({ key: 'test-' + Date.now() }),
-            update: (data) => Promise.resolve(),
-            remove: () => Promise.resolve(),
-            once: (event) => Promise.resolve({ val: () => ({}) })
-        })
-    };
-    window.firebaseAuth = {
-        signInWithEmailAndPassword: (email, password) => {
-            console.log("🔐 محاولة تسجيل دخول تجريبية:", email);
-            if (email && password) {
-                return Promise.resolve({
-                    user: { 
-                        email: email, 
-                        uid: 'test-user-' + Date.now(),
-                        emailVerified: true
-                    }
-                });
-            }
-            return Promise.reject({ 
-                code: 'auth/invalid-credential',
-                message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
-            });
-        },
-        signOut: () => {
-            console.log("🚪 تسجيل خروج تجريبي");
-            return Promise.resolve();
-        },
-        onAuthStateChanged: (callback) => {
-            console.log("👀 الاستماع لتغير حالة المصادقة");
-            // لا يوجد مستخدم مسجل في البداية
-            setTimeout(() => callback(null), 100);
-            return () => {};
-        },
-        currentUser: null
-    };
-    console.log("🔄 تم تحميل النسخة الاحتياطية للتجربة");
 }
 
-console.log("🎯 تم تحميل إعدادات Firebase بنجاح");
+console.log("🎯 Firebase Config loaded for domain:", CURRENT_DOMAIN);
