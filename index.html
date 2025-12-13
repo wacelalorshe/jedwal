@@ -7,6 +7,7 @@
     
     <!-- تحميل أنظمة الحماية أولاً -->
     <script src="js/protection.js"></script>
+    <script src="js/firebase-domain-lock.js"></script>
     
     <!-- تحميل Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -340,24 +341,26 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* شاشة المنع */
-        #blocked-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-            color: white;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px;
-            font-family: Arial, sans-serif;
-            z-index: 10000;
-        }
+        /* شاشة المنع -->
+        <div id="blocked-screen">
+            <h1 style="font-size: 48px; margin-bottom: 30px;">🚫 الوصول ممنوع</h1>
+            <p style="font-size: 24px; margin-bottom: 20px;">
+                الموقع الحالي (<strong id="blocked-domain"></strong>) غير مصرح له بعرض المحتوى.
+            </p>
+            <p style="font-size: 20px; margin-bottom: 40px;">
+                هذا المحتوى محمي بنظام مكافحة السرقة.
+            </p>
+            <div style="background: white; color: #333; padding: 30px; border-radius: 15px; max-width: 600px;">
+                <h3 style="color: #e53e3e;">المواقع المسموحة فقط:</h3>
+                <ul style="text-align: right; direction: rtl; font-size: 18px; margin: 20px 0;">
+                    <li>🔗 <a href="https://wacelalorshe.github.io/jedwal/" style="color: #4299e1;">https://wacelalorshe.github.io/jedwal/</a></li>
+                    <li>🔗 <a href="https://jedwal.netlify.app/" style="color: #4299e1;">https://jedwal.netlify.app/</a></li>
+                </ul>
+                <p style="color: #666; font-size: 16px;">
+                    📞 للإبلاغ عن مواقع تسرق المحتوى: contact@example.com
+                </p>
+            </div>
+        </div>
         
         /* تصميم متجاوب */
         @media (max-width: 768px) {
@@ -399,6 +402,14 @@
             font-size: 12px;
             font-weight: bold;
         }
+        
+        .domain-check {
+            background: rgba(56, 178, 172, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -409,13 +420,17 @@
         <p id="loading-message" style="margin-top: 20px; color: #a0aec0;">
             الموقع: <span id="current-domain"></span>
         </p>
+        <div class="domain-check" id="domain-check-status">
+            <div class="loader" style="width: 30px; height: 30px; border-width: 3px; margin: 10px auto;"></div>
+            جاري التحقق من النطاق...
+        </div>
         <p style="margin-top: 10px; font-size: 14px; color: #cbd5e0;">
             نظام الحماية نشط ⚡
         </p>
     </div>
     
     <!-- شاشة المنع -->
-    <div id="blocked-screen">
+    <div id="blocked-screen" style="display:none;">
         <h1 style="font-size: 48px; margin-bottom: 30px;">🚫 الوصول ممنوع</h1>
         <p style="font-size: 24px; margin-bottom: 20px;">
             الموقع الحالي (<strong id="blocked-domain"></strong>) غير مصرح له بعرض المحتوى.
@@ -478,35 +493,81 @@
             '127.0.0.1'
         ];
         
+        // ============================================
+        // إعدادات Firebase
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
+            authDomain: "wacel-live.firebaseapp.com",
+            databaseURL: "https://wacel-live-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "wacel-live",
+            storageBucket: "wacel-live.firebasestorage.app",
+            messagingSenderId: "185108554006",
+            appId: "1:185108554006:web:93171895b1d4bb07c6f037"
+        };
+        
+        // ============================================
         // التحقق من النطاق
+        // ============================================
         function checkDomainAccess() {
             const currentHost = window.location.hostname;
             document.getElementById('current-domain').textContent = currentHost;
             
+            // تحديث حالة التحقق
+            const domainStatus = document.getElementById('domain-check-status');
+            
             // 1. التحقق من المواقع المسموحة
-            if (!ALLOWED_DOMAINS.includes(currentHost)) {
+            let isAllowed = false;
+            for (const domain of ALLOWED_DOMAINS) {
+                if (currentHost.includes(domain) || domain.includes(currentHost)) {
+                    isAllowed = true;
+                    break;
+                }
+            }
+            
+            if (!isAllowed) {
                 console.error('🚨 موقع غير مصرح:', currentHost);
-                showBlockedScreen(currentHost);
+                domainStatus.innerHTML = `
+                    <div style="color: #f56565;">
+                        ❌ نطاق غير مصرح: ${currentHost}
+                    </div>
+                `;
+                setTimeout(() => showBlockedScreen(currentHost), 2000);
                 return false;
             }
             
             // 2. التحقق من نظام الحماية
             if (!window.DataProtector) {
-                console.error('❌ نظام الحماية غير محمل');
-                showError('نظام الحماية غير محمل');
-                return false;
+                console.warn('⚠️ نظام الحماية غير محمل، لكن الموقع مصرح');
+                domainStatus.innerHTML = `
+                    <div style="color: #ed8936;">
+                        ⚠️ نظام الحماية غير محمل
+                    </div>
+                `;
+                return true; // نسمح بالوصول حتى بدون حماية للنطاقات المسموحة
             }
             
             // 3. التحقق من أن النظام يعمل
-            if (!window.DataProtector.checkOrigin()) {
-                console.error('❌ فشل فحص النطاق');
-                return false;
+            if (window.DataProtector.checkOrigin && window.DataProtector.checkOrigin()) {
+                domainStatus.innerHTML = `
+                    <div style="color: #48bb78;">
+                        ✅ النطاق مصرح: ${currentHost}
+                    </div>
+                `;
+                return true;
             }
             
-            return true;
+            domainStatus.innerHTML = `
+                <div style="color: #f56565;">
+                    ❌ فشل فحص النطاق
+                </div>
+            `;
+            return false;
         }
         
+        // ============================================
         // عرض شاشة المنع
+        // ============================================
         function showBlockedScreen(domain) {
             document.getElementById('loading-screen').style.display = 'none';
             document.getElementById('blocked-screen').style.display = 'flex';
@@ -516,7 +577,9 @@
             reportUnauthorizedAccess(domain);
         }
         
+        // ============================================
         // إرسال إشعار بالوصول غير المصرح
+        // ============================================
         function reportUnauthorizedAccess(domain) {
             const report = {
                 unauthorized_domain: domain,
@@ -526,15 +589,22 @@
             };
             
             console.log('📢 إشعار بالوصول غير المصرح:', report);
-            
-            // يمكنك إضافة كود لإرسال هذا الإشعار لخادمك
-            // fetch('https://your-server.com/report', {
-            //     method: 'POST',
-            //     body: JSON.stringify(report)
-            // });
         }
         
+        // ============================================
+        // إظهار المحتوى الرئيسي
+        // ============================================
+        function showMainContent() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            
+            // تهيئة Firebase والمحتوى
+            initializeFirebase();
+        }
+        
+        // ============================================
         // عرض خطأ
+        // ============================================
         function showError(message) {
             const container = document.getElementById('matches-container');
             container.innerHTML = `
@@ -558,39 +628,8 @@
         }
         
         // ============================================
-        // إعدادات Firebase
-        // ============================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
-            authDomain: "wacel-live.firebaseapp.com",
-            databaseURL: "https://wacel-live-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "wacel-live",
-            storageBucket: "wacel-live.firebasestorage.app",
-            messagingSenderId: "185108554006",
-            appId: "1:185108554006:web:93171895b1d4bb07c6f037"
-        };
-        
-        // ============================================
-        // التهيئة الرئيسية
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 بدء تحميل الموقع...');
-            
-            // تحديث التاريخ
-            updateDateTime();
-            
-            // التحقق من النطاق أولاً
-            setTimeout(() => {
-                if (!checkDomainAccess()) {
-                    return;
-                }
-                
-                // إذا كان مسموحاً، تابع التحميل
-                initializeFirebase();
-            }, 2000);
-        });
-        
         // تحديث التاريخ والوقت
+        // ============================================
         function updateDateTime() {
             const now = new Date();
             const options = { 
@@ -610,12 +649,16 @@
             setTimeout(updateDateTime, 60000);
         }
         
+        // ============================================
         // تهيئة Firebase
+        // ============================================
         function initializeFirebase() {
             try {
                 // التحقق من وجود Firebase SDK
                 if (typeof firebase === 'undefined') {
-                    throw new Error('Firebase SDK غير محمل');
+                    console.warn('⚠️ Firebase SDK غير محمل، استخدام وضع العرض التجريبي');
+                    showDemoMatches();
+                    return;
                 }
                 
                 // تهيئة Firebase
@@ -624,37 +667,30 @@
                 
                 console.log('✅ Firebase مهيأ بنجاح');
                 
-                // إخفاء شاشة التحميل وإظهار المحتوى
-                document.getElementById('loading-screen').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-                
                 // تحميل المباريات
                 loadMatches(db);
                 
             } catch (error) {
                 console.error('❌ خطأ في تهيئة Firebase:', error);
-                showError('فشل الاتصال بقاعدة البيانات');
+                showDemoMatches(); // عرض بيانات تجريبية
             }
         }
         
+        // ============================================
         // تحميل المباريات
+        // ============================================
         function loadMatches(db) {
             const container = document.getElementById('matches-container');
             const protector = window.DataProtector;
             
             if (!db) {
-                showError('قاعدة البيانات غير متاحة');
-                return;
-            }
-            
-            if (!protector) {
-                showError('نظام الحماية غير نشط');
+                showDemoMatches();
                 return;
             }
             
             console.log('🔄 جاري تحميل المباريات...');
             
-            // قراءة البيانات مرة واحدة (لن تستمع للتحديثات لمنع الهجمات)
+            // قراءة البيانات
             db.ref('matches').once('value')
                 .then(snapshot => {
                     console.log('📥 تم استلام البيانات');
@@ -664,7 +700,6 @@
                     console.error('❌ خطأ في تحميل المباريات:', error);
                     
                     if (error.code === 'PERMISSION_DENIED') {
-                        // هذا جيد! يعني الحماية تعمل
                         container.innerHTML = `
                             <div class="error">
                                 <h3>🔒 نظام الحماية نشط</h3>
@@ -675,12 +710,14 @@
                             </div>
                         `;
                     } else {
-                        showError('حدث خطأ في تحميل المباريات');
+                        showDemoMatches();
                     }
                 });
         }
         
+        // ============================================
         // عرض المباريات
+        // ============================================
         function displayMatches(snapshot, protector, container) {
             container.innerHTML = '';
             
@@ -705,7 +742,12 @@
             Object.entries(matches).forEach(([key, encryptedMatch]) => {
                 try {
                     // فك تشفير المباراة
-                    const match = protector.decryptMatch(encryptedMatch);
+                    let match;
+                    if (protector && protector.decryptMatch) {
+                        match = protector.decryptMatch(encryptedMatch);
+                    } else {
+                        match = encryptedMatch; // إذا لم يكن هناك نظام حماية
+                    }
                     
                     if (!match.league) return;
                     
@@ -757,13 +799,13 @@
                             ${leagueMatches.length} مباراة
                         </div>
                     </div>
-                    <div id="matches-${leagueName.replace(/\s+/g, '-')}"></div>
+                    <div id="matches-${leagueName.replace(/\s+/g, '-').replace(/[^\w-]/g, '')}"></div>
                 `;
                 
                 container.appendChild(leagueSection);
                 
                 // عرض مباريات هذا الدوري
-                const matchesContainer = document.getElementById(`matches-${leagueName.replace(/\s+/g, '-')}`);
+                const matchesContainer = document.getElementById(`matches-${leagueName.replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`);
                 
                 leagueMatches.forEach(match => {
                     // إنشاء رابط المشاهدة
@@ -779,7 +821,11 @@
                     // إذا كانت روابط عادية، ننشئ رابط xmtv مشفر
                     if (linksArray.length > 0) {
                         try {
-                            watchLink = protector.createXmtvLink(linksArray);
+                            if (protector && protector.createXmtvLink) {
+                                watchLink = protector.createXmtvLink(linksArray);
+                            } else {
+                                watchLink = linksArray[0] || "#";
+                            }
                         } catch (error) {
                             console.error('❌ خطأ في إنشاء رابط xmtv:', error);
                             watchLink = linksArray[0] || "#";
@@ -790,6 +836,7 @@
                     matchElement.href = watchLink;
                     matchElement.className = 'match-box';
                     matchElement.target = '_blank';
+                    matchElement.rel = 'noopener noreferrer';
                     matchElement.innerHTML = `
                         <div class="protected-overlay">🔒 مشفر</div>
                         <div class="match-info">
@@ -864,6 +911,98 @@
         }
         
         // ============================================
+        // عرض بيانات تجريبية (إذا فشل Firebase)
+        // ============================================
+        function showDemoMatches() {
+            const container = document.getElementById('matches-container');
+            const protector = window.DataProtector || { 
+                decryptMatch: (x) => x,
+                createXmtvLink: (links) => links[0] || '#'
+            };
+            
+            // بيانات تجريبية مشفرة
+            const demoMatches = [
+                {
+                    id: 'demo1',
+                    league: 'الدوري الإنجليزي الممتاز',
+                    leagueLogo: 'https://resources.premierleague.com/premierleague/badges/50/t1.png',
+                    team1: 'مانشستر سيتي',
+                    team1Logo: 'https://resources.premierleague.com/premierleague/badges/50/t43.png',
+                    team2: 'أرسنال',
+                    team2Logo: 'https://resources.premierleague.com/premierleague/badges/50/t3.png',
+                    time: '20:00',
+                    date: 'السبت 20 ديسمبر 2024',
+                    channel: 'beIN Sports',
+                    commentator: 'أحمد البلوشي',
+                    linkType: 'regular',
+                    links: ['https://example.com/stream1', 'https://example.com/stream2']
+                },
+                {
+                    id: 'demo2',
+                    league: 'الدوري السعودي',
+                    leagueLogo: 'https://upload.wikimedia.org/wikipedia/ar/thumb/6/6d/%D8%B4%D8%B9%D8%A7%D8%B1_%D8%A7%D9%84%D8%AF%D9%88%D8%B1%D9%8A_%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A_%D8%A7%D9%84%D9%85%D8%AD%D8%AA%D8%B1%D9%81.svg/1200px-%D8%B4%D8%B9%D8%A7%D8%B1_%D8%A7%D9%84%D8%AF%D9%88%D8%B1%D9%8A_%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A_%D8%A7%D9%84%D9%85%D8%AD%D8%AA%D8%B1%D9%81.svg.png',
+                    team1: 'الهلال',
+                    team1Logo: 'https://upload.wikimedia.org/wikipedia/ar/archive/1/12/20230512223726%21Al_Hilal_SFC_logo_2022.svg',
+                    team2: 'النصر',
+                    team2Logo: 'https://upload.wikimedia.org/wikipedia/ar/thumb/a/ac/Al_Nassr_FC_Logo.svg/1513px-Al_Nassr_FC_Logo.svg.png',
+                    time: '21:00',
+                    date: 'السبت 20 ديسمبر 2024',
+                    channel: 'SSC',
+                    commentator: 'عمر الدوسري',
+                    linkType: 'xmtv',
+                    xmtvLink: 'https://xmtv.com/stream123'
+                }
+            ];
+            
+            // عرض المباريات التجريبية
+            displayMatches({ 
+                exists: () => true, 
+                val: () => ({
+                    demo1: { encrypted: false, ...demoMatches[0] },
+                    demo2: { encrypted: false, ...demoMatches[1] }
+                }) 
+            }, protector, container);
+            
+            // رسالة توضيحية
+            const demoMsg = document.createElement('div');
+            demoMsg.style.cssText = `
+                background: rgba(247, 127, 0, 0.2);
+                border: 2px solid #f77f00;
+                color: #f77f00;
+                padding: 20px;
+                border-radius: 15px;
+                text-align: center;
+                margin-top: 30px;
+            `;
+            demoMsg.innerHTML = `
+                <h3>📡 وضع العرض التجريبي</h3>
+                <p>يتم عرض بيانات تجريبية للاختبار</p>
+                <p style="font-size: 14px; margin-top: 10px;">
+                    لتشغيل البيانات الحقيقية، تأكد من اتصال Firebase
+                </p>
+            `;
+            container.appendChild(demoMsg);
+        }
+        
+        // ============================================
+        // التهيئة الرئيسية
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 بدء تحميل الموقع...');
+            
+            // تحديث التاريخ
+            updateDateTime();
+            
+            // التحقق من النطاق أولاً
+            setTimeout(() => {
+                if (checkDomainAccess()) {
+                    // إذا كان مسموحاً، تابع التحميل
+                    setTimeout(showMainContent, 1500);
+                }
+            }, 2000);
+        });
+        
+        // ============================================
         // وظائف إضافية
         // ============================================
         
@@ -881,7 +1020,7 @@
                 const db = firebase.database();
                 loadMatches(db);
             } else {
-                showError('Firebase غير متاح');
+                showDemoMatches();
             }
         };
         
@@ -919,7 +1058,7 @@
         // ============================================
         // إضافة أزرار تحكم للمطور
         // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
             // إضافة أزرار التحكم في أسفل الصفحة
             const controls = document.createElement('div');
             controls.style.cssText = `
@@ -929,11 +1068,11 @@
                 z-index: 1000;
                 display: flex;
                 gap: 10px;
-                opacity: 0.8;
+                opacity: 0.3;
                 transition: opacity 0.3s;
             `;
             controls.onmouseover = () => controls.style.opacity = '1';
-            controls.onmouseout = () => controls.style.opacity = '0.8';
+            controls.onmouseout = () => controls.style.opacity = '0.3';
             
             controls.innerHTML = `
                 <button onclick="window.refreshMatches()" style="
@@ -976,7 +1115,7 @@
             console.log('🌐 الموقع الحالي:', window.location.hostname);
             console.log('🔒 نظام الحماية:', window.DataProtector ? 'نشط ✅' : 'غير نشط ❌');
             console.log('📋 النطاقات المسموحة:', ALLOWED_DOMAINS);
-        });
+        }, 3000);
         
     </script>
 </body>
