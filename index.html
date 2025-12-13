@@ -3,843 +3,305 @@
 <head>
     <meta charset='UTF-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>وسيل لايف برو - بث المباريات</title>
+    <title>لوحة التحكم - وسيل لايف برو</title>
     
     <!-- أنماط CSS -->
+    <link rel="stylesheet" href="styles/style.css">
+    
+    <!-- إعدادات Firebase (الإصدار النمطي) -->
+    <script type="module" src="js/firebase-config.js"></script>
+    
+    <!-- أنماط إضافية -->
     <style>
-        /* الأنماط الأساسية */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* أنماط نظام الاقتراحات التلقائية */
+        .suggestions-box { 
+            position: absolute; 
+            background: white; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            max-height: 200px; 
+            overflow-y: auto; 
+            z-index: 1000; 
+            width: calc(100% - 2px); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            margin-top: 2px; 
         }
-        
-        body {
-            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-            min-height: 100vh;
-            color: #e2e8f0;
-            padding: 20px;
+        .suggestion-item { 
+            padding: 8px 12px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            border-bottom: 1px solid #f0f0f0; 
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        .suggestion-item:hover { 
+            background-color: #f5f5f5; 
         }
-        
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            border: 2px solid rgba(102, 126, 234, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        .suggestion-item img { 
+            border-radius: 3px; 
         }
-        
-        h1 {
-            color: #63b3ed;
-            font-size: 42px;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 10px rgba(99, 179, 237, 0.3);
+        .hidden { 
+            display: none; 
         }
-        
-        .subtitle {
-            color: #a0aec0;
-            font-size: 20px;
-            margin-bottom: 10px;
+        .form-group { 
+            position: relative; 
         }
-        
-        .date-display {
-            background: rgba(56, 178, 172, 0.2);
-            padding: 12px 25px;
-            border-radius: 15px;
-            display: inline-block;
-            margin-top: 15px;
-            font-weight: bold;
-            color: #81e6d9;
-            border: 2px solid #38b2ac;
+        .logo-preview { 
+            width: 40px; 
+            height: 40px; 
+            object-fit: contain; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            margin-left: 10px; 
         }
-        
-        .security-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #48bb78 0%, #2f855a 100%);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            margin-left: 15px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
-            animation: pulse 2s infinite;
+        .logo-container { 
+            display: flex; 
+            align-items: center; 
+            margin-top: 5px; 
         }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .auto-fill-notice { 
+            font-size: 12px; 
+            color: #666; 
+            margin-top: 5px; 
         }
-        
-        /* تصميم المباريات */
-        .matches-container {
-            margin-top: 30px;
+        .league-logo-container { 
+            display: flex; 
+            align-items: center; 
+            margin-top: 5px; 
         }
-        
-        .league-section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            transition: all 0.3s;
+        .xmtv-section { 
+            background: rgba(67, 76, 117, 0.1); 
+            border-radius: 8px; 
+            padding: 15px; 
+            margin-top: 15px; 
         }
-        
-        .league-section:hover {
-            border-color: #667eea;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
-            transform: translateY(-5px);
+        .xmtv-actions { 
+            display: flex; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+            margin-top: 8px; 
         }
-        
-        .league-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        .btn-small { 
+            padding: 6px 12px; 
+            font-size: 12px; 
         }
-        
-        .league-title {
-            font-size: 28px;
-            color: #63b3ed;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .btn-warning { 
+            background: #ffc107; 
+            color: #000; 
         }
-        
-        .league-logo {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-            border-radius: 10px;
-            border: 2px solid #4299e1;
-            background: white;
-            padding: 5px;
+        .link-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #151825; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-bottom: 5px; 
+            word-break: break-all; 
+            text-align: left; 
+            font-size: 12px; 
         }
-        
-        .match-box {
-            display: block;
-            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            text-decoration: none;
-            color: inherit;
-            border: 2px solid #4a5568;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+        .link-item span { 
+            flex: 1; 
+            margin-right: 10px; 
         }
-        
-        .match-box:hover {
-            transform: translateY(-8px);
-            border-color: #667eea;
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        .xmtv-link-preview { 
+            background: #1a1f3c; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin: 10px 0; 
+            font-family: monospace; 
+            font-size: 11px; 
+            word-break: break-all; 
+            max-height: 80px; 
+            overflow-y: auto; 
         }
-        
-        .match-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+        .link-type-selector { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 10px; 
         }
-        
-        .match-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+        .link-type-btn { 
+            padding: 8px 15px; 
+            border: 1px solid #434C75; 
+            background: #151825; 
+            color: white; 
+            border-radius: 5px; 
+            cursor: pointer; 
         }
-        
-        .team {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            flex: 1;
+        .link-type-btn.active { 
+            background: #434C75; 
+            color: white; 
         }
-        
-        .team-logo {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            margin-bottom: 15px;
-            border-radius: 15px;
-            border: 3px solid #4299e1;
-            background: white;
-            padding: 10px;
-            transition: all 0.3s;
+        .link-input-section { 
+            display: none; 
         }
-        
-        .match-box:hover .team-logo {
-            transform: scale(1.1);
-            border-color: #63b3ed;
-        }
-        
-        .team-name {
-            font-size: 20px;
-            font-weight: bold;
-            color: #e2e8f0;
-        }
-        
-        .vs {
-            font-size: 32px;
-            color: #667eea;
-            font-weight: bold;
-            padding: 0 30px;
-        }
-        
-        .match-time {
-            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0 15px;
-        }
-        
-        .match-details {
-            display: flex;
-            justify-content: space-around;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-size: 16px;
-            color: #a0aec0;
-        }
-        
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        
-        .detail-label {
-            color: #cbd5e0;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        
-        .detail-value {
-            color: #63b3ed;
-            font-weight: bold;
-        }
-        
-        /* رسائل الحالة */
-        .loading {
-            text-align: center;
-            padding: 60px;
-            color: #a0aec0;
-            font-size: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            margin: 40px 0;
-        }
-        
-        .error {
-            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 40px 0;
-            border: 2px solid #fc8181;
-            box-shadow: 0 10px 30px rgba(245, 101, 101, 0.3);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px;
-            color: #a0aec0;
-            font-size: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            margin: 40px 0;
-            border: 2px dashed #4a5568;
-        }
-        
-        /* أزرار التنقل */
-        .admin-link {
-            display: block;
-            text-align: center;
-            margin: 40px auto;
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            width: fit-content;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-        }
-        
-        .admin-link:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-        }
-        
-        /* شاشة التحميل */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #1a202c;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px;
-            font-family: Arial, sans-serif;
-            z-index: 9999;
-        }
-        
-        .loader {
-            border: 8px solid #2d3748;
-            border-top: 8px solid #667eea;
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 30px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* تصميم متجاوب */
-        @media (max-width: 768px) {
-            h1 { font-size: 32px; }
-            .league-title { font-size: 24px; }
-            .team-name { font-size: 16px; }
-            .match-info { flex-direction: column; gap: 20px; }
-            .vs { padding: 15px 0; }
-            .match-details { flex-direction: column; gap: 15px; }
-            .league-header { flex-direction: column; text-align: center; gap: 15px; }
-            .league-logo { width: 50px; height: 50px; }
-            .team-logo { width: 60px; height: 60px; }
-        }
-        
-        /* معلومات إضافية */
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 2px solid rgba(102, 126, 234, 0.3);
-            color: #a0aec0;
-            font-size: 14px;
-        }
-        
-        .last-update {
-            color: #68d391;
-            font-weight: bold;
-        }
-        
-        /* تأثيرات خاصة */
-        .protected-overlay {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(76, 175, 80, 0.9);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: bold;
+        .link-input-section.active { 
+            display: block; 
         }
     </style>
 </head>
 <body>
-    <!-- شاشة التحميل المؤقتة -->
-    <div id="loading-screen">
-        <div class="loader"></div>
-        <h2>⚽ وسيل لايف برو</h2>
-        <p id="loading-message" style="margin-top: 20px; color: #a0aec0;">
-            جاري تحميل المباريات...
-        </p>
-    </div>
-    
-    <!-- المحتوى الرئيسي -->
-    <div id="main-content" style="display: none;">
-        <div class="container">
-            <header>
-                <h1>⚽ وسيل لايف برو <span class="security-badge">مباشر</span></h1>
-                <p class="subtitle">بث مباشر للمباريات - جودة عالية - تحديث فوري</p>
-                <div class="date-display" id="current-date">
-                    جاري تحميل التاريخ...
+    <h2>لوحة تحكم - وسيل لايف برو</h2>
+
+    <div class="container">
+        <!-- قسم تسجيل الدخول -->
+        <div id="login-section" class="form-container">
+            <h3>تسجيل الدخول للإدارة</h3>
+            <form id="login-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">البريد الإلكتروني</label>
+                        <input type="email" id="email" required value="www735981122@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">كلمة المرور</label>
+                        <input type="password" id="password" required placeholder="أدخل كلمة المرور">
+                    </div>
                 </div>
-            </header>
-            
-            <main class="matches-container" id="matches-container">
-                <!-- سيتم ملؤه بالجافاسكريبت -->
-            </main>
-            
-            <div class="footer">
-                <a href="admin.html" class="admin-link">🔐 دخول لوحة التحكم</a>
-                <p style="margin-top: 20px;">
-                    آخر تحديث: <span class="last-update" id="last-update">--:--</span>
-                </p>
-                <p style="margin-top: 10px; font-size: 12px; color: #718096;">
-                    جميع الحقوق محفوظة © 2024 - وسيل لايف برو
-                </p>
+                <div class="form-row">
+                    <button type="submit" class="btn btn-primary">تسجيل الدخول</button>
+                </div>
+                <div id="login-message"></div>
+            </form>
+        </div>
+
+        <!-- قسم لوحة التحكم -->
+        <div id="dashboard-section" class="hidden">
+            <div class="form-container">
+                <h3 id="form-title">إضافة مباراة جديدة</h3>
+                <form id="match-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="league">الدوري *</label>
+                            <select id="league" required>
+                                <option value="">اختر الدوري</option>
+                                <option value="الدوري الانجليزي الممتاز" selected>الدوري الانجليزي الممتاز</option>
+                                <option value="الدوري الاسباني">الدوري الاسباني</option>
+                                <option value="الدوري الايطالي">الدوري الايطالي</option>
+                                <option value="الدوري الالماني">الدوري الالماني</option>
+                                <option value="الدوري الفرنسي">الدوري الفرنسي</option>
+                                <option value="الدوري السعودي">الدوري السعودي</option>
+                                <option value="دوري أبطال أوروبا">دوري أبطال أوروبا</option>
+                                <option value="دوري أبطال آسيا">دوري أبطال آسيا</option>
+                                <option value="كأس العالم">كأس العالم</option>
+                                <option value="كأس الأمم الأوروبية">كأس الأمم الأوروبية</option>
+                                <option value="كأس الأمم الأفريقية">كأس الأمم الأفريقية</option>
+                                <option value="كأس آسيا">كأس آسيا</option>
+                                <option value="كوبا أمريكا">كوبا أمريكا</option>
+                                <option value="كأس الكونكاكاف">كأس الكونكاكاف</option>
+                                <option value="كأس العرب">كأس العرب</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="league-logo">رابط شعار الدوري</label>
+                            <div class="league-logo-container">
+                                <input type="text" id="league-logo" value="https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png">
+                                <img id="league-preview" class="logo-preview" src="https://upload.wikimedia.org/wikipedia/ar/f/f2/Premier_League_Logo.png" alt="شعار الدوري">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="team1">الفريق الأول *</label>
+                            <input type="text" id="team1" required placeholder="ابدأ بكتابة اسم الفريق">
+                            <div class="auto-fill-notice">اكتب اسم الفريق (حرفين على الأقل) وسيتم تعبئة الشعار تلقائياً</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="team1-logo">رابط شعار الفريق الأول</label>
+                            <div class="logo-container">
+                                <input type="text" id="team1-logo" placeholder="سيتم تعبئته تلقائياً">
+                                <img id="team1-preview" class="logo-preview" src="https://via.placeholder.com/40?text=T1" alt="شعار الفريق الأول">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="team2">الفريق الثاني *</label>
+                            <input type="text" id="team2" required placeholder="ابدأ بكتابة اسم الفريق">
+                            <div class="auto-fill-notice">اكتب اسم الفريق (حرفين على الأقل) وسيتم تعبئة الشعار تلقائياً</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="team2-logo">رابط شعار الفريق الثاني</label>
+                            <div class="logo-container">
+                                <input type="text" id="team2-logo" placeholder="سيتم تعبئته تلقائياً">
+                                <img id="team2-preview" class="logo-preview" src="https://via.placeholder.com/40?text=T2" alt="شعار الفريق الثاني">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="match-time">وقت المباراة *</label>
+                            <input type="text" id="match-time" required value="04:00م">
+                        </div>
+                        <div class="form-group">
+                            <label for="channel">القناة الناقلة *</label>
+                            <input type="text" id="channel" required value="bein sport 2">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="commentator">اسم المعلق *</label>
+                            <input type="text" id="commentator" required value="أحمد البلوشي">
+                        </div>
+                        <div class="form-group">
+                            <label for="match-date">التاريخ *</label>
+                            <input type="text" id="match-date" required value="الأحد 23 نوفمبر 2025">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="links">روابط المشاهدة</label>
+                            <div class="link-type-selector">
+                                <button type="button" class="link-type-btn active" data-type="regular">روابط عادية</button>
+                                <button type="button" class="link-type-btn" data-type="xmtv">رابط XPola مباشر</button>
+                            </div>
+                            
+                            <!-- قسم الروابط العادية -->
+                            <div id="regular-links-section" class="link-input-section active">
+                                <textarea id="links" placeholder="كل رابط في سطر جديد">https://example.com/stream1
+https://example.com/stream2
+https://example.com/stream3</textarea>
+                                <div class="auto-fill-notice">أدخل روابط المشاهدة العادية (كل رابط في سطر جديد)</div>
+                            </div>
+                            
+                            <!-- قسم رابط XPola المباشر -->
+                            <div id="xmtv-links-section" class="link-input-section">
+                                <textarea id="xmtv-link" placeholder="xmtv://...">xmtv://WwoKICAKICAKIAogIAogICJodHRwczovL2JkZDAwLjRyb3V3YW5kYS1zaG9wLnN0b3JlL2xpdmUvMzEwMDk5ODgwMDUvaW5kZXgubTN1OD90PWIydm9SNHZJREE5WGItcUJrenZrX3cmZT0xNzU4MTE2NTM2fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgWUMgKDI0NFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvMTMxZjI2ZDktYWZiMC00ODBlLTg2OTAtZTQ2MDA3ZGU5ZmM4Lm0zdTh8Y2FzdD1mYWxzZXxuYW1lPScgICAgICBudW1iZXIgKDM2MFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvYmIxYTQxMTktNjVmOS00MGRjLTk4NjctMTI3ZjJhNjk3M2QxLm0zdTh8ZGV2aWNlY2FuYXJ5PWZhbHNlfGNhc3Q9ZmFsc2V8bmFtZT0nICAgbnVtYmVyICAoNDgwUCkg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAKICAKICAiaHR0cHM6Ly9jZG5mZXN0LmNvbS9HMS03MjBwL3ZpZGVvLm0zdTg/dG9rZW49MlpSdnVtNVJ4SXdlRzNkZXZpY2VjYW5hcnk9ZmFsc2V8Y2FzdD1mYWxzZXxuYW1lPScgICAgRzEgKDcyMFApICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAogIAogIAogIAogIAoKCgoKICAgICJodHRwczovL2Rva2tvMW5ldy5uZXdrc28ucnUvZG9ra28xL3ByZW1pdW09MS9tb25vLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTI5LjAuMC4wIFNhZmFyaS81MzcuMzZ8cmVmZXJlcj1odHRwczovL25ld2VtYmVkcGxheS54eXovfG5hbWU9ICcgICAgIERPSyAoNzIwUCkgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIsCiAgCiAgImh0dHBzOi8vd28uY21hLmZvb3RiYWxsaWkuaXIvaGxzMi9iMi5tM3U4fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgV0FDRUwtVFYgICAgICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAoKCiJodHRwczovL2dpdGh1Yi5jb20vbzJ3cy94cG9sYS1wbGF5ZXIvcmF3L3JlZnMvaGVhZHMvbWFpbi8xLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLy81LjAgKGlQaG9uZTsgQ1BVIGlQaG9uZSBPUyAxNl82IGxpa2UgTWFjIE9TIFgpIEFwcGxlV2ViS2l0Ly82MDUuMS4xNSAoS0hUTUwsIGxpa2UgR2Vja28pIFZlcnNpb24vLzE2LjYgTW9iaWxlLy8xNUUxNDggU2FmYXJpLy82MDQuMXxyZWZlcmVyPWh0dHBzOi8vd3d3LnlhcmlnYS5saXZlL3xuYW1lPSAnICAgICB4cCAo2YXYqti52K/YrykgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIKXQ==</textarea>
+                                <div class="auto-fill-notice">أدخل رابط XPola المباشر (xmtv://) - سيتم استخدام هذا الرابط مباشرة دون تشفير</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <button type="submit" class="btn btn-primary" id="submit-btn">إضافة المباراة</button>
+                        <button type="button" class="btn btn-danger hidden" id="cancel-btn">إلغاء التعديل</button>
+                        <button type="button" class="btn btn-secondary" id="logout-btn">تسجيل الخروج</button>
+                        <a href="index.html" class="btn btn-success">عرض الموقع</a>
+                        <button type="button" class="btn btn-info" id="test-connection-btn">اختبار الاتصال</button>
+                    </div>
+                    <div id="form-message"></div>
+                </form>
+            </div>
+
+            <div class="matches-container">
+                <h3>المباريات المضافة</h3>
+                <div id="matches-list">
+                    <div class="loading">جاري تحميل المباريات...</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <!-- قاعدة بيانات الفرق -->
+    <script src="js/teams-database.js"></script>
     
-    <script>
-        // ============================================
-        // إعدادات Firebase
-        // ============================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
-            authDomain: "wacel-live.firebaseapp.com",
-            databaseURL: "https://wacel-live-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "wacel-live",
-            storageBucket: "wacel-live.firebasestorage.app",
-            messagingSenderId: "185108554006",
-            appId: "1:185108554006:web:93171895b1d4bb07c6f037"
-        };
-
-        // ============================================
-        // نظام حماية مبسط
-        // ============================================
-        const DataProtector = {
-            secretKey: 'jedwal-protection-key-2024',
-            
-            encryptData: function(text) {
-                try {
-                    if (!text) return '';
-                    return btoa(text.split('').map((char, i) => 
-                        String.fromCharCode(char.charCodeAt(0) ^ this.secretKey.charCodeAt(i % this.secretKey.length))
-                    ).join(''));
-                } catch (e) {
-                    console.error('خطأ في التشفير:', e);
-                    return text;
-                }
-            },
-            
-            decryptData: function(encrypted) {
-                try {
-                    if (!encrypted) return '';
-                    const decoded = atob(encrypted);
-                    return decoded.split('').map((char, i) => 
-                        String.fromCharCode(char.charCodeAt(0) ^ this.secretKey.charCodeAt(i % this.secretKey.length))
-                    ).join('');
-                } catch (e) {
-                    console.error('خطأ في فك التشفير:', e);
-                    return encrypted;
-                }
-            },
-            
-            decryptMatch: function(matchData) {
-                if (!matchData) return matchData;
-                
-                // إذا كانت المباراة مشفرة، نفك تشفيرها
-                if (matchData.encrypted === true) {
-                    const decrypted = {};
-                    
-                    // قائمة الحقول المشفرة
-                    const encryptedFields = ['league', 'team1', 'team2', 'channel', 'commentator', 'date'];
-                    encryptedFields.forEach(field => {
-                        if (matchData[field]) {
-                            decrypted[field] = this.decryptData(matchData[field]);
-                        }
-                    });
-                    
-                    // الروابط المشفرة
-                    if (matchData.linkType === 'regular' && matchData.links) {
-                        decrypted.links = matchData.links.map(link => this.decryptData(link));
-                    } else if (matchData.linkType === 'xmtv' && matchData.xmtvLink) {
-                        decrypted.xmtvLink = this.decryptData(matchData.xmtvLink);
-                    }
-                    
-                    // الحقول غير المشفرة
-                    decrypted.linkType = matchData.linkType;
-                    decrypted.time = matchData.time;
-                    decrypted.leagueLogo = matchData.leagueLogo;
-                    decrypted.team1Logo = matchData.team1Logo;
-                    decrypted.team2Logo = matchData.team2Logo;
-                    decrypted.createdAt = matchData.createdAt;
-                    
-                    return decrypted;
-                }
-                
-                // إذا لم تكن مشفرة، نرجعها كما هي
-                return matchData;
-            }
-        };
-
-        // ============================================
-        // التهيئة الرئيسية
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 بدء تحميل الموقع...');
-            
-            // تحديث التاريخ مباشرة
-            updateDateTime();
-            
-            // إخفاء شاشة التحميل بعد ثانيتين وإظهار المحتوى
-            setTimeout(function() {
-                document.getElementById('loading-screen').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-                
-                // محاولة تحميل المباريات من Firebase
-                loadMatches();
-            }, 2000);
-        });
-
-        // ============================================
-        // تحديث التاريخ والوقت
-        // ============================================
-        function updateDateTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            };
-            
-            document.getElementById('current-date').textContent = 
-                now.toLocaleDateString('ar-SA', options);
-            
-            document.getElementById('last-update').textContent = 
-                now.toLocaleTimeString('ar-SA');
-            
-            // تحديث كل دقيقة
-            setTimeout(updateDateTime, 60000);
-        }
-
-        // ============================================
-        // تحميل المباريات
-        // ============================================
-        function loadMatches() {
-            const container = document.getElementById('matches-container');
-            
-            console.log('🔄 جاري تحميل المباريات...');
-            
-            // محاولة استخدام Firebase
-            if (typeof firebase !== 'undefined') {
-                try {
-                    const app = firebase.initializeApp(firebaseConfig);
-                    const db = firebase.database();
-                    
-                    db.ref('matches').once('value')
-                        .then(snapshot => {
-                            if (snapshot.exists()) {
-                                console.log('✅ تم تحميل المباريات من Firebase');
-                                displayMatches(snapshot.val());
-                            } else {
-                                console.log('📭 لا توجد مباريات في Firebase');
-                                showDemoMatches();
-                            }
-                        })
-                        .catch(error => {
-                            console.error('❌ خطأ في Firebase:', error);
-                            showDemoMatches();
-                        });
-                } catch (error) {
-                    console.error('❌ خطأ في تهيئة Firebase:', error);
-                    showDemoMatches();
-                }
-            } else {
-                console.log('⚠️ Firebase غير متوفر، عرض بيانات تجريبية');
-                showDemoMatches();
-            }
-        }
-
-        // ============================================
-        // عرض المباريات
-        // ============================================
-        function displayMatches(matches) {
-            const container = document.getElementById('matches-container');
-            container.innerHTML = '';
-            
-            // تجميع المباريات حسب الدوري
-            const leagues = {};
-            
-            Object.values(matches).forEach(matchData => {
-                try {
-                    // فك تشفير المباراة
-                    const match = DataProtector.decryptMatch(matchData);
-                    
-                    if (!match.league) return;
-                    
-                    if (!leagues[match.league]) {
-                        leagues[match.league] = [];
-                    }
-                    
-                    leagues[match.league].push(match);
-                    
-                } catch (error) {
-                    console.error('❌ خطأ في فك تشفير المباراة:', error);
-                }
-            });
-            
-            // إذا لم توجد مباريات
-            if (Object.keys(leagues).length === 0) {
-                showDemoMatches();
-                return;
-            }
-            
-            // عرض المباريات حسب الدوري
-            Object.entries(leagues).forEach(([leagueName, leagueMatches]) => {
-                const firstMatch = leagueMatches[0];
-                
-                const leagueSection = document.createElement('div');
-                leagueSection.className = 'league-section';
-                
-                leagueSection.innerHTML = `
-                    <div class="league-header">
-                        <div class="league-title">
-                            <img src="${firstMatch.leagueLogo || 'https://via.placeholder.com/60?text=LOGO'}" 
-                                 alt="${leagueName}" 
-                                 class="league-logo"
-                                 onerror="this.src='https://via.placeholder.com/60?text=LOGO'">
-                            <span>${leagueName}</span>
-                        </div>
-                        <div class="security-badge">
-                            ${leagueMatches.length} مباراة
-                        </div>
-                    </div>
-                    <div class="matches-list"></div>
-                `;
-                
-                container.appendChild(leagueSection);
-                
-                // عرض مباريات هذا الدوري
-                const matchesList = leagueSection.querySelector('.matches-list');
-                
-                leagueMatches.forEach(match => {
-                    // إنشاء رابط المشاهدة
-                    let watchLink = "#";
-                    
-                    if (match.linkType === 'regular' && match.links && match.links.length > 0) {
-                        watchLink = match.links[0];
-                    } else if (match.linkType === 'xmtv' && match.xmtvLink) {
-                        watchLink = match.xmtvLink;
-                    }
-                    
-                    const matchElement = document.createElement('a');
-                    matchElement.href = watchLink;
-                    matchElement.className = 'match-box';
-                    matchElement.target = '_blank';
-                    matchElement.rel = 'noopener noreferrer';
-                    matchElement.innerHTML = `
-                        <div class="protected-overlay">🔒</div>
-                        <div class="match-info">
-                            <div class="team">
-                                <img src="${match.team1Logo || 'https://via.placeholder.com/80?text=T1'}" 
-                                     alt="${match.team1}" 
-                                     class="team-logo"
-                                     onerror="this.src='https://via.placeholder.com/80?text=T1'">
-                                <div class="team-name">${match.team1 || 'فريق 1'}</div>
-                            </div>
-                            
-                            <div class="vs">⚽</div>
-                            
-                            <div class="team">
-                                <img src="${match.team2Logo || 'https://via.placeholder.com/80?text=T2'}" 
-                                     alt="${match.team2}" 
-                                     class="team-logo"
-                                     onerror="this.src='https://via.placeholder.com/80?text=T2'">
-                                <div class="team-name">${match.team2 || 'فريق 2'}</div>
-                            </div>
-                        </div>
-                        
-                        <div style="text-align: center; margin: 20px 0;">
-                            <div class="match-time">${match.time || '00:00'}</div>
-                        </div>
-                        
-                        <div class="match-details">
-                            <div class="detail-item">
-                                <span class="detail-label">📺 القناة</span>
-                                <span class="detail-value">${match.channel || 'غير محددة'}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">🎤 المعلق</span>
-                                <span class="detail-value">${match.commentator || 'غير محدد'}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">📅 التاريخ</span>
-                                <span class="detail-value">${match.date || 'غير محدد'}</span>
-                            </div>
-                        </div>
-                    `;
-                    
-                    matchesList.appendChild(matchElement);
-                });
-            });
-            
-            console.log('✅ تم عرض المباريات بنجاح');
-        }
-
-        // ============================================
-        // عرض بيانات تجريبية
-        // ============================================
-        function showDemoMatches() {
-            const container = document.getElementById('matches-container');
-            
-            // بيانات تجريبية
-            const demoMatches = [
-                {
-                    league: 'الدوري الإنجليزي الممتاز',
-                    leagueLogo: 'https://resources.premierleague.com/premierleague/badges/50/t1.png',
-                    team1: 'مانشستر سيتي',
-                    team1Logo: 'https://resources.premierleague.com/premierleague/badges/50/t43.png',
-                    team2: 'أرسنال',
-                    team2Logo: 'https://resources.premierleague.com/premierleague/badges/50/t3.png',
-                    time: '20:00',
-                    date: 'السبت 20 ديسمبر 2024',
-                    channel: 'beIN Sports',
-                    commentator: 'أحمد البلوشي',
-                    linkType: 'regular',
-                    links: ['https://example.com/stream1']
-                },
-                {
-                    league: 'الدوري السعودي',
-                    leagueLogo: 'https://upload.wikimedia.org/wikipedia/ar/thumb/6/6d/%D8%B4%D8%B9%D8%A7%D8%B1_%D8%A7%D9%84%D8%AF%D9%88%D8%B1%D9%8A_%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A_%D8%A7%D9%84%D9%85%D8%AD%D8%AA%D8%B1%D9%81.svg/1200px-%D8%B4%D8%B9%D8%A7%D8%B1_%D8%A7%D9%84%D8%AF%D9%88%D8%B1%D9%8A_%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A_%D8%A7%D9%84%D9%85%D8%AD%D8%AA%D8%B1%D9%81.svg.png',
-                    team1: 'الهلال',
-                    team1Logo: 'https://upload.wikimedia.org/wikipedia/ar/archive/1/12/20230512223726%21Al_Hilal_SFC_logo_2022.svg',
-                    team2: 'النصر',
-                    team2Logo: 'https://upload.wikimedia.org/wikipedia/ar/thumb/a/ac/Al_Nassr_FC_Logo.svg/1513px-Al_Nassr_FC_Logo.svg.png',
-                    time: '21:00',
-                    date: 'السبت 20 ديسمبر 2024',
-                    channel: 'SSC',
-                    commentator: 'عمر الدوسري',
-                    linkType: 'xmtv',
-                    xmtvLink: 'https://xmtv.com/stream123'
-                }
-            ];
-            
-            // عرض المباريات التجريبية
-            const demoLeague = {
-                'الدوري التجريبي': demoMatches
-            };
-            
-            displayMatches({
-                demo1: { encrypted: false, ...demoMatches[0] },
-                demo2: { encrypted: false, ...demoMatches[1] }
-            });
-            
-            // رسالة توضيحية
-            const demoMsg = document.createElement('div');
-            demoMsg.style.cssText = `
-                background: rgba(247, 127, 0, 0.2);
-                border: 2px solid #f77f00;
-                color: #f77f00;
-                padding: 20px;
-                border-radius: 15px;
-                text-align: center;
-                margin-top: 30px;
-            `;
-            demoMsg.innerHTML = `
-                <h3>📡 وضع العرض التجريبي</h3>
-                <p>يتم عرض بيانات تجريبية للاختبار</p>
-                <p style="font-size: 14px; margin-top: 10px;">
-                    لتشغيل البيانات الحقيقية، تأكد من اتصال Firebase
-                </p>
-            `;
-            container.appendChild(demoMsg);
-            
-            console.log('📡 تم عرض البيانات التجريبية');
-        }
-
-        // ============================================
-        // وظائف مساعدة
-        // ============================================
-        window.refreshMatches = function() {
-            const container = document.getElementById('matches-container');
-            container.innerHTML = `
-                <div class="loading">
-                    <div class="loader" style="width: 50px; height: 50px; margin: 20px auto;"></div>
-                    جاري تحديث المباريات...
-                </div>
-            `;
-            
-            setTimeout(loadMatches, 1000);
-        };
-        
-        // أضف أزرار تحكم للمطور
-        setTimeout(() => {
-            const controls = document.createElement('div');
-            controls.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 20px;
-                z-index: 1000;
-                display: flex;
-                gap: 10px;
-                opacity: 0.3;
-                transition: opacity 0.3s;
-            `;
-            controls.onmouseover = () => controls.style.opacity = '1';
-            controls.onmouseout = () => controls.style.opacity = '0.3';
-            
-            controls.innerHTML = `
-                <button onclick="window.refreshMatches()" style="
-                    background: #4299e1;
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                ">
-                    🔄 تحديث
-                </button>
-                <button onclick="console.log('موقع:', window.location.hostname)" style="
-                    background: #38a169;
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                ">
-                    ℹ️ معلومات
-                </button>
-            `;
-            
-            document.body.appendChild(controls);
-        }, 3000);
-
-    </script>
+    <!-- السكريبت الرئيسي للوحة التحكم (ملف منفصل) -->
+    <script type="module" src="js/admin.js"></script>
 </body>
 </html>
