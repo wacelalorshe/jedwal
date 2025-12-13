@@ -1652,5 +1652,461 @@ https://example.com/stream3</textarea>
     console.log("✅ نظام إدارة المباريات جاهز");
     </script>
     
+    
+    <!-- Firebase Live -->
+<script src="js/firebase-live.js"></script>
+
+<script>
+// نظام إدارة المباريات الحقيقي
+console.log("🎮 تحميل نظام المباريات الحقيقي...");
+
+// انتظار تحميل Firebase
+window.addEventListener('firebase-ready', initRealMatchSystem);
+setTimeout(initRealMatchSystem, 3000); // احتياطي
+
+async function initRealMatchSystem() {
+    console.log("🚀 بدء نظام المباريات الحقيقي...");
+    
+    // الانتظار حتى يكون Firebase جاهزاً
+    if (!window.firebaseDb) {
+        console.warn("⚠️ Firebase غير جاهز، جاري الانتظار...");
+        setTimeout(initRealMatchSystem, 1000);
+        return;
+    }
+    
+    // 1. تحديث واجهة المستخدم
+    updateFirebaseStatus(true);
+    
+    // 2. تحميل المباريات الحقيقية
+    await loadRealMatches();
+    
+    // 3. إعداد النموذج الحقيقي
+    setupRealMatchForm();
+    
+    // 4. الاستماع للتحديثات في الوقت الحقيقي
+    setupRealtimeUpdates();
+    
+    console.log("✅ نظام المباريات الحقيقي جاهز");
+}
+
+async function loadRealMatches() {
+    console.log("📥 جاري تحميل المباريات الحقيقية...");
+    
+    const matchesList = document.getElementById('matches-list');
+    if (!matchesList) return;
+    
+    matchesList.innerHTML = `
+        <div class="loading">
+            <div style="text-align: center; padding: 30px;">
+                <div style="margin-bottom: 15px;">📡 جاري الاتصال بقاعدة البيانات...</div>
+                <div class="spinner" style="
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid #667eea;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto;
+                "></div>
+            </div>
+        </div>
+    `;
+    
+    try {
+        // استخدام Firebase Live
+        const matches = await FirebaseLive.getMatches();
+        
+        if (matches.length === 0) {
+            matchesList.innerHTML = `
+                <div class="loading">
+                    <div style="text-align: center; padding: 40px;">
+                        <div style="font-size: 18px; margin-bottom: 10px;">📭 لا توجد مباريات مضافة</div>
+                        <div style="color: #666; margin-bottom: 20px;">ابدأ بإضافة أول مباراة باستخدام النموذج أعلاه</div>
+                        <button onclick="addSampleMatch()" style="
+                            padding: 10px 20px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-weight: bold;
+                        ">
+                            ➕ إضافة مباراة تجريبية
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            displayRealMatches(matches);
+        }
+        
+        // تحديث العداد
+        updateMatchesCount(matches.length);
+        
+    } catch (error) {
+        console.error("❌ خطأ في تحميل المباريات:", error);
+        matchesList.innerHTML = `
+            <div class="error">
+                <div style="text-align: center; padding: 30px;">
+                    <div style="color: #f44336; font-size: 20px; margin-bottom: 10px;">❌ خطأ في الاتصال</div>
+                    <div style="color: #666; margin-bottom: 20px;">${error.message || 'تعذر الاتصال بقاعدة البيانات'}</div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button onclick="loadRealMatches()" style="
+                            padding: 8px 16px;
+                            background: #434C75;
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                        ">
+                            🔄 إعادة المحاولة
+                        </button>
+                        <button onclick="addSampleMatch()" style="
+                            padding: 8px 16px;
+                            background: #4CAF50;
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                        ">
+                            🧪 بيانات تجريبية
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function displayRealMatches(matches) {
+    const matchesList = document.getElementById('matches-list');
+    if (!matchesList) return;
+    
+    // ترتيب المباريات حسب التاريخ
+    matches.sort((a, b) => {
+        const timeA = a.time || '00:00';
+        const timeB = b.time || '00:00';
+        return timeA.localeCompare(timeB);
+    });
+    
+    let html = '';
+    
+    matches.forEach((match, index) => {
+        const date = match.createdAt ? new Date(match.createdAt) : new Date();
+        const timeStr = date.toLocaleTimeString('ar-AR', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = date.toLocaleDateString('ar-AR');
+        
+        html += `
+            <div class="match-item secure-match" style="animation: slideIn 0.3s ease-out ${index * 0.1}s both;">
+                <div class="match-header">
+                    <h4 style="margin: 0; color: #434C75;">${match.league || 'بدون دوري'}</h4>
+                    <span class="security-badge">🔥</span>
+                    <div class="actions">
+                        <button class="btn btn-primary btn-small" onclick="editRealMatch('${match.id}')">
+                            <span>✏️</span> تعديل
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteRealMatch('${match.id}')">
+                            <span>🗑️</span> حذف
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="match-teams">
+                    <div class="match-team">
+                        <img src="${match.team1Logo || 'https://via.placeholder.com/60?text=T1'}" 
+                             alt="${match.team1}" 
+                             onerror="this.src='https://via.placeholder.com/60?text=T1'">
+                        <span style="font-weight: bold; margin-top: 8px; display: block;">${match.team1 || 'فريق 1'}</span>
+                    </div>
+                    <div class="match-time">${match.time || '--:--'}</div>
+                    <div class="match-team">
+                        <img src="${match.team2Logo || 'https://via.placeholder.com/60?text=T2'}" 
+                             alt="${match.team2}" 
+                             onerror="this.src='https://via.placeholder.com/60?text=T2'">
+                        <span style="font-weight: bold; margin-top: 8px; display: block;">${match.team2 || 'فريق 2'}</span>
+                    </div>
+                </div>
+                
+                <div class="match-details">
+                    <div><span style="margin-left: 5px;">📺</span> ${match.channel || 'بدون قناة'}</div>
+                    <div><span style="margin-left: 5px;">🎤</span> ${match.commentator || 'بدون معلق'}</div>
+                    <div><span style="margin-left: 5px;">📅</span> ${match.date || 'بدون تاريخ'}</div>
+                </div>
+                
+                ${match.links && match.links.length > 0 ? `
+                    <div class="links-container secure-links">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <span>🔗</span>
+                            <strong>روابط المشاهدة (${match.links.length})</strong>
+                        </div>
+                        ${match.links.slice(0, 3).map((link, linkIndex) => `
+                            <div class="link-item">
+                                <span>${linkIndex + 1}. ${link.substring(0, 50)}...</span>
+                                <button class="btn btn-small" onclick="copyToClipboard('${link.replace(/'/g, "\\'")}')">
+                                    <span>📋</span> نسخ
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : match.xmtvLink ? `
+                    <div class="xmtv-section">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <span>🎬</span>
+                            <strong>رابط XPola مباشر</strong>
+                        </div>
+                        <div class="xmtv-actions">
+                            <button class="btn btn-success btn-small" onclick="window.open('${match.xmtvLink}', '_blank')">
+                                <span>▶️</span> فتح في XPola
+                            </button>
+                            <button class="btn btn-small" onclick="copyToClipboard('${match.xmtvLink.replace(/'/g, "\\'")}')">
+                                <span>📋</span> نسخ الرابط
+                            </button>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <div class="match-meta" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; font-size: 11px; color: #666; display: flex; justify-content: space-between;">
+                    <small><span>🆔</span> ${match.id.substring(0, 8)}...</small>
+                    <small><span>🕒</span> ${dateStr} ${timeStr}</small>
+                </div>
+            </div>
+        `;
+    });
+    
+    matchesList.innerHTML = html;
+    console.log(`✅ تم عرض ${matches.length} مباراة حقيقية`);
+}
+
+function setupRealMatchForm() {
+    const matchForm = document.getElementById('match-form');
+    if (!matchForm) return;
+    
+    // إزالة المستمع القديم
+    const newForm = matchForm.cloneNode(true);
+    matchForm.parentNode.replaceChild(newForm, matchForm);
+    
+    // إعداد مستمع جديد
+    newForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        console.log("➕ محاولة إضافة مباراة حقيقية...");
+        
+        // جمع البيانات
+        const matchData = {
+            league: document.getElementById('league').value,
+            leagueLogo: document.getElementById('league-logo').value,
+            team1: document.getElementById('team1').value,
+            team1Logo: document.getElementById('team1-logo').value,
+            team2: document.getElementById('team2').value,
+            team2Logo: document.getElementById('team2-logo').value,
+            time: document.getElementById('match-time').value,
+            channel: document.getElementById('channel').value,
+            commentator: document.getElementById('commentator').value,
+            date: document.getElementById('match-date').value,
+            linkType: document.querySelector('.link-type-btn.active')?.dataset.type || 'regular'
+        };
+        
+        // معالجة الروابط
+        if (matchData.linkType === 'xmtv') {
+            matchData.xmtvLink = document.getElementById('xmtv-link').value;
+            matchData.links = [];
+        } else {
+            matchData.links = document.getElementById('links').value
+                .split('\n')
+                .filter(link => link.trim() !== '');
+        }
+        
+        // التحقق من البيانات
+        if (!matchData.team1 || !matchData.team2 || !matchData.time) {
+            showMessage("❌ يرجى ملء جميع الحقول المطلوبة", 'error');
+            return;
+        }
+        
+        try {
+            // إضافة المباراة إلى Firebase
+            const result = await FirebaseLive.addMatch(matchData);
+            
+            if (result.success) {
+                showMessage(`✅ تم إضافة المباراة بنجاح! (ID: ${result.id.substring(0, 8)})`, 'success');
+                
+                // إعادة تعيين النموذج
+                newForm.reset();
+                
+                // استعادة القيم الافتراضية
+                document.getElementById('league').value = 'الدوري الانجليزي الممتاز';
+                document.getElementById('league-logo').value = 'https://resources.premierleague.com/premierleague/badges/50/t1.png';
+                document.getElementById('team1').value = 'مانشستر يونايتد';
+                document.getElementById('team1-logo').value = 'https://resources.premierleague.com/premierleague/badges/50/t1.png';
+                document.getElementById('team2').value = 'ليفربول';
+                document.getElementById('team2-logo').value = 'https://resources.premierleague.com/premierleague/badges/50/t14.png';
+                document.getElementById('match-time').value = '08:00م';
+                document.getElementById('channel').value = 'bein sport 1';
+                document.getElementById('commentator').value = 'أحمد البلوشي';
+                document.getElementById('match-date').value = new Date().toLocaleDateString('ar-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                
+                // تحديث القائمة بعد 2 ثانية
+                setTimeout(loadRealMatches, 2000);
+                
+            } else {
+                showMessage(`❌ فشل في إضافة المباراة: ${result.error}`, 'error');
+            }
+            
+        } catch (error) {
+            console.error("❌ خطأ في إضافة المباراة:", error);
+            showMessage(`❌ خطأ في الإضافة: ${error.message}`, 'error');
+        }
+    });
+}
+
+function setupRealtimeUpdates() {
+    // الاستماع للتحديثات في الوقت الحقيقي
+    FirebaseLive.onMatchesUpdate((matches) => {
+        console.log("🔄 تحديث في الوقت الحقيقي:", matches.length, "مباراة");
+        updateMatchesCount(matches.length);
+    });
+}
+
+// دوال مساعدة
+function updateFirebaseStatus(connected) {
+    const firebaseStatus = document.getElementById('firebase-status');
+    const databaseStatus = document.getElementById('database-status');
+    
+    if (firebaseStatus) {
+        firebaseStatus.textContent = connected ? '🔥' : '❌';
+        firebaseStatus.style.color = connected ? '#4CAF50' : '#f44336';
+    }
+    
+    if (databaseStatus) {
+        databaseStatus.textContent = connected ? '✅' : '❌';
+        databaseStatus.style.color = connected ? '#4CAF50' : '#f44336';
+    }
+}
+
+function updateMatchesCount(count) {
+    const matchesCount = document.getElementById('matches-count');
+    if (matchesCount) {
+        matchesCount.textContent = count;
+    }
+}
+
+function showMessage(message, type = 'info') {
+    const formMessage = document.getElementById('form-message');
+    if (!formMessage) return;
+    
+    const colors = {
+        success: ['#4CAF50', '#2E7D32'],
+        error: ['#f44336', '#d32f2f'],
+        info: ['#2196F3', '#0d47a1']
+    };
+    
+    formMessage.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, ${colors[type][0]} 0%, ${colors[type][1]} 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        ">
+            <div style="font-size: 18px; margin-bottom: 8px;">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</div>
+            <div style="font-size: 14px;">${message}</div>
+        </div>
+    `;
+    
+    setTimeout(() => {
+        formMessage.innerHTML = '';
+    }, 5000);
+}
+
+// دوال التحكم
+window.addSampleMatch = async function() {
+    const sampleMatch = {
+        league: 'الدوري الانجليزي الممتاز',
+        leagueLogo: 'https://resources.premierleague.com/premierleague/badges/50/t1.png',
+        team1: 'مانشستر يونايتد',
+        team1Logo: 'https://resources.premierleague.com/premierleague/badges/50/t1.png',
+        team2: 'ليفربول',
+        team2Logo: 'https://resources.premierleague.com/premierleague/badges/50/t14.png',
+        time: new Date().toLocaleTimeString('ar-AR', { hour: '2-digit', minute: '2-digit' }),
+        channel: 'bein sport 1',
+        commentator: 'أحمد البلوشي',
+        date: new Date().toLocaleDateString('ar-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        links: [
+            'https://example.com/sample-stream-1',
+            'https://example.com/sample-stream-2'
+        ],
+        linkType: 'regular'
+    };
+    
+    try {
+        const result = await FirebaseLive.addMatch(sampleMatch);
+        
+        if (result.success) {
+            showMessage(`✅ تم إضافة مباراة تجريبية بنجاح!`, 'success');
+            setTimeout(loadRealMatches, 1500);
+        } else {
+            showMessage(`❌ فشل في إضافة المباراة التجريبية`, 'error');
+        }
+    } catch (error) {
+        showMessage(`❌ خطأ: ${error.message}`, 'error');
+    }
+};
+
+window.deleteRealMatch = async function(matchId) {
+    if (!confirm('⚠️ هل أنت متأكد من حذف هذه المباراة؟')) return;
+    
+    try {
+        await FirebaseLive.deleteMatch(matchId);
+        showMessage('✅ تم حذف المباراة بنجاح', 'success');
+        setTimeout(loadRealMatches, 1000);
+    } catch (error) {
+        showMessage(`❌ خطأ في الحذف: ${error.message}`, 'error');
+    }
+};
+
+window.editRealMatch = function(matchId) {
+    alert(`✏️ تحرير المباراة: ${matchId}\nسيتم فتح نموذج التحرير...`);
+    // يمكنك إضافة منطق التحرير هنا
+};
+
+window.testRealFirebase = async function() {
+    try {
+        const result = await FirebaseLive.testConnection();
+        alert(result.message);
+    } catch (error) {
+        alert(`❌ خطأ: ${error.message}`);
+    }
+};
+
+// تحديث زر اختبار الاتصال
+const testBtn = document.getElementById('test-connection-btn');
+if (testBtn) {
+    testBtn.onclick = testRealFirebase;
+}
+
+// إضافة أنيميشن
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes slideIn {
+        from {
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+console.log("✅ نظام المباريات الحقيقي محمل");
+</script>
+    
 </body>
 </html>
