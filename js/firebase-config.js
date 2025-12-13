@@ -1,75 +1,55 @@
-// firebase-config.js - مع الحماية المنطقية
-console.log("🔄 جاري تحميل إعدادات Firebase مع الحماية...");
+// firebase-config.js - الإصدار النمطي المعدل
+console.log("🎯 جاري تحميل إعدادات Firebase...");
 
-// النطاقات المصرحة
-const OFFICIAL_DOMAINS = [
-    'wacelalorshe.github.io',
-    'jedwal.netlify.app'
-];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-const CURRENT_DOMAIN = window.location.hostname;
-const IS_OFFICIAL = OFFICIAL_DOMAINS.some(domain => CURRENT_DOMAIN.includes(domain)) || 
-                   CURRENT_DOMAIN.includes('localhost');
-
-if (!IS_OFFICIAL) {
-    console.warn('⚠️ نطاق غير رسمي:', CURRENT_DOMAIN);
-    
-    // 1. إضافة علامة في localStorage
-    localStorage.setItem('unauthorized_domain', CURRENT_DOMAIN);
-    
-    // 2. تسجيل المحاولة
-    try {
-        if (navigator.sendBeacon) {
-            navigator.sendBeacon('https://wacelalorshe.github.io/jedwal/log.php', 
-                JSON.stringify({
-                    type: 'unauthorized_access',
-                    domain: CURRENT_DOMAIN,
-                    time: new Date().toISOString()
-                })
-            );
-        }
-    } catch(e) {}
-}
-
-// تهيئة Firebase
+// إعدادات Firebase المعدلة مع قاعدة بيانات
 const firebaseConfig = {
-    apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
-    authDomain: "wacel-live.firebaseapp.com",
-    databaseURL: "https://wacel-live-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "wacel-live",
-    storageBucket: "wacel-live.firebasestorage.app",
-    messagingSenderId: "185108554006",
-    appId: "1:185108554006:web:93171895b1d4bb07c6f037"
+  apiKey: "AIzaSyDHuT30xDYB7V-ApkniYh6s4FQ--GeGBkI",
+  authDomain: "wacel-jedwal.firebaseapp.com",
+  projectId: "wacel-jedwal",
+  storageBucket: "wacel-jedwal.firebasestorage.app",
+  messagingSenderId: "1076867495104",
+  appId: "1:1076867495104:web:8bf6053e7de57d73856925",
+  // إضافة رابط قاعدة البيانات الحية
+  databaseURL: "https://wacel-jedwal-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
 
+// تهيئة التطبيق
+let app;
+let db;
+let auth;
+
 try {
-    if (typeof firebase !== 'undefined') {
-        // فقط للنطاقات المصرحة، استخدم Firebase الحقيقي
-        if (IS_OFFICIAL) {
-            window.firebaseApp = firebase.initializeApp(firebaseConfig);
-            window.firebaseDb = firebase.database();
-            window.firebaseAuth = firebase.auth();
-            
-            // إضافة علامة للنطاق الرسمي
-            window.firebaseDb.ref('.info/connected').on('value', (snap) => {
-                if (snap.val() === true) {
-                    window.firebaseDb.ref('domain_verification').set({
-                        domain: CURRENT_DOMAIN,
-                        verified: true,
-                        timestamp: Date.now()
-                    });
-                }
-            });
-            
-            console.log("✅ Firebase نشط للنطاق الرسمي:", CURRENT_DOMAIN);
-        } else {
-            // للنطاقات غير الرسمية، استخدم نسخة محدودة
-            console.log("🛡️ تحميل نسخة محدودة من Firebase");
-            // ... نفس الكود السابق للنسخة المحدودة
-        }
-    }
+  app = initializeApp(firebaseConfig);
+  console.log("✅ تم تهيئة التطبيق بنجاح");
+  
+  // تهيئة قاعدة البيانات
+  db = getDatabase(app);
+  console.log("✅ تم تهيئة قاعدة البيانات");
+  
+  // تهيئة المصادقة
+  auth = getAuth(app);
+  console.log("✅ تم تهيئة المصادقة");
+  
+  // اختبار الاتصال
+  console.log("📊 حالة المصادقة الحالية:", auth.currentUser);
 } catch (error) {
-    console.error("❌ خطأ في تهيئة Firebase:", error);
+  console.error("❌ خطأ في تهيئة Firebase:", error);
+  // خلق نسخة وهمية للاختبار
+  auth = {
+    currentUser: null,
+    signInWithEmailAndPassword: () => Promise.reject({ code: 'test-error' }),
+    signOut: () => Promise.resolve(),
+    onAuthStateChanged: (callback) => {
+      console.log("🔧 استخدام auth تجريبي");
+      callback(null);
+      return () => {};
+    }
+  };
 }
 
-console.log("🎯 Firebase Config loaded for domain:", CURRENT_DOMAIN);
+// تصدير الخدمات
+export { app, db, auth };
