@@ -7,7 +7,8 @@ class DataProtector {
         this.allowedOrigins = [
             'wacelalorshe.github.io',
             'jedwal.netlify.app',
-            'localhost'
+            'localhost',
+            '127.0.0.1'
         ];
         console.log("✅ نظام الحماية جاهز للموقع:", window.location.hostname);
     }
@@ -44,6 +45,7 @@ class DataProtector {
     }
 
     encryptData(data) {
+        if (!data || data === '') return '';
         try {
             let encrypted = '';
             for (let i = 0; i < data.length; i++) {
@@ -59,6 +61,7 @@ class DataProtector {
     }
 
     decryptData(encryptedData) {
+        if (!encryptedData || encryptedData === '') return '';
         try {
             const decoded = atob(encryptedData);
             let decrypted = '';
@@ -77,7 +80,7 @@ class DataProtector {
     encryptMatch(matchData) {
         const encryptedMatch = { ...matchData };
         
-        // تشفير الروابط
+        // تشفير الروابط العادية
         if (matchData.links && Array.isArray(matchData.links)) {
             encryptedMatch.protectedLinks = matchData.links.map(link => 
                 this.encryptData(link)
@@ -95,11 +98,13 @@ class DataProtector {
         encryptedMatch.encrypted = true;
         encryptedMatch.domain = window.location.hostname;
         encryptedMatch.timestamp = Date.now();
+        encryptedMatch.createdAt = matchData.createdAt || Date.now();
         
         return encryptedMatch;
     }
 
     decryptMatch(encryptedMatch) {
+        // إذا لم تكن البيانات مشفرة، ارجعها كما هي
         if (!encryptedMatch.encrypted) return encryptedMatch;
         
         const decryptedMatch = { ...encryptedMatch };
@@ -118,6 +123,7 @@ class DataProtector {
             delete decryptedMatch.protectedXmtv;
         }
         
+        // إزالة بيانات التشفير
         delete decryptedMatch.encrypted;
         delete decryptedMatch.domain;
         
@@ -125,6 +131,8 @@ class DataProtector {
     }
 
     createXmtvLink(linksArray) {
+        if (!Array.isArray(linksArray) || linksArray.length === 0) return "#";
+        
         try {
             const jsonString = JSON.stringify(linksArray);
             const encryptedLinks = this.encryptData(jsonString);
@@ -136,8 +144,9 @@ class DataProtector {
     }
 
     parseXmtvLink(xmtvLink) {
+        if (!xmtvLink || !xmtvLink.startsWith("xmtv://")) return [];
+        
         try {
-            if (!xmtvLink.startsWith("xmtv://")) return [];
             const encryptedPart = xmtvLink.replace("xmtv://", "");
             const decryptedJson = this.decryptData(encryptedPart);
             return JSON.parse(decryptedJson);
@@ -153,12 +162,13 @@ if (!window.DataProtector) {
     window.DataProtector = new DataProtector();
     
     // التحقق من النطاق عند التحميل
-    document.addEventListener('DOMContentLoaded', function() {
-        if (!window.DataProtector.checkOrigin()) {
-            return;
-        }
-        console.log("✅ الموقع مصرح به:", window.location.hostname);
-    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            window.DataProtector.checkOrigin();
+        });
+    } else {
+        window.DataProtector.checkOrigin();
+    }
 }
 
 console.log("✅ نظام الحماية جاهز!");
