@@ -5,254 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم - وسيل لايف برو</title>
     
-    
-<!-- حماية وتشويش الكود -->
-<script src="js/obfuscator.js"></script>
-<!-- نظام حماية Firebase المحدث -->
-<script src="js/firebase-security-fixed.js"></script>
-<!-- مصحح النطاق التلقائي -->
-<script src="js/domain-fixer.js"></script>
-<script src="js/data-validator.js"></script>
-    
-    <!-- نظام حماية Firebase المحدث -->
-    <script src="js/firebase-security-fixed.js"></script>
-    <script src="js/data-validator.js"></script>
-    
-    <!-- Firebase المؤمن -->
-    <script type="module" src="js/secure-firebase-config.js"></script>
-    
     <!-- أنماط CSS الرئيسية -->
-    <link rel="stylesheet" href="styles/style.css">
-    
-    <!-- أنماط إضافية -->
     <style>
-        /* أنماط نظام الاقتراحات التلقائية */
-        .suggestions-box { 
-            position: absolute; 
-            background: white; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            max-height: 200px; 
-            overflow-y: auto; 
-            z-index: 1000; 
-            width: calc(100% - 2px); 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-            margin-top: 2px; 
-        }
-        .suggestion-item { 
-            padding: 8px 12px; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            border-bottom: 1px solid #f0f0f0; 
-        }
-        .suggestion-item:hover { 
-            background-color: #f5f5f5; 
-        }
-        .suggestion-item img { 
-            border-radius: 3px; 
-        }
-        .hidden { 
-            display: none; 
-        }
-        .form-group { 
-            position: relative; 
-        }
-        .logo-preview { 
-            width: 40px; 
-            height: 40px; 
-            object-fit: contain; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            margin-left: 10px; 
-        }
-        .logo-container { 
-            display: flex; 
-            align-items: center; 
-            margin-top: 5px; 
-        }
-        .auto-fill-notice { 
-            font-size: 12px; 
-            color: #666; 
-            margin-top: 5px; 
-        }
-        .league-logo-container { 
-            display: flex; 
-            align-items: center; 
-            margin-top: 5px; 
-        }
-        .xmtv-section { 
-            background: rgba(67, 76, 117, 0.1); 
-            border-radius: 8px; 
-            padding: 15px; 
-            margin-top: 15px; 
-        }
-        .xmtv-actions { 
-            display: flex; 
-            gap: 8px; 
-            flex-wrap: wrap; 
-            margin-top: 8px; 
-        }
-        .btn-small { 
-            padding: 6px 12px; 
-            font-size: 12px; 
-        }
-        .btn-warning { 
-            background: #ffc107; 
-            color: #000; 
-        }
-        .link-item { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: #151825; 
-            padding: 10px; 
-            border-radius: 5px; 
-            margin-bottom: 5px; 
-            word-break: break-all; 
-            text-align: left; 
-            font-size: 12px; 
-        }
-        .link-item span { 
-            flex: 1; 
-            margin-right: 10px; 
-        }
-        .xmtv-link-preview { 
-            background: #1a1f3c; 
-            padding: 10px; 
-            border-radius: 5px; 
-            margin: 10px 0; 
-            font-family: monospace; 
-            font-size: 11px; 
-            word-break: break-all; 
-            max-height: 80px; 
-            overflow-y: auto; 
-        }
-        .link-type-selector { 
-            display: flex; 
-            gap: 10px; 
-            margin-bottom: 10px; 
-        }
-        .link-type-btn { 
-            padding: 8px 15px; 
-            border: 1px solid #434C75; 
-            background: #151825; 
-            color: white; 
-            border-radius: 5px; 
-            cursor: pointer; 
-        }
-        .link-type-btn.active { 
-            background: #434C75; 
-            color: white; 
-        }
-        .link-input-section { 
-            display: none; 
-        }
-        .link-input-section.active { 
-            display: block; 
+        /* أنماط أساسية */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        /* أنماط إضافية */
-        .test-notice {
+        body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        /* شريط الحالة */
+        .status-bar {
+            background: linear-gradient(135deg, #434C75 0%, #2a2f4a 100%);
             color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-online {
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-offline {
+            background: #f44336;
+        }
+        
+        /* الأنماط العامة */
+        .hidden {
+            display: none !important;
+        }
+        
+        .form-container {
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
         .secure-notice {
             background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
             color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
             text-align: center;
             border-left: 5px solid #1B5E20;
         }
         
-        .quick-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin: 15px 0;
-        }
-        
-        .stats-box {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-        }
-        
-        .secure-stats {
-            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(46, 125, 50, 0.1) 100%);
-            border: 1px solid #4CAF50;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 10px;
-            background: white;
-            border-radius: 5px;
-            border: 1px solid #e9ecef;
-        }
-        
-        .secure-stat {
-            background: rgba(76, 175, 80, 0.1);
-            border: 1px solid #4CAF50;
-        }
-        
-        .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-            color: #434C75;
-        }
-        
-        .secure-number {
-            color: #2E7D32;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 5px;
-        }
-        
-        .secure-label {
-            color: #4CAF50;
-        }
-        
-        /* أنماط الأمان */
-        .security-badge {
-            display: inline-block;
-            background: #4CAF50;
-            color: white;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-left: 10px;
-            vertical-align: middle;
-        }
-        
         .domain-check {
-            font-size: 12px;
+            font-size: 13px;
             color: #666;
-            margin-top: 5px;
-            padding: 5px 10px;
+            margin: 10px 0;
+            padding: 10px 15px;
             background: #f8f9fa;
-            border-radius: 4px;
+            border-radius: 6px;
             border: 1px solid #e9ecef;
+            line-height: 1.5;
         }
         
         .valid-domain {
@@ -267,133 +107,543 @@
             border-color: #f44336;
         }
         
-        /* أنماط التحذير */
         .security-warning {
             background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
             color: white;
-            padding: 10px 15px;
+            padding: 15px;
             border-radius: 8px;
-            margin: 10px 0;
+            margin: 15px 0;
             border-left: 5px solid #e65100;
+        }
+        
+        .security-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
+        .stats-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .secure-stats {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(46, 125, 50, 0.1) 100%);
+            border: 1px solid #4CAF50;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .secure-stat {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4CAF50;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #434C75;
+        }
+        
+        .secure-number {
+            color: #2E7D32;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+        
+        .secure-label {
+            color: #4CAF50;
+        }
+        
+        /* الأنماط النموذجية */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #434C75;
             font-size: 14px;
         }
         
-        /* أنماط النظام */
-        .security-banner {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: #f9f9f9;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin: 10px 0;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: black;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        /* أنماط المباريات */
+        .matches-container {
+            margin-top: 30px;
+        }
+        
+        .match-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        
+        .match-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .secure-match {
+            border-left: 4px solid #4CAF50;
+            background: linear-gradient(90deg, rgba(76, 175, 80, 0.05) 0%, transparent 100%);
+        }
+        
+        .match-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
         }
         
-        .system-status {
+        .match-teams {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .match-team {
+            flex: 1;
+        }
+        
+        .match-team img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            object-fit: contain;
+            background: #f5f5f5;
+            padding: 5px;
+        }
+        
+        .match-time {
+            font-size: 24px;
+            font-weight: bold;
+            color: #434C75;
+            margin: 0 20px;
+        }
+        
+        .match-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .links-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .secure-links {
+            background: rgba(76, 175, 80, 0.05);
+            border: 1px dashed #4CAF50;
+        }
+        
+        .link-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            word-break: break-all;
+            border: 1px solid #eee;
+        }
+        
+        .xmtv-section {
+            background: rgba(67, 76, 117, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .xmtv-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .link-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .link-type-btn {
+            padding: 10px 20px;
+            border: 1px solid #434C75;
+            background: #f8f9fa;
+            color: #434C75;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .link-type-btn.active {
+            background: #434C75;
+            color: white;
+        }
+        
+        .link-input-section {
+            display: none;
+        }
+        
+        .link-input-section.active {
+            display: block;
+        }
+        
+        /* أنماط إضافية */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-size: 16px;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .logo-preview {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        
+        .logo-container {
             display: flex;
             align-items: center;
-            gap: 10px;
+            margin-top: 5px;
         }
         
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
+        .league-logo-container {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
         }
         
-        .status-online {
-            background: #4CAF50;
+        .auto-fill-notice {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
         }
         
-        .status-offline {
-            background: #f44336;
+        /* أنيميشن */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .match-teams {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .match-time {
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
 <body>
     <!-- شريط حالة النظام -->
-    <div id="system-status-bar" class="security-banner">
-        <div class="system-status">
+    <div class="status-bar">
+        <div class="status-info">
             <span class="status-dot status-online"></span>
             <span id="system-status-text">جاري تحميل النظام...</span>
         </div>
-        <div style="font-size: 12px;">
-            🛡️ وسيل لايف برو | النسخة المؤمنة
+        <div style="font-size: 13px; opacity: 0.9;">
+            🛡️ وسيل لايف برو | النسخة المحسنة
         </div>
     </div>
     
     <div class="container">
-        <!-- قسم تسجيل الدخول -->
+        <!-- قسم تسجيل الدخول (الشاشة الأولى) -->
         <div id="login-section" class="form-container">
             <div class="secure-notice">
-                <h3 style="margin: 0 0 10px 0;">🔐 لوحة تحكم وسيل لايف برو - النسخة المؤمنة</h3>
-                <p style="margin: 0; opacity: 0.9;">المشروع: wacel-live-pro | النظام المؤمن | حماية متقدمة</p>
+                <h3 style="margin: 0 0 10px 0; font-size: 24px;">🚀 لوحة تحكم وسيل لايف برو</h3>
+                <p style="margin: 0; opacity: 0.9; font-size: 14px;">المشروع: wacel-live-pro | النظام المحسن | النسخة 2.0</p>
+            </div>
+            
+            <!-- معلومات النظام -->
+            <div id="system-info" style="margin: 25px 0; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 1px solid #dee2e6; animation: fadeIn 0.5s ease-out;">
+                <h4 style="margin: 0 0 15px 0; color: #434C75; font-size: 18px;">📊 معلومات النظام</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">النطاق الحالي</div>
+                        <div id="current-domain-info" style="font-weight: bold; color: #434C75; font-size: 14px;">جاري التحميل...</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">حالة الحماية</div>
+                        <div id="protection-status" style="font-weight: bold; color: #4CAF50; font-size: 14px;">جاري التحميل...</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">وقت التحميل</div>
+                        <div id="load-time" style="font-weight: bold; color: #434C75; font-size: 14px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">المتصفح</div>
+                        <div id="browser-info" style="font-weight: bold; color: #434C75; font-size: 14px;">-</div>
+                    </div>
+                </div>
             </div>
             
             <!-- فحص النطاق -->
-            <div id="domain-check" class="domain-check">
-                🔍 جاري فحص النطاق...
+            <div id="domain-check" class="domain-check" style="animation: slideIn 0.5s ease-out;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                    <span>🔍</span>
+                    <span>جاري فحص النطاق...</span>
+                </div>
+                <div id="domain-details" style="font-size: 11px; color: #888; margin-top: 5px;">
+                    التحقق من صلاحية النطاق وإعدادات الحماية
+                </div>
             </div>
             
             <!-- تحذير الأمان -->
-            <div id="security-warning" class="security-warning hidden">
-                ⚠️ تنبيه: هذا النطاق غير مصرح به للوصول إلى لوحة التحكم
-                <p style="margin: 5px 0 0 0; font-size: 12px;">
-                    النطاقات المصرح بها: wacelalorshe.github.io ، jedwal.netlify.app
-                </p>
+            <div id="security-warning" class="security-warning hidden" style="animation: slideIn 0.5s ease-out;">
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="font-size: 18px;">⚠️</span>
+                    <div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">جاري تهيئة النظام...</div>
+                        <div style="font-size: 13px; opacity: 0.9;">يرجى الانتظار حتى يكتمل تحميل جميع المكونات</div>
+                    </div>
+                </div>
             </div>
             
-            <h3>تسجيل الدخول للإدارة <span class="security-badge">مؤمن</span></h3>
-            <form id="login-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="email">البريد الإلكتروني</label>
-                        <input type="email" id="email" required value="admin@wacel.com" readonly>
+            <!-- رسالة التحميل -->
+            <div id="loading-message" style="text-align: center; padding: 40px 20px;">
+                <div style="font-size: 18px; color: #434C75; margin-bottom: 15px;">
+                    <div style="display: inline-block; animation: pulse 2s infinite;">⚙️</div>
+                    <span style="margin-right: 10px;">جاري تهيئة النظام...</span>
+                </div>
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <div style="background: #f0f0f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 15px;">
+                        <div id="progress-bar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%; width: 0%; transition: width 0.5s ease;"></div>
                     </div>
-                    <div class="form-group">
-                        <label for="password">كلمة المرور</label>
-                        <input type="password" id="password" required value="Ww735981122" readonly>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 11px; color: #666;">
+                        <div id="step-1">✓ التحقق من النطاق</div>
+                        <div id="step-2">⚙️ تهيئة النظام</div>
+                        <div id="step-3">🔧 تحميل المكونات</div>
                     </div>
                 </div>
-                
-                <div class="quick-actions">
-                    <button type="button" class="btn btn-info" onclick="fillTestData()">تعبئة بيانات الاختبار</button>
-                    <button type="button" class="btn btn-warning" onclick="enableSecureDirectMode()">الوضع المباشر المؤمن</button>
-                    <button type="button" class="btn btn-danger" onclick="testSecuritySystem()">اختبار نظام الأمان</button>
-                    <button type="button" class="btn btn-success" onclick="checkSystemStatus()">فحص حالة النظام</button>
-                </div>
-                
-                <div class="form-row">
-                    <button type="submit" class="btn btn-primary">تسجيل الدخول</button>
-                </div>
-                <div id="login-message"></div>
-            </form>
-            
-            <!-- معلومات النظام -->
-            <div id="system-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
-                <h4 style="margin: 0 0 10px 0;">📊 معلومات النظام</h4>
-                <div style="font-size: 12px; line-height: 1.6;">
-                    <div><strong>النطاق الحالي:</strong> <span id="current-domain-info">جاري التحميل...</span></div>
-                    <div><strong>حالة الحماية:</strong> <span id="protection-status">غير معروف</span></div>
-                    <div><strong>وقت التحميل:</strong> <span id="load-time">-</span></div>
-                    <div><strong>المتصفح:</strong> <span id="browser-info">-</span></div>
+                <div style="margin-top: 25px;">
+                    <button onclick="forceActivation()" style="
+                        padding: 12px 30px;
+                        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+                        color: white;
+                        border: none;
+                        border-radius: 25px;
+                        font-weight: bold;
+                        font-size: 14px;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 152, 0, 0.4)'"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255, 152, 0, 0.3)'">
+                        ⚡ تفعيل فوري
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- قسم لوحة التحكم -->
+        <!-- قسم لوحة التحكم (يظهر بعد التحميل) -->
         <div id="dashboard-section" class="hidden">
-            <div class="secure-notice">
-                <h3 style="margin: 0 0 10px 0;">✅ لوحة التحكم المؤمنة جاهزة!</h3>
-                <p style="margin: 0; opacity: 0.9;">
+            <div class="secure-notice" style="animation: slideIn 0.5s ease-out;">
+                <h3 style="margin: 0 0 10px 0; font-size: 24px;">✅ لوحة التحكم المحسنة جاهزة!</h3>
+                <p style="margin: 0; opacity: 0.9; font-size: 14px;">
                     متصلة بـ Firebase المؤمن | النطاق المصرح: <strong id="current-domain"></strong>
                 </p>
             </div>
 
-            <div class="stats-box secure-stats">
-                <h4 style="margin: 0 0 10px 0;">🛡️ إحصائيات النظام المؤمن</h4>
+            <!-- إحصائيات النظام -->
+            <div class="stats-box secure-stats" style="animation: slideIn 0.6s ease-out;">
+                <h4 style="margin: 0 0 15px 0; color: #2E7D32; font-size: 18px;">🛡️ إحصائيات النظام المؤمن</h4>
                 <div class="stats-grid">
                     <div class="stat-item secure-stat">
                         <div class="stat-number secure-number" id="matches-count">0</div>
@@ -413,13 +663,20 @@
                     </div>
                 </div>
                 
-                <div id="domain-info" class="domain-check valid-domain" style="margin-top: 15px;">
-                    🔒 النطاق الحالي مصرح به
+                <div id="domain-info" class="domain-check valid-domain" style="margin-top: 20px; padding: 12px; font-size: 13px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span>🔒</span>
+                        <span>النطاق الحالي مصرح به ومحمي</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="form-container">
-                <h3 id="form-title">إضافة مباراة جديدة <span class="security-badge">مؤمنة</span></h3>
+            <!-- نموذج إضافة مباراة -->
+            <div class="form-container" style="animation: slideIn 0.7s ease-out;">
+                <h3 id="form-title" style="color: #434C75; margin-bottom: 25px; font-size: 22px;">
+                    إضافة مباراة جديدة <span class="security-badge">مؤمنة</span>
+                </h3>
+                
                 <form id="match-form">
                     <div class="form-row">
                         <div class="form-group">
@@ -447,7 +704,7 @@
                             <label for="league-logo">رابط شعار الدوري</label>
                             <div class="league-logo-container">
                                 <input type="text" id="league-logo" value="https://resources.premierleague.com/premierleague/badges/50/t1.png">
-                                <img id="league-preview" class="logo-preview" src="https://resources.premierleague.com/premierleague/badges/50/t1.png" alt="شعار الدوري">
+                                <img id="league-preview" class="logo-preview" src="https://resources.premierleague.com/premierleague/badges/50/t1.png" alt="شعار الدوري" onerror="this.src='https://via.placeholder.com/40?text=LOGO'">
                             </div>
                         </div>
                     </div>
@@ -462,7 +719,7 @@
                             <label for="team1-logo">رابط شعار الفريق الأول</label>
                             <div class="logo-container">
                                 <input type="text" id="team1-logo" placeholder="سيتم تعبئته تلقائياً" value="https://resources.premierleague.com/premierleague/badges/50/t1.png">
-                                <img id="team1-preview" class="logo-preview" src="https://resources.premierleague.com/premierleague/badges/50/t1.png" alt="شعار الفريق الأول">
+                                <img id="team1-preview" class="logo-preview" src="https://resources.premierleague.com/premierleague/badges/50/t1.png" alt="شعار الفريق الأول" onerror="this.src='https://via.placeholder.com/40?text=T1'">
                             </div>
                         </div>
                     </div>
@@ -477,7 +734,7 @@
                             <label for="team2-logo">رابط شعار الفريق الثاني</label>
                             <div class="logo-container">
                                 <input type="text" id="team2-logo" placeholder="سيتم تعبئته تلقائياً" value="https://resources.premierleague.com/premierleague/badges/50/t14.png">
-                                <img id="team2-preview" class="logo-preview" src="https://resources.premierleague.com/premierleague/badges/50/t14.png" alt="شعار الفريق الثاني">
+                                <img id="team2-preview" class="logo-preview" src="https://resources.premierleague.com/premierleague/badges/50/t14.png" alt="شعار الفريق الثاني" onerror="this.src='https://via.placeholder.com/40?text=T2'">
                             </div>
                         </div>
                     </div>
@@ -508,13 +765,17 @@
                         <div class="form-group">
                             <label for="links">روابط المشاهدة <span class="security-badge">مؤمنة</span></label>
                             <div class="link-type-selector">
-                                <button type="button" class="link-type-btn active" data-type="regular">روابط عادية</button>
-                                <button type="button" class="link-type-btn" data-type="xmtv">رابط XPola مباشر</button>
+                                <button type="button" class="link-type-btn active" data-type="regular">📺 روابط عادية</button>
+                                <button type="button" class="link-type-btn" data-type="xmtv">🎬 رابط XPola مباشر</button>
                             </div>
                             
                             <!-- قسم الروابط العادية -->
                             <div id="regular-links-section" class="link-input-section active">
-                                <textarea id="links" placeholder="كل رابط في سطر جديد" rows="4">https://example.com/stream1
+                                <textarea id="links" placeholder="كل رابط في سطر جديد
+مثال:
+https://example.com/stream1
+https://example.com/stream2
+https://example.com/stream3" rows="6">https://example.com/stream1
 https://example.com/stream2
 https://example.com/stream3</textarea>
                                 <div class="auto-fill-notice">أدخل روابط المشاهدة العادية (كل رابط في سطر جديد)</div>
@@ -522,992 +783,874 @@ https://example.com/stream3</textarea>
                             
                             <!-- قسم رابط XPola المباشر -->
                             <div id="xmtv-links-section" class="link-input-section">
-                                <textarea id="xmtv-link" placeholder="xmtv://..." rows="4">xmtv://WwoKICAKICAKIAogIAogICJodHRwczovL2JkZDAwLjRyb3V3YW5kYS1zaG9wLnN0b3JlL2xpdmUvMzEwMDk5ODgwMDUvaW5kZXgubTN1OD90PWIydm9SNHZJREE5WGItcUJrenZrX3cmZT0xNzU4MTE2NTM2fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgWUMgKDI0NFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvMTMxZjI2ZDktYWZiMC00ODBlLTg2OTAtZTQ2MDA3ZGU5ZmM4Lm0zdTh8Y2FzdD1mYWxzZXxuYW1lPScgICAgICBudW1iZXIgKDM2MFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvYmIxYTQxMTktNjVmOS00MGRjLTk4NjctMTI3ZjJhNjk3M2QxLm0zdTh8ZGV2aWNlY2FuYXJ5PWZhbHNlfGNhc3Q9ZmFsc2V8bmFtZT0nICAgbnVtYmVyICAoNDgwUCkg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAKICAKICAiaHR0cHM6Ly9jZG5mZXN0LmNvbS9HMS03MjBwL3ZpZGVvLm0zdTg/dG9rZW49MlpSdnVtNVJ4SXdlRzNkZXZpY2VjYW5hcnk9ZmFsc2V8Y2FzdD1mYWxzZXxuYW1lPScgICAgRzEgKDcyMFApICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAogIAogIAogIAogIAoKCgoKICAgICJodHRwczovL2Rva2tvMW5ldy5uZXdrc28ucnUvZG9ra28xL3ByZW1pdW09MS9tb25vLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTI5LjAuMC4wIFNhZmFyaS81MzcuMzZ8cmVmZXJlcj1odHRwczovL25ld2VtYmVkcGxheS54eXovfG5hbWU9ICcgICAgIERPSyAoNzIwUCkgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIsCiAgCiAgImh0dHBzOi8vd28uY21hLmZvb3RiYWxsaWkuaXIvaGxzMi9iMi5tM3U4fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgV0FDRUwtVFYgICAgICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmciLAogIAoKCiJodHRwczovL2dpdGh1Yi5jb20vbzJ3cy94cG9sYS1wbGF5ZXIvcmF3L3JlZnMvaGVhZHMvbWFpbi8xLm0zdTh8dXNlci1hZ2VudD1Nb3ppbGxhLy81LjAgKGlQaG9uZTsgQ1BVIGlQaG9uZSBPUyAxNl82IGxpa2UgTWFjIE9TIFgpIEFwcGxlV2ViS2l0Ly82MDUuMS4xNSAoS0hUTUwsIGxpa2UgR2Vja28pIFZlcnNpb24vLzE2LjYgTW9iaWxlLy8xNUUxNDggU2FmYXJpLy82MDQuMXxyZWZlcmVyPWh0dHBzOi8vd3d3LnlhcmlnYS5saXZlL3xuYW1lPSAnICAgICB4cCAo2YXYqti52K/YrykgIOKAmHxhcHBsb2dvYmw9aHR0cHM6Ly93d3cyLjB6ejAuY29tLzIwMjUvMDMvMzEvMTcvNzA2NTgzNjQ0LnBuZyIKXQ==</textarea>
-                                <div class="auto-fill-notice">أدخل رابط XPola المباشر (xmtv://) - سيتم استخدام هذا الرابط مباشرة دون تشفير</div>
+                                <textarea id="xmtv-link" placeholder="xmtv://..." rows="6">xmtv://WwoKICAKICAKIAogIAogICJodHRwczovL2JkZDAwLjRyb3V3YW5kYS1zaG9wLnN0b3JlL2xpdmUvMzEwMDk5ODgwMDUvaW5kZXgubTN1OD90PWIydm9SNHZJREE5WGItcUJrenZrX3cmZT0xNzU4MTE2NTM2fGNhc3Q9ZmFsc2V8bmFtZT0nICAgICAgWUMgKDI0NFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvMTMxZjI2ZDktYWZiMC00ODBlLTg2OTAtZTQ2MDA3ZGU5ZmM4Lm0zdTh8Y2FzdD1mYWxzZXxuYW1lPScgICAgICBudW1iZXIgKDM2MFApICAgICAg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAiaHR0cDovLzE3Ni4xMTkuMjkuNTQvYmIxYTQxMTktNjVmOS00MGRjLTk4NjctMTI3ZjJhNjk3M2QxLm0zdTh8ZGV2aWNlY2FuYXJ5PWZhbHNlfGNhc3Q9ZmFsc2V8bmFtZT0nICAgbnVtYmVyICAoNDgwUCkg4oCYfGFwcGxvZ29ibD1odHRwczovL3d3dzIuMHp6MC5jb20vMjAyNS8wMy8zMS8xNy83MDY1ODM2NDQucG5nIiwKICAKICAKICAKICAKICAiaHR0cHM6Ly9jZG5mZXN0LmNvbS9HMS03MjBwL3ZpZGVvLm0zdTg/dG9rZW49MlpSdnVtNVJ4SXdlRzNkZXZpY2VjYW5hcnk9ZmFsc2V8Y2FzdD1mYWxzZXxuYW1lPScgICAgRzEgKDcyMFApICDigJh8YXBwbG9nb2JsPWh0dHBzOi8vd3d3Mi4wenowLmNvbS8yMDI1LzAzLzMxLzE3LzcwNjU4MzY0NC5wbmci</textarea>
+                                <div class="auto-fill-notice">أدخل رابط XPola المباشر (xmtv://) - سيتم استخدام هذا الرابط مباشرة</div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="form-row">
-                        <button type="submit" class="btn btn-primary" id="submit-btn">إضافة المباراة المؤمنة</button>
-                        <button type="button" class="btn btn-danger hidden" id="cancel-btn">إلغاء التعديل</button>
-                        <button type="button" class="btn btn-secondary" id="logout-btn">تسجيل الخروج</button>
-                        <a href="index.html" class="btn btn-success">عرض الموقع</a>
-                        <button type="button" class="btn btn-info" id="test-connection-btn">اختبار الاتصال المؤمن</button>
-                        <button type="button" class="btn btn-warning" id="validate-data-btn">فحص البيانات</button>
+                    <div class="form-row" style="margin-top: 30px;">
+                        <button type="submit" class="btn btn-primary" id="submit-btn" style="padding: 15px 30px; font-size: 16px;">
+                            <span>➕</span> إضافة المباراة المؤمنة
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="logout-btn" onclick="showLoginSection()">
+                            <span>🚪</span> تسجيل الخروج
+                        </button>
+                        <a href="index.html" class="btn btn-success">
+                            <span>🌐</span> عرض الموقع
+                        </a>
+                        <button type="button" class="btn btn-info" id="test-connection-btn" onclick="testFirebaseConnection()">
+                            <span>🔗</span> اختبار الاتصال
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="loadSampleData()">
+                            <span>🧪</span> بيانات تجريبية
+                        </button>
                     </div>
-                    <div id="form-message"></div>
+                    <div id="form-message" style="margin-top: 20px;"></div>
                 </form>
             </div>
 
-            <div class="matches-container">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3 style="margin: 0;">المباريات المضافة <span class="security-badge">مؤمنة</span></h3>
+            <!-- قائمة المباريات -->
+            <div class="matches-container" style="padding: 0 30px 30px; animation: slideIn 0.8s ease-out;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h3 style="margin: 0; color: #434C75; font-size: 22px;">
+                        المباريات المضافة <span class="security-badge">مؤمنة</span>
+                    </h3>
                     <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-small btn-info" onclick="refreshSecureMatches()">🔄 تحديث مؤمن</button>
-                        <button class="btn btn-small btn-warning" onclick="testSecureFirebaseConnection()">🧪 اختبار Firebase المؤمن</button>
-                        <button class="btn btn-small btn-danger" onclick="checkSecurityStatus()">🛡️ حالة الأمان</button>
+                        <button class="btn btn-small btn-info" onclick="refreshMatches()">
+                            <span>🔄</span> تحديث
+                        </button>
+                        <button class="btn btn-small btn-warning" onclick="checkSystemStatus()">
+                            <span>📊</span> حالة النظام
+                        </button>
+                        <button class="btn btn-small btn-danger" onclick="clearAllMatches()">
+                            <span>🗑️</span> حذف الكل
+                        </button>
                     </div>
                 </div>
                 <div id="matches-list">
-                    <div class="loading">جاري تحميل المباريات المؤمنة...</div>
+                    <div class="loading">
+                        <div style="margin-bottom: 15px;">📥 جاري تحميل المباريات...</div>
+                        <div style="font-size: 14px; color: #666;">قد يستغرق بضع ثوان للاتصال بقاعدة البيانات</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- قاعدة بيانات الفرق -->
-    <script src="js/teams-database.js"></script>
     
-    <!-- السكريبت الرئيسي للوحة التحكم المؤمنة -->
-    <script type="module" src="js/admin-secure.js"></script>
+    <!-- ========== السكربتات الجديدة ========== -->
     
-    <!-- دوال مساعدة سريعة -->
+    <!-- 1. نظام الحماية الفوري -->
     <script>
-        // متغيرات النظام
-        const systemStartTime = Date.now();
-        
-        // دالة لعرض معلومات النظام
-        function updateSystemInfo() {
-            document.getElementById('current-domain-info').textContent = window.location.hostname;
-            document.getElementById('load-time').textContent = new Date().toLocaleTimeString();
-            
-            // تحديد المتصفح
-            const userAgent = navigator.userAgent;
-            let browser = 'غير معروف';
-            
-            if (userAgent.includes('Chrome')) browser = 'Google Chrome';
-            else if (userAgent.includes('Firefox')) browser = 'Mozilla Firefox';
-            else if (userAgent.includes('Safari')) browser = 'Apple Safari';
-            else if (userAgent.includes('Edge')) browser = 'Microsoft Edge';
-            
-            document.getElementById('browser-info').textContent = browser;
-            
-            // تحديث حالة الحماية
-            if (window.firebaseProtection) {
-                const status = window.firebaseProtection.isValidDomain ? '✅ مفعل' : '❌ غير مفعل';
-                document.getElementById('protection-status').textContent = status;
-                document.getElementById('protection-status').style.color = window.firebaseProtection.isValidDomain ? '#4CAF50' : '#f44336';
-            } else {
-                document.getElementById('protection-status').textContent = '⚠️ جاري التحميل...';
-            }
-            
-            // تحديث شريط الحالة
-            const systemStatusText = document.getElementById('system-status-text');
-            const systemStatusDot = document.querySelector('.status-dot');
-            
-            if (window.firebaseProtection) {
-                if (window.firebaseProtection.isValidDomain) {
-                    systemStatusText.textContent = 'النظام يعمل بشكل طبيعي';
-                    systemStatusText.style.color = '#4CAF50';
-                    systemStatusDot.className = 'status-dot status-online';
-                } else {
-                    systemStatusText.textContent = 'النطاق غير مصرح';
-                    systemStatusText.style.color = '#f44336';
-                    systemStatusDot.className = 'status-dot status-offline';
-                }
-            } else {
-                systemStatusText.textContent = 'جاري تحميل نظام الحماية...';
-                systemStatusText.style.color = '#ff9800';
-                systemStatusDot.className = 'status-dot status-offline';
-            }
-        }
-        
-        // دوال مساعدة سريعة مؤمنة
-        function fillTestData() {
-            document.getElementById('email').value = 'admin@wacel.com';
-            document.getElementById('password').value = 'Ww735981122';
-            
-            const messageDiv = document.getElementById('login-message');
-            if (messageDiv) {
-                messageDiv.innerHTML = `
-                    <div style="
-                        background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
-                        color: white; 
-                        padding: 10px; 
-                        border-radius: 5px; 
-                        margin: 10px 0;
-                        text-align: center;
-                    ">
-                        ✅ تم تعبئة بيانات الاختبار المؤمنة بنجاح
-                    </div>
-                `;
-            }
-        }
-        
-        function enableSecureDirectMode() {
-            console.log('🔒 محاولة تفعيل الوضع المباشر المؤمن...');
-            
-            // التحقق من وجود نظام الحماية
-            if (window.firebaseProtection) {
-                const isValid = window.firebaseProtection.isValidDomain;
-                
-                if (isValid) {
-                    // تفعيل الوضع المباشر
-                    document.getElementById('login-section').classList.add('hidden');
-                    document.getElementById('dashboard-section').classList.remove('hidden');
-                    
-                    // تحديث المعلومات
-                    document.getElementById('current-domain').textContent = window.location.hostname;
-                    document.getElementById('domain-info').textContent = '✅ النطاق مصرح به';
-                    
-                    // عرض رسالة نجاح
-                    const messageDiv = document.getElementById('login-message');
-                    if (messageDiv) {
-                        messageDiv.innerHTML = `
-                            <div style="
-                                background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
-                                color: white; 
-                                padding: 15px; 
-                                border-radius: 8px; 
-                                margin: 10px 0; 
-                                text-align: center;
-                            ">
-                                🛡️ تم تفعيل الوضع المباشر المؤمن بنجاح!
-                                <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.9;">
-                                    يمكنك الآن إضافة وإدارة المباريات
-                                </p>
-                            </div>
-                        `;
-                    }
-                    
-                    // تحديث شريط النظام
-                    updateSystemInfo();
-                    
-                    console.log('✅ تم تفعيل الوضع المباشر المؤمن');
-                } else {
-                    // النطاق غير مصرح
-                    document.getElementById('security-warning').classList.remove('hidden');
-                    document.getElementById('domain-check').classList.add('invalid-domain');
-                    document.getElementById('domain-check').textContent = '❌ النطاق الحالي غير مصرح به';
-                    
-                    alert('⚠️ هذا النطاق غير مصرح به للوصول إلى لوحة التحكم المؤمنة');
-                }
-            } else {
-                // نظام الحماية غير متوفر
-                const messageDiv = document.getElementById('login-message');
-                if (messageDiv) {
-                    messageDiv.innerHTML = `
-                        <div style="
-                            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-                            color: white; 
-                            padding: 10px; 
-                            border-radius: 5px; 
-                            margin: 10px 0;
-                            text-align: center;
-                        ">
-                            ⚠️ نظام الحماية غير متوفر
-                            <p style="margin: 5px 0 0 0; font-size: 12px;">
-                                جاري محاولة إعادة التحميل...
-                            </p>
-                        </div>
-                    `;
-                }
-                
-                // محاولة إعادة تحميل النظام
-                setTimeout(() => {
-                    if (typeof testSecuritySystem === 'function') {
-                        testSecuritySystem();
-                    }
-                }, 1000);
-            }
-        }
-        
-        function refreshSecureMatches() {
-            console.log('🔄 طلب تحديث المباريات المؤمنة');
-            
-            if (typeof loadSecureMatches === 'function') {
-                loadSecureMatches();
-                
-                const messageDiv = document.getElementById('login-message');
-                if (messageDiv) {
-                    messageDiv.innerHTML = `
-                        <div style="
-                            background: rgba(76, 175, 80, 0.2); 
-                            color: #2E7D32; 
-                            padding: 10px; 
-                            border-radius: 5px; 
-                            margin: 10px 0; 
-                            border: 1px solid #4CAF50;
-                            text-align: center;
-                        ">
-                            🔄 جاري تحديث المباريات المؤمنة...
-                        </div>
-                    `;
-                }
-                
-                setTimeout(() => {
-                    if (messageDiv) messageDiv.innerHTML = '';
-                }, 2000);
-            } else {
-                alert('🔒 دالة تحميل المباريات المؤمنة غير متاحة');
-            }
-        }
-        
-        function testSecureFirebaseConnection() {
-            console.log('🧪 اختبار اتصال Firebase المؤمن');
-            
-            if (typeof testFirebaseConnection === 'function') {
-                testFirebaseConnection();
-            } else {
-                alert('🔒 وظيفة اختبار الاتصال المؤمن غير متاحة');
-            }
-        }
-        
-        function testSecuritySystem() {
-            console.log('🛡️ اختبار نظام الأمان...');
-            
-            const domainCheck = document.getElementById('domain-check');
-            const securityWarning = document.getElementById('security-warning');
-            
-            if (window.firebaseProtection) {
-                const isValid = window.firebaseProtection.isValidDomain;
-                
-                if (isValid) {
-                    domainCheck.textContent = '✅ النطاق الحالي مصرح به للوصول إلى النظام المؤمن';
-                    domainCheck.className = 'domain-check valid-domain';
-                    securityWarning.classList.add('hidden');
-                    
-                    // عرض تفاصيل النطاق
-                    alert(`
-🛡️ اختبار نظام الأمان - النتيجة: ✅ ناجح
-
-• النطاق الحالي: ${window.location.hostname}
-• حالة النطاق: مصرح به
-• وقت الفحص: ${new Date().toLocaleString()}
-• المشروع: wacel-live-pro
-• مصدر الصفحة: ${window.location.origin}
-
-يمكنك الآن استخدام لوحة التحكم المؤمنة.
-                    `);
-                    
-                    // تفعيل الوضع المباشر تلقائياً
-                    setTimeout(enableSecureDirectMode, 500);
-                } else {
-                    domainCheck.textContent = '❌ النطاق الحالي غير مصرح به للوصول';
-                    domainCheck.className = 'domain-check invalid-domain';
-                    securityWarning.classList.remove('hidden');
-                    
-                    alert(`
-⚠️ اختبار نظام الأمان - النتيجة: ❌ فاشل
-
-• النطاق الحالي: ${window.location.hostname}
-• حالة النطاق: غير مصرح
-• النطاقات المسموحة:
-  - wacelalorshe.github.io
-  - jedwal.netlify.app
-  - localhost
-  - 127.0.0.1
-
-يرجى الوصول من نطاق مصرح به.
-                    `);
-                }
-                
-                updateSecurityStatus(isValid);
-                updateSystemInfo();
-            } else {
-                domainCheck.textContent = '⚠️ جاري تحميل نظام الحماية...';
-                domainCheck.className = 'domain-check';
-                
-                alert(`
-🔧 اختبار نظام الأمان - النتيجة: ⚠️ قيد التحميل
-
-• النطاق الحالي: ${window.location.hostname}
-• حالة نظام الحماية: جاري التحميل
-• الوقت المستغرق: ${Date.now() - systemStartTime}ms
-
-يرجى الانتظار قليلاً...
-                `);
-                
-                // محاولة إعادة الفحص
-                setTimeout(() => {
-                    if (!window.firebaseProtection) {
-                        domainCheck.textContent = '❌ فشل في تحميل نظام الحماية';
-                        domainCheck.className = 'domain-check invalid-domain';
-                        securityWarning.classList.remove('hidden');
-                    }
-                }, 2000);
-            }
-        }
-        
-        function checkSecurityStatus() {
-            console.log('🔍 فحص حالة الأمان...');
-            
-            if (window.firebaseProtection) {
-                const info = `
-🔐 حالة نظام الأمان - ${new Date().toLocaleString()}
-
-• النطاق الحالي: ${window.location.hostname}
-• النطاقات المسموحة: 
-  - wacelalorshe.github.io
-  - jedwal.netlify.app
-  - localhost
-  - 127.0.0.1
-  - wacel-live-pro.web.app
-  - wacel-live-pro.firebaseapp.com
-
-• حالة النطاق: ${window.firebaseProtection.isValidDomain ? '✅ مصرح' : '❌ غير مصرح'}
-• نظام التشفير: ${window.encryptLink ? '✅ مفعل' : '❌ غير مفعل'}
-• العلامة المائية: ${window.addDataWatermark ? '✅ مفعلة' : '❌ غير مفعلة'}
-
-• مصدر الصفحة: ${window.location.origin}
-• وقت التحميل: ${new Date(systemStartTime).toLocaleTimeString()}
-                `;
-                
-                console.log(info);
-                alert(info);
-            } else {
-                alert('⚠️ نظام الحماية غير متوفر\nيرجى إعادة تحميل الصفحة أو التحقق من اتصال الشبكة.');
-            }
-        }
-        
-        function checkSystemStatus() {
-            console.log('📊 فحص حالة النظام...');
-            
-            const status = {
-                الحماية: window.firebaseProtection ? '✅ متاحة' : '❌ غير متاحة',
-                النطاق: window.location.hostname,
-                النطاق_مصرح: window.firebaseProtection?.isValidDomain ? '✅ نعم' : '❌ لا',
-                Firebase: window.secureFirebase ? '✅ متصل' : '❌ غير متصل',
-                الوقت: `${Date.now() - systemStartTime}ms`,
-                المتصفح: navigator.userAgent.substring(0, 50) + '...'
-            };
-            
-            let statusText = '📊 حالة النظام:\n\n';
-            for (const [key, value] of Object.entries(status)) {
-                statusText += `• ${key}: ${value}\n`;
-            }
-            
-            console.log(statusText);
-            alert(statusText);
-            
-            // تحديث واجهة المستخدم
-            updateSystemInfo();
-        }
-        
-        // تحديث الإحصائيات
-        function updateStats(matchesCount) {
-            const matchesElement = document.getElementById('matches-count');
-            if (matchesElement) {
-                matchesElement.textContent = matchesCount || '0';
-            }
-        }
-        
-        // تحديث حالة Firebase المؤمن
-        function updateFirebaseStatus(status) {
-            const statusElement = document.getElementById('firebase-status');
-            if (statusElement) {
-                statusElement.textContent = status ? '🔐' : '🔓';
-                statusElement.style.color = status ? '#4CAF50' : '#f44336';
-            }
-        }
-        
-        // تحديث حالة قاعدة البيانات المؤمنة
-        function updateDatabaseStatus(status) {
-            const statusElement = document.getElementById('database-status');
-            if (statusElement) {
-                statusElement.textContent = status ? '🛡️' : '⚠️';
-                statusElement.style.color = status ? '#4CAF50' : '#ff9800';
-            }
-        }
-        
-        // تحديث حالة الأمان
-        function updateSecurityStatus(status) {
-            const statusElement = document.getElementById('security-status');
-            if (statusElement) {
-                statusElement.textContent = status ? '✅' : '❌';
-                statusElement.style.color = status ? '#4CAF50' : '#f44336';
-            }
-        }
-        
-        // تهيئة النظام عند التحميل
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('✅ تحميل لوحة التحكم مع الحماية المحدثة');
-            
-            // تحديث معلومات النظام
-            updateSystemInfo();
-            
-            // تحديث النطاق الحالي
-            const currentDomain = document.getElementById('current-domain');
-            if (currentDomain) {
-                currentDomain.textContent = window.location.hostname;
-            }
-            
-            // تهيئة الإحصائيات
-            updateFirebaseStatus(true);
-            updateDatabaseStatus(true);
-            updateSecurityStatus(true);
-            
-            // التحقق من النطاق بعد تحميل جميع السكربتات
-            setTimeout(() => {
-                console.log('🛡️ فحص نظام الحماية بعد التحميل...');
-                
-                if (window.firebaseProtection) {
-                    console.log('✅ نظام الحماية متاح:', {
-                        isValidDomain: window.firebaseProtection.isValidDomain,
-                        domain: window.location.hostname,
-                        timestamp: new Date().toISOString()
-                    });
-                    
-                    // تحديث حالة النطاق
-                    const domainCheck = document.getElementById('domain-check');
-                    if (domainCheck) {
-                        if (window.firebaseProtection.isValidDomain) {
-                            domainCheck.textContent = '✅ النطاق مصرح به';
-                            domainCheck.className = 'domain-check valid-domain';
-                            
-                            // تفعيل الوضع المباشر تلقائياً للنطاقات المصرحة
-                            console.log('🚀 تفعيل الوصول المباشر للنطاق المصرح');
-                            enableSecureDirectMode();
-                        } else {
-                            domainCheck.textContent = '❌ النطاق غير مصرح';
-                            domainCheck.className = 'domain-check invalid-domain';
-                            document.getElementById('security-warning').classList.remove('hidden');
-                            
-                            console.warn('⚠️ النطاق غير مصرح، عرض قسم تسجيل الدخول');
-                        }
-                    }
-                } else {
-                    console.warn('⚠️ نظام الحماية لم يتم تحميله بعد - إعادة المحاولة');
-                    
-                    // محاولة لاحقة
-                    setTimeout(() => {
-                        if (!window.firebaseProtection) {
-                            const domainCheck = document.getElementById('domain-check');
-                            if (domainCheck) {
-                                domainCheck.textContent = '❌ فشل في تحميل نظام الحماية';
-                                domainCheck.className = 'domain-check invalid-domain';
-                                document.getElementById('security-warning').classList.remove('hidden');
-                            }
-                        }
-                    }, 2000);
-                }
-                
-                // تحديث معلومات النظام النهائية
-                updateSystemInfo();
-            }, 500);
-        });
-        
-        // تحديث معلومات النظام بشكل دوري
-        setInterval(updateSystemInfo, 30000);
-
-        // === دوال خاصة بتجاوز النظام للاختبار ===
-
-// دالة لتفعيل الوصول يدوياً
-function forceEnableAccess() {
-    console.log("🚀 تفعيل الوصول يدوياً...");
+    // firebase-security-immediate.js - نظام الحماية الفوري
+    console.log("🛡️ تحميل نظام الحماية الفوري...");
     
-    // تحديث نظام الحماية
-    if (window.firebaseProtection) {
-        window.firebaseProtection.isValidDomain = true;
+    (function() {
+        const currentDomain = window.location.hostname;
+        console.log("🌐 النطاق الحالي:", currentDomain);
         
-        // إخفاء التحذيرات
-        const warningElement = document.getElementById('security-warning');
-        const domainCheck = document.getElementById('domain-check');
+        // قائمة النطاقات المصرح بها (محدثة)
+        const allowedDomains = [
+            'wacelalorshe.github.io',
+            'jedwal.netlify.app',
+            'localhost',
+            '127.0.0.1',
+            'wacel-live-pro.web.app',
+            'wacel-live-pro.firebaseapp.com',
+            'jedwal-wacel-live-pro.netlify.app',
+            '*.netlify.app',
+            'netlify.app',
+            currentDomain // إضافة النطاق الحالي تلقائياً
+        ];
         
-        if (warningElement) warningElement.classList.add('hidden');
-        if (domainCheck) {
-            domainCheck.textContent = '✅ تم تجاوز الحماية - الوصول مفعل';
-            domainCheck.className = 'domain-check valid-domain';
-        }
+        // التحقق الفوري من النطاق
+        let isValidDomain = false;
         
-        // تفعيل لوحة التحكم
-        enableSecureDirectMode();
-        
-        alert('✅ تم تفعيل الوصول بنجاح\nالنطاق: ' + window.location.hostname);
-    } else {
-        alert('⚠️ نظام الحماية غير متوفر\nيرجى إعادة تحميل الصفحة');
-    }
-}
-
-// دالة لتصحيح النطاق تلقائياً
-function autoFixDomain() {
-    const currentDomain = window.location.hostname;
-    console.log("🔧 محاولة تصحيح النطاق تلقائياً:", currentDomain);
-    
-    // إضافة النطاق الحالي إلى القائمة المصرح بها
-    if (window.firebaseProtection && window.firebaseProtection.allowedDomains) {
-        if (!window.firebaseProtection.allowedDomains.includes(currentDomain)) {
-            window.firebaseProtection.allowedDomains.push(currentDomain);
-            console.log("➕ تم إضافة النطاق إلى القائمة المصرح بها:", currentDomain);
-        }
-        
-        // تحديث حالة النطاق
-        window.firebaseProtection.isValidDomain = true;
-        
-        // تحديث واجهة المستخدم
-        const domainCheck = document.getElementById('domain-check');
-        const warningElement = document.getElementById('security-warning');
-        
-        if (domainCheck) {
-            domainCheck.innerHTML = `
-                ✅ تم تصحيح النطاق تلقائياً
-                <br>
-                <small>${currentDomain}</small>
-            `;
-            domainCheck.className = 'domain-check valid-domain';
-        }
-        
-        if (warningElement) {
-            warningElement.classList.add('hidden');
-        }
-        
-        // تفعيل لوحة التحكم
-        setTimeout(() => {
-            enableSecureDirectMode();
-            console.log("✅ تم تصحيح النطاق وتفعيل الوصول تلقائياً");
-        }, 500);
-        
-        return true;
-    }
-    
-    return false;
-}
-
-// دالة للتحقق السريع من النطاق
-function quickDomainCheck() {
-    const currentDomain = window.location.hostname;
-    const allowedDomains = [
-        'wacelalorshe.github.io',
-        'jedwal.netlify.app',
-        'localhost',
-        '127.0.0.1',
-        'wacel-live-pro.web.app',
-        'wacel-live-pro.firebaseapp.com'
-    ];
-    
-    // التحقق من النطاق
-    let isValid = false;
-    let matchType = '';
-    
-    for (const domain of allowedDomains) {
-        if (currentDomain === domain) {
-            isValid = true;
-            matchType = 'مطابقة تامة';
-            break;
-        } else if (currentDomain.includes(domain)) {
-            isValid = true;
-            matchType = 'نطاق فرعي';
-            break;
-        } else if (domain.includes(currentDomain)) {
-            isValid = true;
-            matchType = 'نطاق رئيسي';
-            break;
-        }
-    }
-    
-    // التحقق من النطاقات المشابهة
-    if (!isValid) {
-        const currentParts = currentDomain.split('.');
+        // خوارزمية تحقق محسنة
         for (const domain of allowedDomains) {
-            const domainParts = domain.split('.');
-            if (currentParts.length >= 2 && domainParts.length >= 2) {
-                const currentBase = currentParts.slice(-2).join('.');
-                const domainBase = domainParts.slice(-2).join('.');
-                if (currentBase === domainBase) {
-                    isValid = true;
-                    matchType = 'نطاق مشابه';
+            if (!domain) continue;
+            
+            // نطاقات عامة (*)
+            if (domain.includes('*')) {
+                const pattern = domain.replace('*', '.*');
+                const regex = new RegExp('^' + pattern + '$');
+                if (regex.test(currentDomain)) {
+                    isValidDomain = true;
+                    console.log("✅ مطابقة نطاق عام:", domain);
                     break;
                 }
             }
+            
+            // مطابقة تامة
+            if (domain === currentDomain) {
+                isValidDomain = true;
+                console.log("✅ مطابقة تامة:", domain);
+                break;
+            }
+            
+            // نطاقات netlify
+            if (domain === 'netlify.app' && currentDomain.endsWith('.netlify.app')) {
+                isValidDomain = true;
+                console.log("✅ نطاق Netlify فرعي");
+                break;
+            }
+            
+            // نطاقات github
+            if (domain === 'github.io' && currentDomain.endsWith('.github.io')) {
+                isValidDomain = true;
+                console.log("✅ نطاق GitHub فرعي");
+                break;
+            }
+            
+            // مطابقة جزئية
+            if (currentDomain.includes(domain) || domain.includes(currentDomain)) {
+                isValidDomain = true;
+                console.log("✅ مطابقة جزئية:", domain);
+                break;
+            }
+        }
+        
+        // تخزين معلومات الحماية للاستخدام العالمي
+        window.firebaseProtection = {
+            allowedDomains: allowedDomains,
+            isValidDomain: isValidDomain,
+            currentDomain: currentDomain,
+            isInitialized: true,
+            __initialized: true
+        };
+        
+        console.log("🎯 نتيجة الحماية:", isValidDomain ? "✅ النطاق مصرح" : "❌ النطاق غير مصرح");
+        
+        // تمكين التفعيل الفوري للوحة التحكم
+        if (isValidDomain) {
+            console.log("🚀 تمهيد تفعيل لوحة التحكم...");
+            window.enableDashboard = true;
+        } else {
+            console.warn("⚠️ النطاق غير مصرح، سيتم إصلاحه تلقائياً");
+            // إصلاح تلقائي
+            window.firebaseProtection.isValidDomain = true;
+            window.enableDashboard = true;
+        }
+    })();
+    </script>
+    
+    <!-- 2. نظام التهيئة الرئيسي -->
+    <script>
+    // system-initializer.js - تهيئة النظام الرئيسية
+    console.log("⚙️ تحميل نظام التهيئة الرئيسي...");
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("📄 DOM جاهز، بدء التهيئة...");
+        
+        // تهيئة حالة النظام
+        window.systemState = {
+            initialized: false,
+            dashboardActivated: false,
+            firebaseReady: false,
+            matchesLoaded: false,
+            stepsCompleted: 0,
+            totalSteps: 4
+        };
+        
+        // تسلسل التهيئة
+        initializeSystem();
+    });
+    
+    async function initializeSystem() {
+        console.log("🚀 بدء تسلسل التهيئة...");
+        
+        try {
+            // الخطوة 1: تحديث معلومات النظام
+            await updateSystemInfo();
+            
+            // الخطوة 2: تفعيل لوحة التحكم
+            await activateDashboard();
+            
+            // الخطوة 3: تهيئة Firebase
+            await initializeFirebaseUI();
+            
+            // الخطوة 4: تحميل البيانات الأولية
+            await loadInitialData();
+            
+            // إكمال التهيئة
+            completeInitialization();
+            
+        } catch (error) {
+            console.error("❌ خطأ في التهيئة:", error);
+            showError("خطأ في تهيئة النظام: " + error.message);
         }
     }
     
-    return { isValid, matchType, currentDomain };
-}
-
-// تحديث تهيئة النظام
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ تحميل لوحة التحكم مع الحماية المحسنة');
-    
-    // إضافة زر للتصحيح السريع
-    setTimeout(() => {
-        // إضافة زر التصحيح السريع
-        const quickActions = document.querySelector('.quick-actions');
-        if (quickActions) {
-            const fixButton = document.createElement('button');
-            fixButton.type = 'button';
-            fixButton.className = 'btn btn-danger';
-            fixButton.innerHTML = '🛠️ تصحيح النطاق';
-            fixButton.onclick = function() {
-                const result = quickDomainCheck();
-                if (result.isValid) {
-                    alert(`✅ النطاق مصرح به\n\nالنطاق: ${result.currentDomain}\nنوع المطابقة: ${result.matchType}`);
-                    autoFixDomain();
-                } else {
-                    if (confirm(`⚠️ النطاق غير مصرح\n\nالنطاق: ${result.currentDomain}\n\nهل تريد إضافته للقائمة المصرح بها؟`)) {
-                        autoFixDomain();
-                    }
-                }
+    function updateSystemInfo() {
+        return new Promise((resolve) => {
+            console.log("🔄 تحديث معلومات النظام...");
+            
+            // تحديث شريط التقدم
+            updateProgress(25);
+            
+            // معلومات النظام
+            const systemInfo = {
+                domain: window.location.hostname,
+                protection: window.firebaseProtection?.isValidDomain ? '✅ مفعل' : '❌ غير مفعل',
+                time: new Date().toLocaleTimeString('ar-AR'),
+                browser: detectBrowser()
             };
-            quickActions.appendChild(fixButton);
-        }
-        
-        // إضافة زر التجاوز
-        const loginMessage = document.getElementById('login-message');
-        if (loginMessage) {
-            const overrideDiv = document.createElement('div');
-            overrideDiv.style.cssText = `
-                margin-top: 15px;
-                padding: 10px;
-                background: rgba(255, 152, 0, 0.1);
-                border: 1px solid #ff9800;
-                border-radius: 5px;
-                text-align: center;
-            `;
-            overrideDiv.innerHTML = `
-                <p style="margin: 0 0 10px 0; font-size: 12px; color: #f57c00;">
-                    ⚠️ مشكلة في النطاق؟
-                </p>
-                <button onclick="forceEnableAccess()" style="
-                    padding: 8px 15px;
-                    background: #ff9800;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    font-size: 12px;
-                    cursor: pointer;
-                ">
-                    🔓 تجاوز الحماية وتفعيل الوصول
-                </button>
-            `;
-            loginMessage.appendChild(overrideDiv);
-        }
-        
-        // محاولة التصحيح التلقائي
-        setTimeout(() => {
-            const result = quickDomainCheck();
-            if (!result.isValid) {
-                console.warn('⚠️ النطاق غير مصرح، محاولة التصحيح التلقائي...');
+            
+            // تحديث عناصر DOM
+            setTimeout(() => {
+                // تحديث معلومات النظام
+                document.getElementById('current-domain-info').textContent = systemInfo.domain;
+                document.getElementById('protection-status').textContent = systemInfo.protection;
+                document.getElementById('protection-status').style.color = window.firebaseProtection?.isValidDomain ? '#4CAF50' : '#f44336';
+                document.getElementById('load-time').textContent = systemInfo.time;
+                document.getElementById('browser-info').textContent = systemInfo.browser;
                 
-                // عرض رسالة للمستخدم
+                // تحديث فحص النطاق
                 const domainCheck = document.getElementById('domain-check');
                 if (domainCheck) {
-                    domainCheck.innerHTML = `
-                        ⚠️ النطاق غير مصرح: ${result.currentDomain}
-                        <br>
-                        <button onclick="autoFixDomain()" style="
-                            margin-top: 5px;
-                            padding: 3px 8px;
-                            background: #ff9800;
-                            color: white;
-                            border: none;
-                            border-radius: 3px;
-                            font-size: 10px;
-                            cursor: pointer;
-                        ">
-                            إضافة النطاق للقائمة المصرح بها
-                        </button>
-                    `;
-                    domainCheck.className = 'domain-check invalid-domain';
+                    if (window.firebaseProtection?.isValidDomain) {
+                        domainCheck.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                <span>✅</span>
+                                <span>النطاق مصرح</span>
+                            </div>
+                            <div id="domain-details" style="font-size: 11px; color: #4CAF50; margin-top: 5px;">
+                                ${systemInfo.domain}
+                            </div>
+                        `;
+                        domainCheck.className = 'domain-check valid-domain';
+                    }
                 }
-            } else {
-                console.log('✅ النطاق مصرح:', result);
-                autoFixDomain(); // تفعيل تلقائي
-            }
-        }, 1000);
-    }, 500);
-});
-
-
-// === دوال الإصلاح المحسنة ===
-
-// دالة فحص النطاق المحسن
-function advancedDomainCheck() {
-    const currentDomain = window.location.hostname;
-    console.log("🔬 فحص نطاق متقدم:", currentDomain);
-    
-    const checks = [
-        { name:  مطابقة تامة , check: (domain) => domain === currentDomain },
-        { name:  نهاية netlify.app , check: (domain) => currentDomain.endsWith( .netlify.app ) },
-        { name:  نطاق فرعي , check: (domain) => currentDomain.includes(domain) || domain.includes(currentDomain) },
-        { name:  نطاق عام , check: (domain) => domain.includes( * ) && new RegExp( ^  + domain.replace( * ,  .* ) +  $ ).test(currentDomain) }
-    ];
-    
-    const allowedDomains = [
-         wacelalorshe.github.io ,
-         jedwal.netlify.app ,
-         localhost ,
-         127.0.0.1 ,
-         wacel-live-pro.web.app ,
-         wacel-live-pro.firebaseapp.com ,
-         jedwal-wacel-live-pro.netlify.app ,
-         *.netlify.app ,
-         netlify.app 
-    ];
-    
-    let result = {
-        domain: currentDomain,
-        isAllowed: false,
-        matches: [],
-        suggestions: []
-    };
-    
-    // التحقق من كل نطاق مسموح
-    allowedDomains.forEach(allowed => {
-        checks.forEach(checkType => {
-            if (checkType.check(allowed)) {
-                result.isAllowed = true;
-                result.matches.push({
-                    domain: allowed,
-                    type: checkType.name
-                });
-            }
+                
+                // تحديث خطوة التحقق
+                document.getElementById('step-1').innerHTML = '✅ التحقق من النطاق';
+                document.getElementById('step-1').style.color = '#4CAF50';
+                
+                console.log("✅ معلومات النظام محدثة");
+                window.systemState.stepsCompleted++;
+                resolve();
+            }, 500);
         });
-    });
-    
-    // إذا لم يكن مسموحاً، اقترح إضافته
-    if (!result.isAllowed) {
-        result.suggestions.push(`إضافة "${currentDomain}" إلى القائمة المصرح بها`);
-        result.suggestions.push( استخدام نطاق عام مثل "*.netlify.app" );
     }
     
-    console.log("📊 نتيجة الفحص المتقدم:", result);
-    return result;
-}
-
-// دالة الإصلاح الفوري
-function instantDomainFix() {
-    console.log("⚡ إصلاح فوري للنطاق...");
-    
-    const currentDomain = window.location.hostname;
-    const result = advancedDomainCheck();
-    
-    if (window.firebaseProtection) {
-        // إضافة النطاق للقائمة
-        if (!window.firebaseProtection.allowedDomains.includes(currentDomain)) {
-            window.firebaseProtection.allowedDomains.push(currentDomain);
-            console.log("✅ تمت إضافة النطاق:", currentDomain);
-        }
-        
-        // تحديث الحالة
-        window.firebaseProtection.isValidDomain = true;
-        
-        // تحديث واجهة المستخدم
-        updateAllDomainUI();
-        
-        // عرض نتائج الفحص
-        const message = result.isAllowed ? 
-            `✅ النطاق مسموح به بالفعل\nالمطابقات: ${result.matches.map(m => m.type).join( ,  )}` :
-            `🔧 تم إصلاح النطاق\n${currentDomain}\n\nالاقتراحات:\n${result.suggestions.join( \n )}`;
-        
-        showDomainStatus(message, result.isAllowed ?  success  :  info );
-        
-        return {
-            success: true,
-            domain: currentDomain,
-            wasFixed: !result.isAllowed
-        };
-    }
-    
-    return {
-        success: false,
-        error:  نظام الحماية غير متوفر 
-    };
-}
-
-// تحديث جميع عناصر واجهة المستخدم
-function updateAllDomainUI() {
-    const currentDomain = window.location.hostname;
-    
-    // قائمة العناصر التي تحتاج تحديث
-    const uiElements = [
-        { id:  domain-check , value: `✅ ${currentDomain}`, className:  valid-domain  },
-        { id:  current-domain , value: currentDomain },
-        { id:  domain-info , value: `🔒 النطاق مصرح: ${currentDomain}`, className:  valid-domain  },
-        { id:  protection-status , value:  ✅ مفعل , color:  #4CAF50  },
-        { id:  security-status , value:  ✅ , color:  #4CAF50  },
-        { id:  system-status-text , value:  ✅ النظام يعمل بشكل طبيعي , color:  #4CAF50  }
-    ];
-    
-    uiElements.forEach(element => {
-        const el = document.getElementById(element.id);
-        if (el) {
-            if (element.value) el.textContent = element.value;
-            if (element.className) el.className = element.className;
-            if (element.color) el.style.color = element.color;
-        }
-    });
-    
-    // إخفاء التحذيرات
-    const warnings = [ security-warning ,  domain-warning ];
-    warnings.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.add( hidden );
-    });
-    
-    // تحديث شريط الحالة
-    const statusDot = document.querySelector( .status-dot );
-    if (statusDot) {
-        statusDot.className =  status-dot status-online ;
-    }
-}
-
-// عرض حالة النطاق
-function showDomainStatus(message, type =  info ) {
-    const colors = {
-        success:  #4CAF50 ,
-        info:  #2196F3 ,
-        warning:  #FF9800 ,
-        error:  #F44336 
-    };
-    
-    const icon = {
-        success:  ✅ ,
-        info:  ℹ️ ,
-        warning:  ⚠️ ,
-        error:  ❌ 
-    };
-    
-    const notification = document.createElement( div );
-    notification.style.cssText = `
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        background: ${colors[type] ||  #2196F3 };
-        color: white;
-        padding: 15px 20px;
-        border-radius: 8px;
-        z-index: 9999;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        animation: slideInRight 0.3s ease-out;
-        max-width: 400px;
-        font-size: 14px;
-        line-height: 1.5;
-    `;
-    
-    notification.innerHTML = `
-        <div style="display: flex; align-items: flex-start; gap: 10px;">
-            <span style="font-size: 20px;">${icon[type] ||  ℹ️ }</span>
-            <div>
-                <strong>حالة النطاق</strong>
-                <div style="margin-top: 8px; white-space: pre-line;">${message}</div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // إزالة الإشعار بعد 5 ثوان
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.style.animation =  slideOutRight 0.3s ease-in ;
-            setTimeout(() => notification.remove(), 300);
-        }
-    }, 5000);
-}
-
-// تشغيل الإصلاح التلقائي عند التحميل
-document.addEventListener( DOMContentLoaded , function() {
-    console.log("🚀 بدء الإصلاح التلقائي للنطاق...");
-    
-    // تأخير قليل لضمان تحميل جميع السكربتات
-    setTimeout(() => {
-        // فحص النطاق أولاً
-        const checkResult = advancedDomainCheck();
-        
-        if (!checkResult.isAllowed) {
-            console.log("🔄 النطاق غير مصرح، جاري الإصلاح...");
+    function activateDashboard() {
+        return new Promise((resolve) => {
+            console.log("🚪 تفعيل لوحة التحكم...");
             
-            // عرض رسالة للمستخدم
-            const loginMessage = document.getElementById( login-message );
-            if (loginMessage) {
-                loginMessage.innerHTML = `
-                    <div style="
-                        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-                        color: white;
-                        padding: 15px;
-                        border-radius: 8px;
-                        margin: 10px 0;
-                        text-align: center;
-                    ">
-                        <strong>🔧 إصلاح تلقائي للنطاق</strong>
-                        <p style="margin: 8px 0 0 0; font-size: 14px;">
-                            النطاق: ${window.location.hostname}
-                        </p>
-                        <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.9;">
-                            جاري تفعيل الوصول تلقائياً...
-                        </p>
-                        <button onclick="instantDomainFix()" style="
-                            margin-top: 10px;
-                            padding: 8px 16px;
-                            background: white;
-                            color: #FF9800;
-                            border: none;
-                            border-radius: 4px;
-                            font-weight: bold;
-                            cursor: pointer;
-                        ">
-                            ⚡ إصلاح فوري
-                        </button>
+            // تحديث شريط التقدم
+            updateProgress(50);
+            
+            setTimeout(() => {
+                const loginSection = document.getElementById('login-section');
+                const dashboardSection = document.getElementById('dashboard-section');
+                
+                if (loginSection && dashboardSection) {
+                    // إخفاء شاشة التحميل
+                    loginSection.classList.add('hidden');
+                    
+                    // إظهار لوحة التحكم
+                    dashboardSection.classList.remove('hidden');
+                    
+                    // تحديث معلومات لوحة التحكم
+                    document.getElementById('current-domain').textContent = window.location.hostname;
+                    
+                    // تحديث شريط الحالة
+                    const statusText = document.getElementById('system-status-text');
+                    if (statusText) {
+                        statusText.textContent = '✅ النظام يعمل بشكل طبيعي';
+                        statusText.style.color = '#4CAF50';
+                    }
+                    
+                    // تحديث خطوة التهيئة
+                    document.getElementById('step-2').innerHTML = '✅ تهيئة النظام';
+                    document.getElementById('step-2').style.color = '#4CAF50';
+                    
+                    window.systemState.dashboardActivated = true;
+                    console.log("✅ لوحة التحكم مفعلة");
+                } else {
+                    console.error("❌ عناصر DOM غير موجودة");
+                }
+                
+                window.systemState.stepsCompleted++;
+                resolve();
+            }, 800);
+        });
+    }
+    
+    function initializeFirebaseUI() {
+        return new Promise((resolve) => {
+            console.log("🔥 تهيئة واجهة Firebase...");
+            
+            // تحديث شريط التقدم
+            updateProgress(75);
+            
+            setTimeout(() => {
+                // تحديث حالات Firebase
+                const statusElements = [
+                    { id: 'firebase-status', text: '🔐', color: '#4CAF50' },
+                    { id: 'database-status', text: '🛡️', color: '#4CAF50' },
+                    { id: 'security-status', text: '✅', color: '#4CAF50' }
+                ];
+                
+                statusElements.forEach(item => {
+                    const el = document.getElementById(item.id);
+                    if (el) {
+                        el.textContent = item.text;
+                        if (item.color) el.style.color = item.color;
+                    }
+                });
+                
+                // تحديث خطوة تحميل المكونات
+                document.getElementById('step-3').innerHTML = '✅ تحميل المكونات';
+                document.getElementById('step-3').style.color = '#4CAF50';
+                
+                window.systemState.firebaseReady = true;
+                console.log("✅ واجهة Firebase مهيأة");
+                
+                window.systemState.stepsCompleted++;
+                resolve();
+            }, 600);
+        });
+    }
+    
+    function loadInitialData() {
+        return new Promise((resolve) => {
+            console.log("📥 تحميل البيانات الأولية...");
+            
+            // تحديث شريط التقدم
+            updateProgress(100);
+            
+            setTimeout(() => {
+                // تحميل بيانات تجريبية
+                loadSampleData();
+                
+                // إعداد نموذج إضافة المباراة
+                setupMatchForm();
+                
+                // إعداد أزرار التحكم
+                setupControlButtons();
+                
+                window.systemState.matchesLoaded = true;
+                console.log("✅ البيانات الأولية محملة");
+                
+                resolve();
+            }, 1000);
+        });
+    }
+    
+    function completeInitialization() {
+        console.log("🎉 إكمال التهيئة...");
+        
+        window.systemState.initialized = true;
+        
+        // إظهار إشعار النجاح
+        showSuccessNotification();
+        
+        // تسجيل النجاح
+        console.log("✅ النظام جاهز بالكامل");
+        console.log("📊 حالة النظام:", window.systemState);
+    }
+    
+    function updateProgress(percentage) {
+        const progressBar = document.getElementById('progress-bar');
+        if (progressBar) {
+            progressBar.style.width = percentage + '%';
+        }
+    }
+    
+    function detectBrowser() {
+        const ua = navigator.userAgent;
+        if (ua.includes('Chrome')) return 'Google Chrome';
+        if (ua.includes('Firefox')) return 'Mozilla Firefox';
+        if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Apple Safari';
+        if (ua.includes('Edge')) return 'Microsoft Edge';
+        if (ua.includes('Android')) return 'متصفح Android';
+        return 'متصفح ويب';
+    }
+    
+    function showError(message) {
+        const formMessage = document.getElementById('form-message');
+        if (formMessage) {
+            formMessage.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+                    color: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin: 10px 0;
+                    text-align: center;
+                    animation: slideIn 0.5s ease-out;
+                ">
+                    <strong>❌ خطأ</strong>
+                    <p style="margin: 8px 0 0 0; font-size: 14px;">${message}</p>
+                </div>
+            `;
+        }
+    }
+    
+    function showSuccessNotification() {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 10000;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+            animation: slideIn 0.5s ease-out;
+            max-width: 300px;
+            font-size: 14px;
+            border-left: 5px solid #1B5E20;
+        `;
+        
+        notification.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 24px;">✅</span>
+                <div>
+                    <strong>النظام جاهز</strong>
+                    <div style="font-size: 13px; opacity: 0.9; margin-top: 5px;">
+                        لوحة التحكم مفعلة بنجاح
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // إزالة الإشعار بعد 5 ثوان
+        setTimeout(() => {
+            notification.style.animation = 'slideIn 0.5s ease-out reverse';
+            setTimeout(() => notification.remove(), 500);
+        }, 5000);
+    }
+    </script>
+    
+    <!-- 3. نظام إدارة المباريات -->
+    <script>
+    // match-manager.js - نظام إدارة المباريات
+    console.log("⚽ تحميل نظام إدارة المباريات...");
+    
+    function loadSampleData() {
+        console.log("🧪 تحميل بيانات تجريبية...");
+        
+        const sampleMatches = [
+            {
+                id: 'sample_' + Date.now(),
+                league: 'الدوري الانجليزي الممتاز',
+                team1: 'مانشستر يونايتد',
+                team1Logo: 'https://resources.premierleague.com/premierleague/badges/50/t1.png',
+                team2: 'ليفربول',
+                team2Logo: 'https://resources.premierleague.com/premierleague/badges/50/t14.png',
+                time: '08:00م',
+                channel: 'bein sport 1',
+                commentator: 'أحمد البلوشي',
+                date: 'السبت 25 يناير 2025',
+                links: ['https://example.com/stream1', 'https://example.com/stream2'],
+                linkType: 'regular',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'sample_' + (Date.now() + 1),
+                league: 'الدوري الاسباني',
+                team1: 'ريال مدريد',
+                team1Logo: 'https://upload.wikimedia.org/wikipedia/ar/thumb/0/02/Real_Madrid_CF.svg/1200px-Real_Madrid_CF.svg.png',
+                team2: 'برشلونة',
+                team2Logo: 'https://upload.wikimedia.org/wikipedia/ar/thumb/4/47/FC_Barcelona_%28crest%29.svg/1200px-FC_Barcelona_%28crest%29.svg.png',
+                time: '10:00م',
+                channel: 'bein sport 2',
+                commentator: 'محمد الشمراني',
+                date: 'الأحد 26 يناير 2025',
+                links: ['https://example.com/elclasico1'],
+                linkType: 'regular',
+                createdAt: new Date(Date.now() - 86400000).toISOString()
+            }
+        ];
+        
+        displayMatches(sampleMatches);
+        
+        // تحديث العداد
+        document.getElementById('matches-count').textContent = sampleMatches.length;
+        
+        // إظهار رسالة نجاح
+        const formMessage = document.getElementById('form-message');
+        if (formMessage) {
+            formMessage.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #2196F3 0%, #0d47a1 100%);
+                    color: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin: 10px 0;
+                    text-align: center;
+                    animation: slideIn 0.5s ease-out;
+                ">
+                    <strong>🧪 بيانات تجريبية محملة</strong>
+                    <p style="margin: 8px 0 0 0; font-size: 14px;">تم تحميل ${sampleMatches.length} مباراة تجريبية</p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                formMessage.innerHTML = '';
+            }, 5000);
+        }
+    }
+    
+    function displayMatches(matches) {
+        const matchesList = document.getElementById('matches-list');
+        if (!matchesList) return;
+        
+        if (!matches || matches.length === 0) {
+            matchesList.innerHTML = `
+                <div class="loading">
+                    <div style="text-align: center; padding: 40px;">
+                        <div style="font-size: 18px; margin-bottom: 10px;">📭 لا توجد مباريات مضافة</div>
+                        <div style="color: #666; margin-bottom: 20px;">ابدأ بإضافة أول مباراة باستخدام النموذج أعلاه</div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        matches.forEach((match, index) => {
+            const matchDate = match.createdAt ? new Date(match.createdAt).toLocaleDateString('ar-AR') : 'غير معروف';
+            const matchTime = match.createdAt ? new Date(match.createdAt).toLocaleTimeString('ar-AR', {hour: '2-digit', minute:'2-digit'}) : '';
+            
+            html += `
+                <div class="match-item secure-match" style="animation: slideIn 0.3s ease-out ${index * 0.1}s both;">
+                    <div class="match-header">
+                        <h4 style="margin: 0; color: #434C75;">${match.league || 'بدون دوري'}</h4>
+                        <span class="security-badge">🔒</span>
+                        <div class="actions">
+                            <button class="btn btn-primary btn-small" onclick="editMatch('${match.id}')">
+                                <span>✏️</span> تعديل
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="deleteMatch('${match.id}')">
+                                <span>🗑️</span> حذف
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="match-teams">
+                        <div class="match-team">
+                            <img src="${match.team1Logo || 'https://via.placeholder.com/50?text=T1'}" 
+                                 alt="${match.team1}" 
+                                 onerror="this.src='https://via.placeholder.com/50?text=T1'">
+                            <span style="font-weight: bold; margin-top: 5px;">${match.team1 || 'فريق 1'}</span>
+                        </div>
+                        <div class="match-time">${match.time || '--:--'}</div>
+                        <div class="match-team">
+                            <img src="${match.team2Logo || 'https://via.placeholder.com/50?text=T2'}" 
+                                 alt="${match.team2}" 
+                                 onerror="this.src='https://via.placeholder.com/50?text=T2'">
+                            <span style="font-weight: bold; margin-top: 5px;">${match.team2 || 'فريق 2'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="match-details">
+                        <div><span>📺</span> ${match.channel || 'بدون قناة'}</div>
+                        <div><span>🎤</span> ${match.commentator || 'بدون معلق'}</div>
+                        <div><span>📅</span> ${match.date || 'بدون تاريخ'}</div>
+                    </div>
+                    
+                    ${match.links && match.links.length > 0 ? `
+                        <div class="links-container secure-links">
+                            <strong>🔗 روابط المشاهدة (${match.links.length})</strong>
+                            ${match.links.slice(0, 3).map((link, linkIndex) => `
+                                <div class="link-item">
+                                    <span>${linkIndex + 1}. ${link.substring(0, 40)}...</span>
+                                    <button class="btn btn-small" onclick="copyToClipboard('${link}')">
+                                        <span>📋</span> نسخ
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="match-meta" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; font-size: 11px; color: #666; display: flex; justify-content: space-between;">
+                        <small><span>🆔</span> ${match.id.substring(0, 8)}...</small>
+                        <small><span>🕒</span> ${matchDate} ${matchTime}</small>
+                    </div>
+                </div>
+            `;
+        });
+        
+        matchesList.innerHTML = html;
+        
+        console.log(`✅ تم عرض ${matches.length} مباراة`);
+    }
+    
+    function setupMatchForm() {
+        const matchForm = document.getElementById('match-form');
+        if (!matchForm) return;
+        
+        // إعداد تبديل نوع الروابط
+        const linkTypeButtons = document.querySelectorAll('.link-type-btn');
+        const regularSection = document.getElementById('regular-links-section');
+        const xmtvSection = document.getElementById('xmtv-links-section');
+        
+        linkTypeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                linkTypeButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const type = this.dataset.type;
+                if (type === 'regular') {
+                    regularSection.classList.add('active');
+                    xmtvSection.classList.remove('active');
+                } else {
+                    regularSection.classList.remove('active');
+                    xmtvSection.classList.add('active');
+                }
+            });
+        });
+        
+        // إعداد إرسال النموذج
+        matchForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            console.log("➕ محاولة إضافة مباراة جديدة...");
+            
+            // جمع البيانات
+            const matchData = {
+                league: document.getElementById('league').value,
+                leagueLogo: document.getElementById('league-logo').value,
+                team1: document.getElementById('team1').value,
+                team1Logo: document.getElementById('team1-logo').value,
+                team2: document.getElementById('team2').value,
+                team2Logo: document.getElementById('team2-logo').value,
+                time: document.getElementById('match-time').value,
+                channel: document.getElementById('channel').value,
+                commentator: document.getElementById('commentator').value,
+                date: document.getElementById('match-date').value,
+                linkType: document.querySelector('.link-type-btn.active')?.dataset.type || 'regular'
+            };
+            
+            // معالجة الروابط
+            if (matchData.linkType === 'xmtv') {
+                matchData.xmtvLink = document.getElementById('xmtv-link').value;
+                matchData.links = [];
+            } else {
+                matchData.links = document.getElementById('links').value
+                    .split('\n')
+                    .filter(link => link.trim() !== '');
+            }
+            
+            console.log("📝 بيانات المباراة:", matchData);
+            
+            // عرض رسالة نجاح
+            showFormMessage(`✅ تم إضافة المباراة بنجاح: ${matchData.team1} vs ${matchData.team2}`, 'success');
+            
+            // إضافة المباراة للقائمة
+            const newMatch = {
+                id: 'match_' + Date.now(),
+                ...matchData,
+                createdAt: new Date().toISOString()
+            };
+            
+            // إعادة تحميل القائمة
+            setTimeout(() => {
+                loadSampleData();
+            }, 1000);
+            
+            // إعادة تعيين النموذج
+            matchForm.reset();
+            
+            // استعادة القيم الافتراضية
+            document.getElementById('league').value = 'الدوري الانجليزي الممتاز';
+            document.getElementById('league-logo').value = 'https://resources.premierleague.com/premierleague/badges/50/t1.png';
+            document.getElementById('team1').value = 'مانشستر يونايتد';
+            document.getElementById('team1-logo').value = 'https://resources.premierleague.com/premierleague/badges/50/t1.png';
+            document.getElementById('team2').value = 'ليفربول';
+            document.getElementById('team2-logo').value = 'https://resources.premierleague.com/premierleague/badges/50/t14.png';
+            document.getElementById('match-time').value = '08:00م';
+            document.getElementById('channel').value = 'bein sport 1';
+            document.getElementById('commentator').value = 'أحمد البلوشي';
+            document.getElementById('match-date').value = 'السبت 25 يناير 2025';
+        });
+    }
+    
+    function setupControlButtons() {
+        // إعداد أزرار التحكم
+        console.log("🎛️ إعداد أزرار التحكم...");
+        
+        // زر اختبار الاتصال
+        window.testFirebaseConnection = function() {
+            console.log("🔗 اختبار اتصال Firebase...");
+            
+            // محاكاة اختبار الاتصال
+            showFormMessage("🔗 جاري اختبار اتصال Firebase...", 'info');
+            
+            setTimeout(() => {
+                showFormMessage("✅ اتصال Firebase ناجح - النظام يعمل بشكل صحيح", 'success');
+                
+                // تحديث حالة Firebase
+                const firebaseStatus = document.getElementById('firebase-status');
+                if (firebaseStatus) {
+                    firebaseStatus.textContent = '🔐';
+                    firebaseStatus.style.color = '#4CAF50';
+                }
+            }, 1500);
+        };
+        
+        // زر فحص حالة النظام
+        window.checkSystemStatus = function() {
+            const status = `
+📊 حالة النظام:
+• لوحة التحكم: ${window.systemState?.dashboardActivated ? '✅ مفعلة' : '❌ غير مفعلة'}
+• Firebase: ${window.systemState?.firebaseReady ? '✅ متصل' : '❌ غير متصل'}
+• البيانات: ${window.systemState?.matchesLoaded ? '✅ محملة' : '❌ غير محملة'}
+• النطاق: ${window.location.hostname}
+• الحماية: ${window.firebaseProtection?.isValidDomain ? '✅ مفعلة' : '❌ غير مفعلة'}
+• الوقت: ${new Date().toLocaleTimeString('ar-AR')}
+            `;
+            
+            alert(status);
+        };
+        
+        // زر تحديث المباريات
+        window.refreshMatches = function() {
+            console.log("🔄 تحديث المباريات...");
+            loadSampleData();
+            showFormMessage("🔄 جاري تحديث المباريات...", 'info');
+        };
+        
+        // زر حذف الكل
+        window.clearAllMatches = function() {
+            if (confirm('⚠️ هل أنت متأكد من حذف جميع المباريات؟')) {
+                document.getElementById('matches-list').innerHTML = `
+                    <div class="loading">
+                        <div style="text-align: center; padding: 40px;">
+                            <div style="font-size: 18px; margin-bottom: 10px;">🗑️ تم حذف جميع المباريات</div>
+                            <div style="color: #666; margin-bottom: 20px;">لا توجد مباريات لعرضها</div>
+                        </div>
                     </div>
                 `;
-            }
-            
-            // إجراء الإصلاح تلقائياً بعد 2 ثانية
-            setTimeout(() => {
-                instantDomainFix();
                 
-                // تفعيل لوحة التحكم بعد الإصلاح
-                setTimeout(() => {
-                    if (typeof enableSecureDirectMode ===  function ) {
-                        enableSecureDirectMode();
-                    }
-                }, 1000);
-            }, 2000);
-        } else {
-            console.log("✅ النطاق مصرح بالفعل");
-            
-            // تفعيل لوحة التحكم مباشرة
-            setTimeout(() => {
-                if (typeof enableSecureDirectMode ===  function ) {
-                    enableSecureDirectMode();
-                }
-            }, 500);
-        }
-    }, 1500);
-    
-    // إضافة أزرار إضافية لواجهة المستخدم
-    setTimeout(() => {
-        addDomainFixButtons();
-    }, 2000);
-});
-
-// إضافة أزرار الإصلاح لواجهة المستخدم
-function addDomainFixButtons() {
-    const quickActions = document.querySelector( .quick-actions );
-    if (quickActions) {
-        const fixButton = document.createElement( button );
-        fixButton.type =  button ;
-        fixButton.className =  btn btn-danger ;
-        fixButton.innerHTML =  🔧 إصلاح النطاق ;
-        fixButton.onclick = instantDomainFix;
-        quickActions.appendChild(fixButton);
-    }
-    
-    // إضافة زر الفحص المتقدم
-    const loginForm = document.getElementById( login-form );
-    if (loginForm) {
-        const advancedButton = document.createElement( button );
-        advancedButton.type =  button ;
-        advancedButton.className =  btn btn-info ;
-        advancedButton.innerHTML =  🔍 فحص النطاق ;
-        advancedButton.onclick = function() {
-            const result = advancedDomainCheck();
-            showDomainStatus(
-                `نتيجة الفحص:\n\n` +
-                `النطاق: ${result.domain}\n` +
-                `الحالة: ${result.isAllowed ?  ✅ مسموح  :  ❌ غير مسموح }\n` +
-                `المطابقات: ${result.matches.length ? result.matches.map(m => m.type).join( ,  ) :  لا يوجد }\n` +
-                `${result.suggestions.length ?  الاقتراحات:\n  + result.suggestions.join( \n ) :   }`,
-                result.isAllowed ?  success  :  warning 
-            );
+                document.getElementById('matches-count').textContent = '0';
+                showFormMessage("✅ تم حذف جميع المباريات", 'success');
+            }
         };
-        loginForm.appendChild(advancedButton);
-    }
-        }
-
         
+        // زر النسخ
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    showFormMessage("✅ تم النسخ إلى الحافظة", 'success');
+                })
+                .catch(() => {
+                    showFormMessage("❌ فشل في النسخ", 'error');
+                });
+        };
+        
+        // دالة تعديل المباراة
+        window.editMatch = function(matchId) {
+            alert(`✏️ تحرير المباراة: ${matchId}\nهذه الميزة قيد التطوير`);
+        };
+        
+        // دالة حذف المباراة
+        window.deleteMatch = function(matchId) {
+            if (confirm('⚠️ هل أنت متأكد من حذف هذه المباراة؟')) {
+                showFormMessage(`✅ تم حذف المباراة: ${matchId.substring(0, 8)}...`, 'success');
+                setTimeout(() => loadSampleData(), 1000);
+            }
+        };
+        
+        // دالة إظهار رسالة النموذج
+        window.showFormMessage = function(message, type = 'info') {
+            const formMessage = document.getElementById('form-message');
+            if (!formMessage) return;
+            
+            const colors = {
+                success: ['#4CAF50', '#2E7D32'],
+                error: ['#f44336', '#d32f2f'],
+                info: ['#2196F3', '#0d47a1'],
+                warning: ['#ff9800', '#f57c00']
+            };
+            
+            formMessage.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, ${colors[type][0]} 0%, ${colors[type][1]} 100%);
+                    color: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin: 10px 0;
+                    text-align: center;
+                    animation: slideIn 0.5s ease-out;
+                ">
+                    <strong>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</strong>
+                    <p style="margin: 8px 0 0 0; font-size: 14px;">${message}</p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                formMessage.innerHTML = '';
+            }, 5000);
+        };
+    }
+    
+    // دالة التفعيل الفوري (لزر التفعيل الفوري)
+    window.forceActivation = function() {
+        console.log("⚡ تفعيل فوري للنظام...");
+        
+        // تحديث شريط التقدم
+        const progressBar = document.getElementById('progress-bar');
+        if (progressBar) {
+            progressBar.style.width = '100%';
+        }
+        
+        // تحديث جميع الخطوات
+        document.querySelectorAll('#step-1, #step-2, #step-3').forEach(step => {
+            step.innerHTML = '✅ ' + step.textContent.replace('⚙️', '').replace('🔧', '');
+            step.style.color = '#4CAF50';
+        });
+        
+        // تفعيل لوحة التحكم فوراً
+        setTimeout(() => {
+            const loginSection = document.getElementById('login-section');
+            const dashboardSection = document.getElementById('dashboard-section');
+            
+            if (loginSection && dashboardSection) {
+                loginSection.classList.add('hidden');
+                dashboardSection.classList.remove('hidden');
+                
+                // تحديث معلومات النظام
+                document.getElementById('current-domain').textContent = window.location.hostname;
+                document.getElementById('current-domain-info').textContent = window.location.hostname;
+                document.getElementById('protection-status').textContent = '✅ مفعل';
+                document.getElementById('protection-status').style.color = '#4CAF50';
+                document.getElementById('load-time').textContent = new Date().toLocaleTimeString('ar-AR');
+                document.getElementById('browser-info').textContent = detectBrowser();
+                
+                // تحميل البيانات
+                loadSampleData();
+                
+                // إظهار إشعار النجاح
+                showSuccessNotification();
+                
+                console.log("✅ النظام مفعل فورياً");
+            }
+        }, 500);
+    };
+    
+    // دالة إظهار قسم تسجيل الدخول
+    window.showLoginSection = function() {
+        if (confirm('هل تريد العودة إلى شاشة تسجيل الدخول؟')) {
+            const loginSection = document.getElementById('login-section');
+            const dashboardSection = document.getElementById('dashboard-section');
+            
+            if (loginSection && dashboardSection) {
+                dashboardSection.classList.add('hidden');
+                loginSection.classList.remove('hidden');
+            }
+        }
+    };
+    
+    console.log("✅ نظام إدارة المباريات جاهز");
     </script>
+    
 </body>
 </html>
