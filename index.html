@@ -4,6 +4,9 @@
     <meta charset='UTF-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>وسيل لايف برو - بث المباريات</title>
+    
+    <!-- تحميل أنظمة الحماية أولاً -->
+    <script src="js/protection.js"></script>
     <script src="js/security.js"></script>
     <link rel="stylesheet" href="styles/style.css">
     
@@ -12,6 +15,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
+    <div id="protection-message" style="display:none; background:red; color:white; padding:10px; text-align:center;">
+        ⚠️ هذا الموقع غير مصرح له بعرض المحتوى
+    </div>
+    
     <h2 id="page-title">جاري التحميل...</h2>
     
     <div id="matches-container">
@@ -21,6 +28,12 @@
     <a href="admin.html" class="admin-link">لوحة التحكم</a>
 
     <script>
+        // التحقق من النطاق أولاً
+        if (!window.DataProtector || !window.DataProtector.checkOrigin()) {
+            document.getElementById('protection-message').style.display = 'block';
+            throw new Error("الموقع غير مصرح");
+        }
+
         // إعدادات Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
@@ -37,11 +50,11 @@
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
             firebaseDb = firebase.database();
-            console.log("✅ تم تهيئة Firebase بنجاح في index.html");
+            console.log("✅ تم تهيئة Firebase بنجاح");
         } catch (error) {
             console.error("❌ خطأ في تهيئة Firebase:", error);
             document.getElementById('matches-container').innerHTML = 
-                '<div class="error">❌ خطأ في تحميل البيانات. يرجى المحاولة لاحقاً.</div>';
+                '<div class="error">❌ خطأ في تحميل البيانات</div>';
         }
 
         // الانتظار حتى تحميل الصفحة
@@ -74,13 +87,14 @@
                 function(error) {
                     console.error("❌ خطأ في تحميل المباريات:", error);
                     matchesContainer.innerHTML = 
-                        '<div class="error">❌ حدث خطأ في تحميل المباريات. يرجى المحاولة لاحقاً.</div>';
+                        '<div class="error">❌ حدث خطأ في تحميل المباريات</div>';
                 }
             );
         }
 
         function displayMatches(snapshot) {
             const matchesContainer = document.getElementById('matches-container');
+            const protector = window.DataProtector;
             matchesContainer.innerHTML = '';
             
             if (!snapshot.exists()) {
@@ -90,35 +104,33 @@
             
             const matches = snapshot.val();
             console.log("📊 عدد المباريات المستلمة:", Object.keys(matches).length);
-            console.log("🔍 بيانات المباريات:", matches);
             
             let currentLeague = '';
             let hasMatches = false;
             
-            // ترتيب المباريات حسب الوقت أو التاريخ إذا كان متوفراً
+            // ترتيب المباريات حسب الوقت
             const matchesArray = Object.entries(matches).map(([key, value]) => {
                 return { id: key, ...value };
             });
             
-            // يمكن إضافة ترتيب حسب الوقت إذا كان موجوداً في البيانات
-            // matchesArray.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-            
             matchesArray.forEach(match => {
                 hasMatches = true;
-                console.log("🎯 عرض مباراة:", match.team1, "vs", match.team2);
+                
+                // فك تشفير البيانات إذا كانت مشفرة
+                const decryptedMatch = protector.decryptMatch(match);
                 
                 // إذا تغير الدوري، نضيف عنوان الدوري الجديد
-                if (match.league !== currentLeague) {
-                    currentLeague = match.league;
+                if (decryptedMatch.league !== currentLeague) {
+                    currentLeague = decryptedMatch.league;
                     
                     const leagueContainer = document.createElement('div');
                     leagueContainer.className = 'flex-container';
                     leagueContainer.innerHTML = `
-                        <b>${match.league}</b>
+                        <b>${decryptedMatch.league}</b>
                         <div class="img">
-                            <img src="${match.leagueLogo || 'https://i.postimg.cc/Bb0WFJfJ/Picsart-25-01-18-03-49-12-620.png'}" 
+                            <img src="${decryptedMatch.leagueLogo || 'https://i.postimg.cc/Bb0WFJfJ/Picsart-25-01-18-03-49-12-620.png'}" 
                                  style="width: 80px; height: 45px;" 
-                                 alt="${match.league}"
+                                 alt="${decryptedMatch.league}"
                                  onerror="this.src='https://via.placeholder.com/80x45?text=LOGO'">
                         </div>
                     `;
@@ -126,14 +138,23 @@
                     matchesContainer.appendChild(leagueContainer);
                 }
                 
-                // إنشاء رابط المشاهدة المشفر (base64)
+                // إنشاء رابط المشاهدة المشفر
                 let watchLink = "#";
-                try {
-                    const encodedLinks = btoa(JSON.stringify(match.links || []));
-                    watchLink = "xmtv://" + encodedLinks;
-                } catch (error) {
-                    console.error("❌ خطأ في ترميز روابط المشاهدة:", error);
-                    watchLink = "#";
+                let linksArray = [];
+                
+                if (decryptedMatch.linkType === 'regular' && decryptedMatch.links && decryptedMatch.links.length > 0) {
+                    linksArray = decryptedMatch.links;
+                } else if (decryptedMatch.linkType === 'xmtv' && decryptedMatch.xmtvLink) {
+                    watchLink = decryptedMatch.xmtvLink;
+                }
+                
+                // إذا كانت روابط عادية، ننشئ رابط xmtv مشفر
+                if (linksArray.length > 0) {
+                    try {
+                        watchLink = protector.createXmtvLink(linksArray);
+                    } catch (error) {
+                        console.error("❌ خطأ في إنشاء رابط xmtv:", error);
+                    }
                 }
                 
                 // إنشاء عنصر المباراة
@@ -144,22 +165,22 @@
                 matchElement.innerHTML = `
                     <div class='match-info'>
                         <div>
-                            <img src='${match.team1Logo || 'https://via.placeholder.com/40?text=T1'}' 
-                                 alt='${match.team1}'
+                            <img src='${decryptedMatch.team1Logo || 'https://via.placeholder.com/40?text=T1'}' 
+                                 alt='${decryptedMatch.team1}'
                                  onerror="this.src='https://via.placeholder.com/40?text=T1'">
-                            <p>${match.team1 || 'فريق 1'}</p>
+                            <p>${decryptedMatch.team1 || 'فريق 1'}</p>
                         </div>
-                        <div><span class='match-time'>${match.time || '00:00'}</span></div>
+                        <div><span class='match-time'>${decryptedMatch.time || '00:00'}</span></div>
                         <div>
-                            <img src='${match.team2Logo || 'https://via.placeholder.com/40?text=T2'}' 
-                                 alt='${match.team2}'
+                            <img src='${decryptedMatch.team2Logo || 'https://via.placeholder.com/40?text=T2'}' 
+                                 alt='${decryptedMatch.team2}'
                                  onerror="this.src='https://via.placeholder.com/40?text=T2'">
-                            <p>${match.team2 || 'فريق 2'}</p>
+                            <p>${decryptedMatch.team2 || 'فريق 2'}</p>
                         </div>
                     </div>
                     <div class='match-details'>
-                        <div>${match.channel || 'قناة غير محددة'}</div>
-                        <div>${match.commentator || 'معلق غير محدد'}</div>
+                        <div>${decryptedMatch.channel || 'قناة غير محددة'}</div>
+                        <div>${decryptedMatch.commentator || 'معلق غير محدد'}</div>
                     </div>
                 `;
                 
@@ -176,14 +197,14 @@
         // دالة مساعدة لتصحيح الأخطاء
         window.debugFirebase = function() {
             console.log("🔍 تصحيح أخطاء Firebase:");
-            console.log("Firebase App:", firebaseApp);
-            console.log("Firebase Database:", firebaseDb);
+            console.log("DataProtector:", window.DataProtector);
             
             if (firebaseDb) {
                 firebaseDb.ref('matches').once('value')
                     .then(snapshot => {
-                        console.log("📊 بيانات matches:", snapshot.val());
-                        console.log("🔢 عدد المباريات:", snapshot.numChildren());
+                        const matches = snapshot.val();
+                        console.log("📊 عدد المباريات:", snapshot.numChildren());
+                        console.log("🔐 بيانات أول مباراة (مشفرة):", Object.values(matches)[0]);
                     })
                     .catch(error => {
                         console.error("❌ خطأ في جلب البيانات:", error);
