@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang='ar' dir='rtl'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وسيل لايف برو - بث المباريات</title>
+    <link rel="stylesheet" href="styles/style.css">
+    
+    <!-- تحميل Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+</head>
+<body>
+    <h2 id="page-title">جاري التحميل...</h2>
+    
+    <div id="matches-container">
+        <div class="loading">جاري تحميل المباريات...</div>
+    </div>
+    
+    <a href="admin.html" class="admin-link">لوحة التحكم</a>
+
+    <script>
+        // إعدادات Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqE7ZwveHg1dIhYf1Hlo7OpHyCZudeZvM",
+            authDomain: "wacel-live.firebaseapp.com",
+            databaseURL: "https://wacel-live-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "wacel-live",
+            storageBucket: "wacel-live.firebasestorage.app",
+            messagingSenderId: "185108554006",
+            appId: "1:185108554006:web:93171895b1d4bb07c6f037"
+        };
+
+        // تهيئة Firebase
+        let firebaseApp, firebaseDb;
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            firebaseDb = firebase.database();
+            console.log("✅ تم تهيئة Firebase بنجاح في index.html");
+        } catch (error) {
+            console.error("❌ خطأ في تهيئة Firebase:", error);
+            document.getElementById('matches-container').innerHTML = 
+                '<div class="error">❌ خطأ في تحميل البيانات. يرجى المحاولة لاحقاً.</div>';
+        }
+
+        // الانتظار حتى تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // تحديث التاريخ في العنوان
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('page-title').textContent = `مباريات اليوم | ${today.toLocaleDateString('ar-AR', options)}`;
+            
+            // تحميل المباريات
+            loadMatches();
+        });
+
+        function loadMatches() {
+            const matchesContainer = document.getElementById('matches-container');
+            
+            if (!firebaseDb) {
+                matchesContainer.innerHTML = '<div class="error">❌ قاعدة البيانات غير متاحة</div>';
+                return;
+            }
+
+            console.log("🔄 جاري تحميل المباريات من Firebase...");
+            
+            // الاستماع للتحديثات في قاعدة البيانات
+            firebaseDb.ref('matches').on('value', 
+                function(snapshot) {
+                    console.log("📥 تم استلام البيانات من Firebase");
+                    displayMatches(snapshot);
+                }, 
+                function(error) {
+                    console.error("❌ خطأ في تحميل المباريات:", error);
+                    matchesContainer.innerHTML = 
+                        '<div class="error">❌ حدث خطأ في تحميل المباريات. يرجى المحاولة لاحقاً.</div>';
+                }
+            );
+        }
+
+        function displayMatches(snapshot) {
+            const matchesContainer = document.getElementById('matches-container');
+            matchesContainer.innerHTML = '';
+            
+            if (!snapshot.exists()) {
+                matchesContainer.innerHTML = '<div class="loading">لا توجد مباريات اليوم</div>';
+                return;
+            }
+            
+            const matches = snapshot.val();
+            console.log("📊 عدد المباريات المستلمة:", Object.keys(matches).length);
+            console.log("🔍 بيانات المباريات:", matches);
+            
+            let currentLeague = '';
+            let hasMatches = false;
+            
+            // ترتيب المباريات حسب الوقت أو التاريخ إذا كان متوفراً
+            const matchesArray = Object.entries(matches).map(([key, value]) => {
+                return { id: key, ...value };
+            });
+            
+            // يمكن إضافة ترتيب حسب الوقت إذا كان موجوداً في البيانات
+            // matchesArray.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+            
+            matchesArray.forEach(match => {
+                hasMatches = true;
+                console.log("🎯 عرض مباراة:", match.team1, "vs", match.team2);
+                
+                // إذا تغير الدوري، نضيف عنوان الدوري الجديد
+                if (match.league !== currentLeague) {
+                    currentLeague = match.league;
+                    
+                    const leagueContainer = document.createElement('div');
+                    leagueContainer.className = 'flex-container';
+                    leagueContainer.innerHTML = `
+                        <b>${match.league}</b>
+                        <div class="img">
+                            <img src="${match.leagueLogo || 'https://i.postimg.cc/Bb0WFJfJ/Picsart-25-01-18-03-49-12-620.png'}" 
+                                 style="width: 80px; height: 45px;" 
+                                 alt="${match.league}"
+                                 onerror="this.src='https://via.placeholder.com/80x45?text=LOGO'">
+                        </div>
+                    `;
+                    
+                    matchesContainer.appendChild(leagueContainer);
+                }
+                
+                // إنشاء رابط المشاهدة المشفر (base64)
+                let watchLink = "#";
+                try {
+                    const encodedLinks = btoa(JSON.stringify(match.links || []));
+                    watchLink = "xmtv://" + encodedLinks;
+                } catch (error) {
+                    console.error("❌ خطأ في ترميز روابط المشاهدة:", error);
+                    watchLink = "#";
+                }
+                
+                // إنشاء عنصر المباراة
+                const matchElement = document.createElement('a');
+                matchElement.href = watchLink;
+                matchElement.className = 'match-box';
+                matchElement.target = "_blank";
+                matchElement.innerHTML = `
+                    <div class='match-info'>
+                        <div>
+                            <img src='${match.team1Logo || 'https://via.placeholder.com/40?text=T1'}' 
+                                 alt='${match.team1}'
+                                 onerror="this.src='https://via.placeholder.com/40?text=T1'">
+                            <p>${match.team1 || 'فريق 1'}</p>
+                        </div>
+                        <div><span class='match-time'>${match.time || '00:00'}</span></div>
+                        <div>
+                            <img src='${match.team2Logo || 'https://via.placeholder.com/40?text=T2'}' 
+                                 alt='${match.team2}'
+                                 onerror="this.src='https://via.placeholder.com/40?text=T2'">
+                            <p>${match.team2 || 'فريق 2'}</p>
+                        </div>
+                    </div>
+                    <div class='match-details'>
+                        <div>${match.channel || 'قناة غير محددة'}</div>
+                        <div>${match.commentator || 'معلق غير محدد'}</div>
+                    </div>
+                `;
+                
+                matchesContainer.appendChild(matchElement);
+            });
+            
+            if (!hasMatches) {
+                matchesContainer.innerHTML = '<div class="loading">لا توجد مباريات متاحة حالياً</div>';
+            } else {
+                console.log("✅ تم عرض جميع المباريات بنجاح");
+            }
+        }
+
+        // دالة مساعدة لتصحيح الأخطاء
+        window.debugFirebase = function() {
+            console.log("🔍 تصحيح أخطاء Firebase:");
+            console.log("Firebase App:", firebaseApp);
+            console.log("Firebase Database:", firebaseDb);
+            
+            if (firebaseDb) {
+                firebaseDb.ref('matches').once('value')
+                    .then(snapshot => {
+                        console.log("📊 بيانات matches:", snapshot.val());
+                        console.log("🔢 عدد المباريات:", snapshot.numChildren());
+                    })
+                    .catch(error => {
+                        console.error("❌ خطأ في جلب البيانات:", error);
+                    });
+            }
+        }
+
+        // تفعيل التصحيح بعد تحميل الصفحة
+        setTimeout(() => {
+            window.debugFirebase();
+        }, 2000);
+    </script>
+</body>
+</html>
